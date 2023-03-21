@@ -21,11 +21,11 @@ mvn package
 java -jar target/webdav-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 ```
 
-requires java >= 1.8
+requires JDK >= 1.8
 
-note that on starting, it creates a folder "work" in the current directory.
-and serves the current directory on webdav at http://localhost:8082
+Note that on starting, it creates a folder "work" in the current directory.
+and serves the current directory on webdav at http://localhost:8082/webdav
 
-On running, point the web browser to http://localhost:8082, you should see the directory listing of your current work directory. For more functionality, it requires a WebDAV client to interact with the WebDAV server
+On running, point the web browser to http://localhost:8082/webdav, you should see the directory listing of your current work directory. For more functionality, it requires a WebDAV client to interact with the WebDAV server
 
 
