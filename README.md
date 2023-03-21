@@ -9,13 +9,14 @@ Current status: alpha/scratch/trial
 - it serves the current working directory in which the app is started
 - no authentication etc
 
-Build
----
+![screenshot in a browser](https://github.com/ag88/embtomcatwebdav/raw/main/web/screenshot.jpg "Screen shot")
+
+# Build
 
 mvn package
 
-Run
----
+# Run
+
 ```
 java -jar target/webdav-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 ```
