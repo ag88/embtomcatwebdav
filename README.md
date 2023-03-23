@@ -22,16 +22,16 @@ mvn package
 ## Run
 
 ```
-java -jar webdav-0.1.1.jar
+java -jar webdav-0.1.2.jar
 ```
-Note that if you build from source the file name is webdav-0.1.1-jar-with-dependencies.jar, in target/ folder.
+Note that if you build from source the file name is webdav-0.1.2-jar-with-dependencies.jar, in target/ folder.
 
 ## usage 
 
 ```
-java -jar webdav-0.1.1.jar -h
+java -jar webdav-0.1.2.jar -h
 
-usage: webdav-0.1.1
+usage: webdav-0.1.2
  -b,--basedir <path>      set basedir, a work folder for tomcat, default
                           [current working dir]/tomcat.port
  -h,--help                help

@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Scanner;
@@ -74,9 +75,8 @@ public class App
 	public void runserver() {
 		try {
 			if(basedir == null)
-				basedir = System.getProperty("user.dir")
-				.concat("/tomcat.")
-				.concat(Integer.toString(port));
+				basedir = Paths.get(System.getProperty("user.dir"), 
+					"tomcat.".concat(Integer.toString(port))).toString();
 			if(!quiet)
 				log.info(String.format("tomcat basedir: %s", basedir));
 			
