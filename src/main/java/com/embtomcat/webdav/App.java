@@ -21,7 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Scanner;
@@ -34,6 +37,7 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.authenticator.BasicAuthenticator;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.servlets.WebdavServlet;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.cli.CommandLine;
@@ -55,6 +59,9 @@ public class App
 	Log log = LogFactory.getLog(App.class);
 	
 	Tomcat tomcat; 
+	
+	String keystorefile = null;
+	String keystorepasswd = null;
 	
 	int port = 8080;
 	String shost = "localhost";
@@ -83,7 +90,37 @@ public class App
 			tomcat = new Tomcat();			
 			tomcat.setBaseDir(basedir);
 			tomcat.setSilent(quiet);
-			tomcat.setPort(port);
+			if(keystorefile != null && keystorepasswd != null) { //enable SSL
+				try {
+					if(!Files.exists(Paths.get(basedir)))
+						Files.createDirectory(Paths.get(basedir));
+					Path tgt = Paths.get(basedir).resolve(keystorefile);
+					Files.copy(Paths.get(keystorefile), tgt, StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException e) {
+					log.error("cannot copy keystore file to tomcat basedir", e);
+					System.exit(1);
+				}				
+				for(Connector c : tomcat.getService().findConnectors()) {
+					tomcat.getService().removeConnector(c);
+				}
+				Connector c = new Connector();
+			    c.setPort(port);
+			    c.setSecure(true);
+			    c.setScheme("https");
+			    c.setProperty("keyAlias", "tomcat");
+			    c.setProperty("keystorePass", keystorepasswd);
+			    c.setProperty("keystoreType", "JKS");
+			    c.setProperty("keystoreFile", keystorefile);
+			    c.setProperty("clientAuth", "false");
+			    c.setProperty("protocol", "HTTP/1.1");
+			    c.setProperty("sslProtocol", "TLS");
+			    c.setProperty("maxThreads", "10");
+			    c.setProperty("protocol", "org.apache.coyote.http11.Http11NioProtocol");
+			    c.setProperty("SSLEnabled", "true");
+			    tomcat.getService().addConnector(c);			    
+			} else {
+				tomcat.setPort(port);
+			}			
 			tomcat.setHostname(shost);
 			
 			Thread hook = new Thread() {
@@ -165,6 +202,11 @@ public class App
 				.desc("set password, you may omit this, it would prompt for it if -u is specified")
 				.hasArg().argName("password").build());
 		options.addOption(Option.builder("q").longOpt("quiet").desc("mute (most) logs").build());
+		options.addOption(Option.builder("S").longOpt("secure")
+				.desc("enable SSL, you need to supply a keystore file and keystore passwd, " +
+		          "if passwd is omitted it'd be prompted.")
+				.hasArg().argName("keystore,passwd").build());
+
 		
 		try {
 			CommandLineParser parser = new DefaultParser();
@@ -209,6 +251,25 @@ public class App
 				input.close();
 			}
 			
+			if (cmd.hasOption("secure")) {
+				String arg = cmd.getOptionValue("secure");
+				if (arg.contains(",")) {
+					String[] f = arg.split(",");
+					keystorefile = f[0];
+					keystorepasswd = f[1];
+				} else {
+					keystorefile = arg;
+					log.info("Enter password for keystore:");
+					Scanner s = new Scanner(System.in);
+					keystorepasswd = s.nextLine();
+					s.close();
+				}
+				if(!Files.exists(Paths.get(keystorefile))) {
+					log.error("keystore file not found!");
+					System.exit(0);
+				}
+			}
+
 			if(cmd.hasOption("quiet")) {
 				quiet = true;
 			}
@@ -308,9 +369,26 @@ public class App
 		this.quiet = quiet;
 	}
 	
+	public String getKeystorefile() {
+		return keystorefile;
+	}
+
+	public void setKeystorefile(String keystorefile) {
+		this.keystorefile = keystorefile;
+	}
+
+	public String getKeystorepasswd() {
+		return keystorepasswd;
+	}
+
+	public void setKeystorepasswd(String keystorepasswd) {
+		this.keystorepasswd = keystorepasswd;
+	}
+
     public static void main(String[] args)  {
         App app = new App();
         app.run(args);
     }
+
 
 }
