@@ -1,3 +1,20 @@
+/*
+ Copyright 2023 Andrew Goh http://github.com/ag88
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
+
 package com.embtomcat.webdav;
 
 import java.io.File;
@@ -12,10 +29,8 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.apache.catalina.Context;
-import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Realm;
-import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.authenticator.BasicAuthenticator;
 import org.apache.catalina.servlets.WebdavServlet;
@@ -46,7 +61,6 @@ public class App
 	String basedir = null;
 	String user = null;
 	String passwd = null;
-	String realm = "Simple";
 	boolean quiet = false;
 
 	public App() {
@@ -57,7 +71,7 @@ public class App
 		runserver();
 	}
 	
-	private void runserver() {
+	public void runserver() {
 		try {
 			if(basedir == null)
 				basedir = System.getProperty("user.dir")
@@ -237,8 +251,66 @@ public class App
 		}
 		return null;
 	}	
+		
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public String getShost() {
+		return shost;
+	}
+
+	public void setShost(String shost) {
+		this.shost = shost;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getBasedir() {
+		return basedir;
+	}
+
+	public void setBasedir(String basedir) {
+		this.basedir = basedir;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPasswd() {
+		return passwd;
+	}
+
+	public void setPasswd(String passwd) {
+		this.passwd = passwd;
+	}
+
+	public boolean isQuiet() {
+		return quiet;
+	}
+
+	public void setQuiet(boolean quiet) {
+		this.quiet = quiet;
+	}
+	
     public static void main(String[] args)  {
         App app = new App();
         app.run(args);
     }
+
 }
