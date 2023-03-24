@@ -9,7 +9,7 @@ Current status: alpha/test
 - It runs on http://localhost:8080/webdav
 - It serves the current working directory in which the app is started
 - Added (BASIC) authentication
-- Added (DIGEST) authentication - v0.2.1
+- Added (DIGEST) authentication - v0.3.0, v0.2.1
 - Added command line aguments so that various parameters can be changed:
 - Added SSL (i.e. https://) - v0.2.0
 - It requires a folder 'tomcat.port' for the embedded Tomcat instance, if the folder isn't present,
