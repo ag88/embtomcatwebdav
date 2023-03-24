@@ -24,16 +24,16 @@ mvn package
 ## Run
 
 ```
-java -jar webdav-0.2.1.jar
+java -jar embtomcatwebdav-0.3.0.jar
 ```
-Note that if you build from source the file name is webdav-0.2.1-jar-with-dependencies.jar, in target/ folder.
+Note that if you build from source the file name is embtomcatwebdav-0.3.0-jar-with-dependencies.jar, in target/ folder.
 
 ## usage 
 
 ```
-java -jar webdav-0.2.1.jar -h
+java -jar embtomcatwebdav-0.3.0.jar -h
 
-usage: webdav-0.2.1
+usage: embtomcatwebdav-0.3.0
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
  -D,--digest                     use digest authentication
@@ -90,7 +90,7 @@ Note that keytool is normally bundled with JDK distributions, it is not part of 
 Next run the app with -S option and the keystore file. If the keystore password is not
 specified on the command line, it would prompt for it. e.g.
 ```
-java -jar webdav-0.2.1.jar -p 8443 -S keystorefile.jkf 
+java -jar embtomcatwebdav-0.3.0.jar -p 8443 -S keystorefile.jkf 
 ```
 Note that when you run the app with the -S keystorefile.jkf option, it copies the keystore file into the 'tomcat.port' work folder, this is needed for the app to access the keystore file.
 

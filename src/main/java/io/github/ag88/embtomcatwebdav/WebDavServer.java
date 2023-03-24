@@ -15,7 +15,7 @@
  */
 
 
-package com.embtomcat.webdav;
+package io.github.ag88.embtomcatwebdav;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Scanner;
@@ -60,34 +59,118 @@ import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 
-public class App 
+
+/**
+ * This is a WebDAV server based on Apache Tomcat's WebDAV servlet and embedded Tomcat server.<p>
+ * 
+ * The parameters required to start the Tomcat server and WebDAV servlet are maintained as 
+ * instance variables in this class.<p>
+ * 
+ * Normally, this class's {@link #main(String[])} is the main entry point of this App.<br>
+ * {@link #main(String[])} in turns calls {@link #run(String[])} which in turns calls a private method
+ * to process command line parameters, and when done, calls {@link #runserver()} which starts the Tomcat
+ * server/instance and host the WebDAV servlet.<p>
+ * 
+ * To use this class as an embedded application, first call the various getter/setter methods to setup
+ * parameters for the app.<p>
+ * 
+ * Then call {@link #runserver()} which starts the Tomcat server/instance and host the WebDAV servlet.
+ * 
+ */
+public class WebDavServer 
 {
 	
-	Log log = LogFactory.getLog(App.class);
+	/** The log. This isn't intended to be used externally.
+	 * Note tha it uses Tomcat's JULI logging framework */
+	private Log log = LogFactory.getLog(WebDavServer.class);
 	
+	/** The tomcat. */
 	Tomcat tomcat; 
 	
+	/** The keystorefile. used for SSL*/
 	String keystorefile = null;
+	
+	/** The keystorepasswd. used for SSL*/
 	String keystorepasswd = null;
 	
+	/** The port. default 8080*/
 	int port = 8080;
+	
+	/** The host.
+	 * This takes a string for the hostname, accordingly, the embedded Tomcat server 
+	 * can resolve this as a IP address string as well, default localhost*/
 	String shost = "localhost";
+	
+	/** The path. default user.dir
+	 * This is the path which is served. It is actually the context path.
+	 * 
+	 * */	
 	String path = System.getProperty("user.dir");
+	
+	/** The basedir. 
+	 * This directory/folder is used by tomcat for (temporary) files.
+	 * e.g. used by JSP container, places server keystore file for SSL
+	 * certificates etc. 
+	 * 
+	 * When runserver() starts, if this is null, it set it to the 
+	 * default path [user.dir]/tomcat.port 
+	 * */
 	String basedir = null;
+	
+	/** Flag to set if DIGEST authentication is selected, 
+	 * if it is false, it defaults to BASIC authentication */
 	boolean digest = false;
+	
+	/** The Authentication realm for BASIC/DIGEST authentication,
+	 *  default "Simple" */
 	String realm = "Simple";
+	
+	/** The username.
+	 *  If both username and passwords are specified, the server would authentication 
+	 *  with BASIC authentication. To use DIGEST authentication, set digest to true as well*/
 	String user = null;
+	
+	/** The password for the user.
+	 * 
+	 * For DIGEST authentication it can be stored in the format:
+	 * digest(MD5(user:realm:password)) where MD5(user:realm:password) a hex string representing 
+	 * the hashed value of MD5(user:realm:password). The wrapping syntax digest(xxxx) is used by 
+	 * runserver to determine that xxxx is encoded and hence will not apply further encoding/hashing
+	 * on it */
 	String passwd = null;
+	
+	/** Quiet flag, reduce the amount of logs/info messages on running the embedded Tomcat Server */
 	boolean quiet = false;
 	
-	public App() {
+	/**
+	 * Instantiates a new web dav server, no arg constructor.
+	 */
+	public WebDavServer() {
 	}
 		
+	/**
+	 * Run
+	 * 
+	 * This method is actually called by {@link #main(String[])}.
+	 * It calls a method to parse the command line variables and setup the instance variables.
+	 * It then calls {@link #runserver()} to start the embedded Tomcat server
+	 *
+	 * @param args the args
+	 */
 	public void run(String[] args) {
 		parseargs(args);
 		runserver();
 	}
 	
+	/**
+	 * Runserver
+	 * 
+	 * This is the main method which starts the embedded Tomcat server and host the Webdav Servlet.<p>
+	 * 
+	 * Before calling this, first set the various parameters, e.g. port, host, path, basedir etc..
+	 * Then call {@link #runserver()} which starts the embedded Tomcat server and host the Webdav Servlet.
+	 * 
+	 */
 	public void runserver() {
 		try {
 			if(basedir == null)
@@ -224,6 +307,11 @@ public class App
 		}		
 	}
 	
+	/**
+	 * Parseargs.
+	 *
+	 * @param args command line args passed to {@link #main(String[])}
+	 */
 	private void parseargs(String[] args) {
 		Options options = new Options();
 		options.addOption(Option.builder("h").longOpt("help").desc("help").build());		
@@ -345,13 +433,13 @@ public class App
 	
 	
 	/**
-	 * Generates enncoded password for DIGEST authentication
-	 * 
-	 * @param realm
-	 * @param username
+	 * Generates encoded password for DIGEST authentication.
+	 *
+	 * @param realm the realm
+	 * @param username the username
 	 * @param password plaintext password
 	 * @return encoded password for DIGEST authentication
-	 * @throws NoSuchAlgorithmException 
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public String digestEncodePasswd(String realm, String username, String password) 
 			throws NoSuchAlgorithmException {
@@ -365,16 +453,17 @@ public class App
 			return credhand.mutate(credentials);		
 	}
 	
-	/** 
-	 * returns an encoded (hashed) password for digest auth for storage
+	/**
+	 *  
+	 * returns an encoded (hashed) password for digest auth for storage<p>
 	 * 
-	 * not safe, but hashed so as to obfuscate the original password
-	 * 
-	 * @param realm
-	 * @param username
-	 * @param password
+	 * not safe, but hashed so as to obfuscate the original password.
+	 *
+	 * @param realm Authentication Realm (for BASIC/DIGEST Authentication)
+	 * @param username username
+	 * @param password password
 	 * @return encoded password for text storage
-	 * @throws NoSuchAlgorithmException 
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public String digestEncodeStoredPw(String realm, String username, String password)
 			throws NoSuchAlgorithmException {
@@ -384,16 +473,16 @@ public class App
 	
 	
 	/**
-	 * returns password encoding for digest authentication
-	 * i.e. MD5(username:realm:password)
+	 * returns password encoded for digest authentication as a hex string<br>
+	 * i.e. MD5(username:realm:password)<p>
 	 * 
 	 * if password is in format "digest(hexstring)", it is deemed pre-encoded and returned
-	 * 
-	 * @param realm
-	 * @param username
-	 * @param password
-	 * @return
-	 * @throws NoSuchAlgorithmException 
+	 *
+	 * @param realm Authentication Realm (for BASIC/DIGEST Authentication)
+	 * @param username username
+	 * @param password password
+	 * @return encoded password i.e. MD5(username:realm:password) as a HexString
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 */
 	public String digestPw(String realm, String username, String password) throws NoSuchAlgorithmException {
 		String dpw = null;
@@ -406,6 +495,11 @@ public class App
 		return dpw;
 	}
 	
+	/**
+	 * Read manifest.
+	 *
+	 * @return the map
+	 */
 	private Map<String, String> readManifest() {
 		TreeMap<String, String> mret = new TreeMap<String, String>();
 		try {
@@ -429,97 +523,272 @@ public class App
 		return null;
 	}	
 		
+	/**
+	 * Gets the port.
+	 * 
+	 * Default 8080
+	 *
+	 * @return the port
+	 */
 	public int getPort() {
 		return port;
 	}
 
+	/**
+	 * Sets the port.
+	 * 
+	 * This takes a string for the hostname, accordingly, the embedded Tomcat server 
+	 * can resolve this as a IP address string as well, default localhost
+	 * 
+	 * @param port the new port
+	 */
 	public void setPort(int port) {
 		this.port = port;
 	}
 
-	public String getShost() {
+	/**
+	 * Gets the host as a string.
+	 *
+	 * @return the host
+	 */
+	public String getHost() {
 		return shost;
 	}
 
+	/**
+	 * Sets the host.
+	 * 
+	 * This takes a string for the hostname, accordingly, the embedded Tomcat server 
+	 * can resolve this as a IP address string as well, default localhost
+	 * 
+	 * @param shost the new shost
+	 */
 	public void setShost(String shost) {
 		this.shost = shost;
 	}
 
+	/**
+	 * Gets the path, this is the path which is served, default user.dir.
+	 *  
+	 * It is actually the context path. 
+	 *
+	 * @return the path
+	 */
 	public String getPath() {
 		return path;
 	}
 
+	/**
+	 * Sets the path, this is the path which is served, default user.dir.
+	 * 
+	 * It is actually the context path.
+	 * 
+	 * @param path the new path
+	 */
 	public void setPath(String path) {
 		this.path = path;
 	}
 
+	/**
+	 * Gets the basedir, used by tomcat.
+	 * 
+	 * This directory/folder is used by tomcat for (temporary) files.
+	 * e.g. used by JSP container, places server keystore file for SSL
+	 * certificates etc.<p> 
+	 * 
+	 * When runserver() starts, if this is null, it set it to the 
+	 * default path [user.dir]/tomcat.port 
+	 * 
+	 * @return the basedir
+	 */
 	public String getBasedir() {
 		return basedir;
 	}
 
+	/**
+	 * Sets the basedir, used by tomcat.
+	 * 
+	 * This directory/folder is used by tomcat for (temporary) files.
+	 * e.g. used by JSP container, places server keystore file for SSL
+	 * certificates etc. <p> 
+	 * 
+	 * When runserver() starts, if this is null, it set it to the 
+	 * default path [user.dir]/tomcat.port
+	 *  
+	 * @param basedir the new basedir
+	 */
 	public void setBasedir(String basedir) {
 		this.basedir = basedir;
 	}
 
+	/**
+	 * Gets the username.
+	 *
+	 * If both username and passwords are specified, the server would authenticate
+	 * with BASIC authentication. To use DIGEST authentication, set digest to true as well
+	 *
+	 * @return the user
+	 */
 	public String getUser() {
 		return user;
 	}
 
+	/**
+	 * Sets the username.
+	 * 
+	 * If both username and passwords are specified, the server would authenticate
+	 * with BASIC authentication. To use DIGEST authentication, set digest to true as well
+	 *
+	 * @param user the new user
+	 */
 	public void setUser(String user) {
 		this.user = user;
 	}
 
+	/**
+	 * Gets the password.
+	 * 
+	 * For DIGEST authentication it can be stored in the format:<br>
+	 * digest(MD5(user:realm:password))<br>
+	 * where MD5(user:realm:password) a hex string representing the hashed value of 
+	 * MD5(user:realm:password).<p>
+	 * 
+	 * The wrapping syntax digest(xxxx) is used by runserver to determine that xxxx is encoded 
+	 * and hence will not apply further encoding/hashing on it
+	 * 
+	 * @return the password
+	 */
 	public String getPasswd() {
 		return passwd;
 	}
 
+	/**
+	 * Sets the password.
+	 * 
+	 * For DIGEST authentication it can be stored in the format:<br>
+	 * digest(MD5(user:realm:password))<br>
+	 * where MD5(user:realm:password) a hex string representing the hashed value of 
+	 * MD5(user:realm:password).<p>
+	 * 
+	 * The wrapping syntax digest(xxxx) is used by runserver to determine that xxxx is encoded 
+	 * and hence will not apply further encoding/hashing on it
+	 *
+	 * @param passwd the new passwd
+	 */
 	public void setPasswd(String passwd) {
 		this.passwd = passwd;
 	}
 
+	/**
+	 * Checks if is quiet.
+	 * 
+	 * reduce the amount of logs/info messages on running the embedded Tomcat Server
+	 *
+	 * @return true, if is quiet
+	 */
 	public boolean isQuiet() {
 		return quiet;
 	}
 
+	/**
+	 * Sets the quiet flag.
+	 * 
+	 * reduce the amount of logs/info messages on running the embedded Tomcat Server
+	 *
+	 * @param quiet quiet flag
+	 */
 	public void setQuiet(boolean quiet) {
 		this.quiet = quiet;
 	}
 	
+	/**
+	 * Gets the keystorefile, used for SSL.
+	 *
+	 * @return the keystorefile
+	 */
 	public String getKeystorefile() {
 		return keystorefile;
 	}
 
+	/**
+	 * Sets the keystorefile, used for SSL.
+	 *
+	 * @param keystorefile the new keystorefile
+	 */
 	public void setKeystorefile(String keystorefile) {
 		this.keystorefile = keystorefile;
 	}
 
+	/**
+	 * Gets the keystorepasswd, used for SSL.
+	 *
+	 * @return the keystorepasswd
+	 */
 	public String getKeystorepasswd() {
 		return keystorepasswd;
 	}
 
+	/**
+	 * Sets the keystorepasswd, used for SSL.
+	 *
+	 * @param keystorepasswd the new keystorepasswd
+	 */
 	public void setKeystorepasswd(String keystorepasswd) {
 		this.keystorepasswd = keystorepasswd;
 	}
 	
+	/**
+	 * Checks if is digest.
+	 *
+	 * Flag to set if DIGEST authentication is selected.
+	 * If it is false, it defaults to BASIC authentication
+	 * 
+	 * @return true, if is digest
+	 */
 	public boolean isDigest() {
 		return digest;
 	}
 
+	/**
+	 * Sets the digest flag
+	 * 
+	 * Flag to set if DIGEST authentication is selected.
+	 * If it is false, it defaults to BASIC authentication
+	 *
+	 * @param digest the new digest flag
+	 */
 	public void setDigest(boolean digest) {
 		this.digest = digest;
 	}
 
 	
+	/**
+	 * Gets the authentication realm, for BASIC/DIGEST authentication
+	 *
+	 * @return the realm
+	 */
 	public String getRealm() {
 		return realm;
 	}
 
+	/**
+	 * Sets the authentication realm, for BASIC/DIGEST authentication
+	 *
+	 * @param realm the new realm
+	 */
 	public void setRealm(String realm) {
 		this.realm = realm;
 	}
 
+    /**
+     * The main method, starting point of this app.
+     * 
+     * As this is mainly an App, this is the main entry point to start the App.
+     *
+     * @param args the arguments
+     */
     public static void main(String[] args)  {
-        App app = new App();
+        WebDavServer app = new WebDavServer();
         app.run(args);
     }
 

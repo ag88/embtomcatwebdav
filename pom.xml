@@ -3,19 +3,31 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.embtomcat</groupId>
-	<artifactId>webdav</artifactId>
-	<version>0.2.1</version>
+	<groupId>io.github.ag88</groupId>
+	<artifactId>embtomcatwebdav</artifactId>
+	<version>0.3.0</version>
 	<packaging>jar</packaging>
 
 	<name>embtomcatwebdav</name>
 	<description>A WebDAV server based on Apache Tomcat's Webdav servlet and embedded Tomcat server</description>
 	<url>https://github.com/ag88/embtomcatwebdav</url>
 
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://github.com/ag88/embtomcatwebdav.git</url>
+	</scm>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tomcat.version>8.5.87</tomcat.version>
-		<mainclass>${project.groupId}.${project.artifactId}.App</mainclass>
+		<mainclass>${project.groupId}.${project.artifactId}.WebDavServer</mainclass>
 		<skipTests>true</skipTests>
 	</properties>
 
@@ -166,9 +178,38 @@
 								</resource>
 							</resources>
 						</configuration>
-					</execution>					
+					</execution>
 				</executions>
-			</plugin>			
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.5.0</version>
+				<configuration>
+					<source>8</source>
+				</configuration>
+				<executions>
+					<execution>
+						<id> maven-javadocs </id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
