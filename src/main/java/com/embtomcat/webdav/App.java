@@ -21,23 +21,30 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.authenticator.BasicAuthenticator;
+import org.apache.catalina.authenticator.DigestAuthenticator;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.realm.MessageDigestCredentialHandler;
 import org.apache.catalina.servlets.WebdavServlet;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.cli.CommandLine;
@@ -67,10 +74,12 @@ public class App
 	String shost = "localhost";
 	String path = System.getProperty("user.dir");
 	String basedir = null;
+	boolean digest = false;
+	String realm = "Simple";
 	String user = null;
 	String passwd = null;
 	boolean quiet = false;
-
+	
 	public App() {
 	}
 		
@@ -140,21 +149,54 @@ public class App
 			tomcat.setAddDefaultWebXmlToWebapp(false);
 			Tomcat.addDefaultMimeTypeMappings(context);
 			
-			if(!quiet)
+			if(!quiet) 
 				log.info(String.format("serving path: %s", path));
 
 			if (user != null) {
-				tomcat.addUser(user, passwd);
+				Realm realmo = tomcat.getEngine().getRealm();
+				if (digest) {
+					MessageDigestCredentialHandler credhand = new MessageDigestCredentialHandler();
+					credhand.setSaltLength(0);
+					credhand.setEncoding("UTF-8");
+					credhand.setIterations(1);
+					try {
+						credhand.setAlgorithm("MD5");
+					} catch (NoSuchAlgorithmException e1) {
+						log.error("unable to set cred handler algorithm", e1);
+						System.exit(1);
+					}
+					realmo.setCredentialHandler(credhand);
+					tomcat.getEngine().setRealm(realmo);
+				}
+				context.setRealm(realmo);
+				if (digest) {
+					try {
+						passwd = digestPw(realm, user, passwd);
+						tomcat.addUser(user, passwd);
+					} catch (NoSuchAlgorithmException e) {
+						log.error("unable to encode digest passwd", e);
+						System.exit(1);
+					}					
+				} else {
+					tomcat.addUser(user, passwd);
+				}
 				tomcat.addRole(user, "user");
-				Realm realm = tomcat.getEngine().getRealm();
-				context.setRealm(realm);
 				LoginConfig lconf = new LoginConfig();
+				lconf.setRealmName(realm);
+				if(!quiet) log.info("Realm name: ".concat(realm));
 				// NONE, BASIC, DIGEST, FORM, or CLIENT-CERT.
-				lconf.setAuthMethod("BASIC");
-				lconf.setRealmName("Simple");
+				if(digest) {
+					lconf.setAuthMethod("DIGEST");					
+				} else				
+					lconf.setAuthMethod("BASIC");
+				if(!quiet) log.info("Auth method: ".concat(lconf.getAuthMethod()));
 				lconf.setCharset(Charset.forName("UTF-8"));
 				context.setLoginConfig(lconf);
-				context.getPipeline().addValve(new BasicAuthenticator());
+				if(digest) 
+					context.getPipeline().addValve(new DigestAuthenticator());
+				else				
+					context.getPipeline().addValve(new BasicAuthenticator());
+				
 				SecurityConstraint secconstr = new SecurityConstraint();
 				secconstr.addAuthRole("user");
 				secconstr.setAuthConstraint(true);
@@ -201,7 +243,11 @@ public class App
 		options.addOption(Option.builder("w").longOpt("passwd")
 				.desc("set password, you may omit this, it would prompt for it if -u is specified")
 				.hasArg().argName("password").build());
+		options.addOption(Option.builder("R").longOpt("realm")
+				.desc("set realm name, default 'Simple'")
+				.hasArg().argName("realmname").build());
 		options.addOption(Option.builder("q").longOpt("quiet").desc("mute (most) logs").build());
+		options.addOption(Option.builder("D").longOpt("digest").desc("use digest authentication").build());
 		options.addOption(Option.builder("S").longOpt("secure")
 				.desc("enable SSL, you need to supply a keystore file and keystore passwd, " +
 		          "if passwd is omitted it'd be prompted.")
@@ -211,7 +257,16 @@ public class App
 		try {
 			CommandLineParser parser = new DefaultParser();
 			CommandLine cmd = parser.parse(options, args);
-						
+
+			if(cmd.hasOption("help")) {
+				HelpFormatter formatter = new HelpFormatter();
+				Map<String, String> mkv = readManifest();
+				String name = mkv.get("artifactId")
+						.concat("-").concat(mkv.get("version"));
+				formatter.printHelp(name, options);
+				System.exit(0);
+			}
+
 			if (cmd.hasOption("host")) {
 				shost = cmd.getOptionValue("host");
 			} 
@@ -235,6 +290,10 @@ public class App
 				String p = cmd.getOptionValue("basedir");
 				basedir = new File(p).getAbsolutePath();
 			}
+			
+			if (cmd.hasOption("realm")) {
+				realm = cmd.getOptionValue("realm");
+			} 
 			
 			if (cmd.hasOption("user")) {
 				user = cmd.getOptionValue("user");
@@ -270,25 +329,82 @@ public class App
 				}
 			}
 
+			if(cmd.hasOption("digest")) {
+				digest = true;
+			}
+			
 			if(cmd.hasOption("quiet")) {
 				quiet = true;
 			}
-			
-			if(cmd.hasOption("help")) {
-				HelpFormatter formatter = new HelpFormatter();
-				Map<String, String> mkv = readManifest();
-				String name = mkv.get("artifactId")
-						.concat("-").concat(mkv.get("version"));
-				formatter.printHelp(name, options);
-				System.exit(0);
-			}
-			
+						
 		} catch (ParseException e) {
 			log.error(e.getMessage(),e);
 		}
 		
 	}	
 	
+	
+	/**
+	 * Generates enncoded password for DIGEST authentication
+	 * 
+	 * @param realm
+	 * @param username
+	 * @param password plaintext password
+	 * @return encoded password for DIGEST authentication
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public String digestEncodePasswd(String realm, String username, String password) 
+			throws NoSuchAlgorithmException {
+		
+			String credentials = username.concat(":").concat(realm).concat(":").concat(password);
+			MessageDigestCredentialHandler credhand = new MessageDigestCredentialHandler();
+			credhand.setEncoding(StandardCharsets.UTF_8.name());
+			credhand.setAlgorithm("MD5");
+			credhand.setIterations(1);
+			credhand.setSaltLength(0);
+			return credhand.mutate(credentials);		
+	}
+	
+	/** 
+	 * returns an encoded (hashed) password for digest auth for storage
+	 * 
+	 * not safe, but hashed so as to obfuscate the original password
+	 * 
+	 * @param realm
+	 * @param username
+	 * @param password
+	 * @return encoded password for text storage
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public String digestEncodeStoredPw(String realm, String username, String password)
+			throws NoSuchAlgorithmException {
+		String epw = digestEncodePasswd(realm, username, password);
+		return "digest(".concat(epw).concat(")");
+	}
+	
+	
+	/**
+	 * returns password encoding for digest authentication
+	 * i.e. MD5(username:realm:password)
+	 * 
+	 * if password is in format "digest(hexstring)", it is deemed pre-encoded and returned
+	 * 
+	 * @param realm
+	 * @param username
+	 * @param password
+	 * @return
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public String digestPw(String realm, String username, String password) throws NoSuchAlgorithmException {
+		String dpw = null;
+		Pattern p = Pattern.compile("digest\\(.*\\)");
+		Matcher m = p.matcher(password); 
+		if(m.matches()) {
+			dpw = m.group(1);
+		} else 
+			dpw = digestEncodePasswd(realm, username, password);
+		return dpw;
+	}
 	
 	private Map<String, String> readManifest() {
 		TreeMap<String, String> mret = new TreeMap<String, String>();
@@ -384,11 +500,27 @@ public class App
 	public void setKeystorepasswd(String keystorepasswd) {
 		this.keystorepasswd = keystorepasswd;
 	}
+	
+	public boolean isDigest() {
+		return digest;
+	}
+
+	public void setDigest(boolean digest) {
+		this.digest = digest;
+	}
+
+	
+	public String getRealm() {
+		return realm;
+	}
+
+	public void setRealm(String realm) {
+		this.realm = realm;
+	}
 
     public static void main(String[] args)  {
         App app = new App();
         app.run(args);
     }
-
 
 }

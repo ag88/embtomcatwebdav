@@ -9,6 +9,7 @@ Current status: alpha/test
 - It runs on http://localhost:8080/webdav
 - It serves the current working directory in which the app is started
 - Added (BASIC) authentication
+- Added (DIGEST) authentication - v0.2.1
 - Added command line aguments so that various parameters can be changed:
 - Added SSL (i.e. https://) - v0.2.0
 - It requires a folder 'tomcat.port' for the embedded Tomcat instance, if the folder isn't present,
@@ -35,17 +36,20 @@ java -jar ${project.artifactId}-${project.version}.jar -h
 usage: ${project.artifactId}-${project.version}
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
+ -D,--digest                     use digest authentication
  -h,--help                       help
  -H,--host <hostname>            set host
  -p,--port <port>                set port
  -P,--path <path>                set path, default current working dir
  -q,--quiet                      mute (most) logs
+ -R,--realm <realmname>          set realm name, default 'Simple'
  -S,--secure <keystore,passwd>   enable SSL, you need to supply a keystore
                                  file and keystore passwd, if passwd is
                                  omitted it'd be prompted.
  -u,--user <username>            set user
  -w,--passwd <password>          set password, you may omit this, it would
                                  prompt for it if -u is specified
+
 ```
 
 note that the app can be run without specifying arguments.
@@ -58,6 +62,8 @@ And it serves the current directory on webdav at http://localhost:8080/webdav
 On running, point the web browser to http://localhost:8080/webdav, you should see the directory listing of your current work directory. For more functionality, it requires a WebDAV client to interact with the WebDAV server
 
 To enable authentication, specify a userid using -u option and password would be prompted if the -w option is not specified.
+
+From version 0.2.1, DIGEST authentication is supported, to use DIGEST authentication, pass the -D option in addition to specifying the user with -u option. Without SSL, DIGEST authentication is slightly more secure than BASIC authentication in that passwords is not transmited in plain text. However, it requires that the client supports DIGEST authentication.
 
 If you are bothered with illegal reflective access operation warnings, you can use the batch file run.bat or run.sh
 replace the "target/webdav-0.x.x-jar-with-dependencies.jar" with the appropriate release jar, that should mute most of those illegal reflective access warnings. Tomcat needs those reflective access which accounts for its versetile flexibility features. 
