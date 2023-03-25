@@ -13,6 +13,8 @@ Current status: alpha/test
 - Added command line aguments so that various parameters can be changed:
 - Added SSL (i.e. https://) - v0.2.0
 - Added option to change urlprefix '/webdav' - v0.3.1
+- Added loading of options from properties file, and option to generate a default config file - v0.3.2
+- Added a dialog to generate DIGEST passwords that can be used in the config file. - v0.3.2
 - It requires a folder 'tomcat.port' for the embedded Tomcat instance, if the folder isn't present,
 it is created.
 
@@ -37,7 +39,10 @@ java -jar ${project.artifactId}-${project.version}.jar -h
 usage: ${project.artifactId}-${project.version}
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
+ -c,--conf <configfile>          load properties config file
  -D,--digest                     use digest authentication
+    --genconf <configfile>       generate properties config file
+    --genpass                    dialog to generate digest password
  -h,--help                       help
  -H,--host <hostname>            set host
  -p,--port <port>                set port
@@ -64,7 +69,19 @@ On running, point the web browser to http://localhost:8080/webdav, you should se
 
 To enable authentication, specify a userid using -u option and password would be prompted if the -w option is not specified.
 
-From version 0.2.1, DIGEST authentication is supported, to use DIGEST authentication, pass the -D option in addition to specifying the user with -u option. Without SSL, DIGEST authentication is slightly more secure than BASIC authentication in that passwords is not transmited in plain text. However, it requires that the client supports DIGEST authentication.
+Version 0.2.1 added DIGEST authentication, to use DIGEST authentication, pass the -D option in addition to specifying the user with -u option. Without SSL, DIGEST authentication is slightly more secure than BASIC authentication in that passwords is not transmited in plain text. However, it requires that the client supports DIGEST authentication.
+
+Version 0.3.2, you can maintain the options/settings in a properties text file. First generate a template using
+the ``--genconf configfile``  option, this would generate a config text file template with default entries. You can then edit the entries as desired. Then while running it use the ``-c configfile`` option to load the configs from the properties file.
+
+Version 0.3.2 also added a ``--genpass`` dialog feature, this lets you generate a DIGEST password to be used with DIGEST authentication.  This generated hashed password, including the 'digest(xxx)' wrapper text, can be maintained
+in the password field in the properties config file. Set digest to true as it otherwise defaults to BASIC 
+authentication. Note that this DIGEST hashed password won't work with BASIC authentication as that requires a clear
+text password. The benefit here is that it is possible to store the hashed password rather than clear text password
+in the config file if you use DIGEST authentication. This is more secure than storing plaintext passwords in
+config files.
+
+![Generate digest password](web/digestpwdlg.png "Generate digest password")
 
 If you are bothered with illegal reflective access operation warnings, you can use the batch file run.bat or run.sh
 replace the "target/webdav-0.x.x-jar-with-dependencies.jar" with the appropriate release jar, that should mute most of those illegal reflective access warnings. Tomcat needs those reflective access which accounts for its versetile flexibility features. 

@@ -17,7 +17,14 @@
 
 package io.github.ag88.embtomcatwebdav;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -29,12 +36,15 @@ import java.nio.file.StandardCopyOption;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.swing.SwingUtilities;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
@@ -177,9 +187,8 @@ public class WebDavServer
 	 */
 	public void runserver() {
 		try {
-			if(basedir == null)
-				basedir = Paths.get(System.getProperty("user.dir"), 
-					"tomcat.".concat(Integer.toString(port))).toString();
+			basedir = getDefbasedir(basedir);
+			
 			if(!quiet)
 				log.info(String.format("tomcat basedir: %s", basedir));
 			
@@ -322,6 +331,21 @@ public class WebDavServer
 	}
 	
 	/**
+	 * Gets default basedir, Tomcat's work folder 
+	 *
+	 * default [usr.dir]/tomcat.port
+	 *
+	 * @param basedir the current base dir
+	 * @return the default base directory 
+	 */
+	public String getDefbasedir(String basedir) {
+		if(basedir == null)
+			basedir = Paths.get(System.getProperty("user.dir"), 
+				"tomcat.".concat(Integer.toString(port))).toString();
+		return basedir;
+	}
+
+	/**
 	 * Parseargs.
 	 *
 	 * @param args command line args passed to {@link #main(String[])}
@@ -357,7 +381,14 @@ public class WebDavServer
 				.desc("enable SSL, you need to supply a keystore file and keystore passwd, " +
 		          "if passwd is omitted it'd be prompted.")
 				.hasArg().argName("keystore,passwd").build());
-
+		options.addOption(Option.builder("c").longOpt("conf")
+				.desc("load properties config file")
+				.hasArg().argName("configfile").build());
+		options.addOption(Option.builder().longOpt("genconf")
+				.desc("generate properties config file")
+				.hasArg().argName("configfile").build());
+		options.addOption(Option.builder().longOpt("genpass")
+				.desc("dialog to generate digest password").build());
 		
 		try {
 			CommandLineParser parser = new DefaultParser();
@@ -372,6 +403,24 @@ public class WebDavServer
 				System.exit(0);
 			}
 
+			if (cmd.hasOption("conf")) {
+				String configfile = cmd.getOptionValue("conf");
+				loadconfigprop(configfile);
+			} 
+			
+			if (cmd.hasOption("genconf")) {
+				String configfile = cmd.getOptionValue("genconf");
+				genconfigprop(configfile);
+			} 
+			
+			if (cmd.hasOption("genpass")) {
+				DigestPWGenDlg dlg = new DigestPWGenDlg(this);
+				dlg.pack();
+				dlg.setLocationRelativeTo(null);
+				dlg.setVisible(true);
+				System.exit(0);
+			} 
+			
 			if (cmd.hasOption("host")) {
 				shost = cmd.getOptionValue("host");
 			} 
@@ -452,7 +501,91 @@ public class WebDavServer
 		
 	}	
 	
+	/**
+	 * Load config options from properties file.
+	 *
+	 * @param configfile this should be a properties text file in the appropriate format
+	 * e.g. generated using {@link #genconfigprop(String)}
+	 */
+	public void loadconfigprop(String configfile) {				
+		try {
+			Properties p = new Properties();
+			BufferedReader reader = new BufferedReader(new FileReader(configfile));
+			p.load(reader);
+			
+			shost = p.getProperty("host", shost);
+			port = Integer.parseInt(p.getProperty("port", "8080"));
+			urlprefix = p.getProperty("urlprefix", "/webdav");
+			path = p.getProperty("path", System.getProperty("user.dir"));
+			basedir = p.getProperty("basedir", getDefbasedir(basedir));
+			digest = Boolean.parseBoolean(p.getProperty("digest", "false"));
+			realm = p.getProperty("realm", "Simple");
+			user = p.getProperty("user", "");
+			if (user.equals("")) user = null;
+			passwd = p.getProperty("password", "");
+			if (passwd.equals("")) passwd = null;
+			quiet = Boolean.parseBoolean(p.getProperty("quiet", "false"));
+			
+			keystorefile = p.getProperty("keystorefile", "");
+			if (keystorefile.equals("")) keystorefile = null;
+			keystorepasswd = p.getProperty("keystorepasswd", "");
+			if (keystorepasswd.equals("")) keystorepasswd = null;
+			
+		} catch (FileNotFoundException e) {
+			log.error(String.format("config file %s not found %s", configfile), e);
+			System.exit(1);
+		} catch (IOException e) {
+			log.error(String.format("config file %s not found %s", configfile), e);
+			System.exit(1);
+		}		
+	}
 	
+	/**
+	 * Generate config options properties file template.
+	 * 
+	 * It would fill up some default values
+	 *
+	 * @param configfile new properties config file name.
+	 */
+	public void genconfigprop(String configfile) {
+		if(Files.exists(Paths.get(configfile))) {
+			log.error("file exists, not overwriting, specify a new name");
+			System.exit(1);
+		}
+		
+		basedir = getDefbasedir(basedir);
+		
+		Properties p = new Properties();
+		p.setProperty("host", shost);
+		p.setProperty("port", Integer.toString(port));
+		p.setProperty("urlprefix", urlprefix);
+		p.setProperty("path", path == null ? "" : path);
+		p.setProperty("basedir", basedir == null ? "" : basedir);
+		p.setProperty("digest", Boolean.toString(digest));
+		p.setProperty("realm", realm);
+		p.setProperty("user", user == null ? "" : user);
+		p.setProperty("password", passwd == null ? "" : passwd);
+		p.setProperty("quiet", Boolean.toString(quiet));		
+		p.setProperty("keystorefile", keystorefile == null ? "" : keystorefile);
+		p.setProperty("keystorepasswd", keystorepasswd == null ? "" : keystorepasswd);
+		
+		
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(configfile));
+			p.store(writer, "Embedded Tomcat Webdav server properties");
+			writer.flush();
+			writer.close();
+			
+			log.info("config file saveed to ".concat(configfile));
+			System.exit(0);
+		} catch (IOException e) {
+			log.error(String.format("unable to write config file %s",configfile), e);
+			System.exit(1);
+		}		
+		
+	}
+
+
 	/**
 	 * Generates encoded password for DIGEST authentication.
 	 *
@@ -507,7 +640,7 @@ public class WebDavServer
 	 */
 	public String digestPw(String realm, String username, String password) throws NoSuchAlgorithmException {
 		String dpw = null;
-		Pattern p = Pattern.compile("digest\\(.*\\)");
+		Pattern p = Pattern.compile("digest\\((.*)\\)");
 		Matcher m = p.matcher(password); 
 		if(m.matches()) {
 			dpw = m.group(1);
