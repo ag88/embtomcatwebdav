@@ -65,8 +65,6 @@ public class DigestPWGenDlg extends JDialog implements ActionListener {
 		sb.append("in the password field in the properties config file. ");
 		sb.append("Set digest to true as it otherwise defaults to BASIC authentication</html>");				
 		JLabel l = new JLabel(sb.toString());
-		//l.setSize(400, 80);
-		l.setBorder(new LineBorder(Color.BLACK));
 		addleft(l);
 		
 		JPanel p = new JPanel();
