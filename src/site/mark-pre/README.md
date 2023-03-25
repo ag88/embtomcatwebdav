@@ -12,6 +12,7 @@ Current status: alpha/test
 - Added (DIGEST) authentication - v0.3.0, v0.2.1
 - Added command line aguments so that various parameters can be changed:
 - Added SSL (i.e. https://) - v0.2.0
+- Added option to change urlprefix '/webdav' - v0.3.1
 - It requires a folder 'tomcat.port' for the embedded Tomcat instance, if the folder isn't present,
 it is created.
 
@@ -49,7 +50,7 @@ usage: ${project.artifactId}-${project.version}
  -u,--user <username>            set user
  -w,--passwd <password>          set password, you may omit this, it would
                                  prompt for it if -u is specified
-
+ -x,--urlprefix <urlprefix>      set urlprefix, default /webdav
 ```
 
 note that the app can be run without specifying arguments.

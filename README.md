@@ -12,6 +12,7 @@ Current status: alpha/test
 - Added (DIGEST) authentication - v0.3.0, v0.2.1
 - Added command line aguments so that various parameters can be changed:
 - Added SSL (i.e. https://) - v0.2.0
+- Added option to change urlprefix '/webdav' - v0.3.1
 - It requires a folder 'tomcat.port' for the embedded Tomcat instance, if the folder isn't present,
 it is created.
 
@@ -24,16 +25,16 @@ mvn package
 ## Run
 
 ```
-java -jar embtomcatwebdav-0.3.0.jar
+java -jar embtomcatwebdav-0.3.1.jar
 ```
-Note that if you build from source the file name is embtomcatwebdav-0.3.0-jar-with-dependencies.jar, in target/ folder.
+Note that if you build from source the file name is embtomcatwebdav-0.3.1-jar-with-dependencies.jar, in target/ folder.
 
 ## usage 
 
 ```
-java -jar embtomcatwebdav-0.3.0.jar -h
+java -jar embtomcatwebdav-0.3.1.jar -h
 
-usage: embtomcatwebdav-0.3.0
+usage: embtomcatwebdav-0.3.1
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
  -D,--digest                     use digest authentication
@@ -49,7 +50,7 @@ usage: embtomcatwebdav-0.3.0
  -u,--user <username>            set user
  -w,--passwd <password>          set password, you may omit this, it would
                                  prompt for it if -u is specified
-
+ -x,--urlprefix <urlprefix>      set urlprefix, default /webdav
 ```
 
 note that the app can be run without specifying arguments.
@@ -90,7 +91,7 @@ Note that keytool is normally bundled with JDK distributions, it is not part of 
 Next run the app with -S option and the keystore file. If the keystore password is not
 specified on the command line, it would prompt for it. e.g.
 ```
-java -jar embtomcatwebdav-0.3.0.jar -p 8443 -S keystorefile.jkf 
+java -jar embtomcatwebdav-0.3.1.jar -p 8443 -S keystorefile.jkf 
 ```
 Note that when you run the app with the -S keystorefile.jkf option, it copies the keystore file into the 'tomcat.port' work folder, this is needed for the app to access the keystore file.
 

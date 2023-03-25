@@ -85,7 +85,7 @@ public class WebDavServer
 	private Log log = LogFactory.getLog(WebDavServer.class);
 	
 	/** The tomcat. */
-	Tomcat tomcat; 
+	private Tomcat tomcat; 
 	
 	/** The keystorefile. used for SSL*/
 	String keystorefile = null;
@@ -100,6 +100,10 @@ public class WebDavServer
 	 * This takes a string for the hostname, accordingly, the embedded Tomcat server 
 	 * can resolve this as a IP address string as well, default localhost*/
 	String shost = "localhost";
+	
+	
+	/** urlprefix. default "/webdav" */
+	String urlprefix = "/webdav";
 	
 	/** The path. default user.dir
 	 * This is the path which is served. It is actually the context path.
@@ -297,8 +301,18 @@ public class WebDavServer
 			ws.addInitParameter("readonly", "false");
 			ws.addInitParameter("allowSpecialPaths", "true");			
 
-			context.addServletMappingDecoded("/webdav/*", "webdav");
+			if (! urlprefix.endsWith("/"))
+				urlprefix = urlprefix.concat("/*");
+			else
+				urlprefix = urlprefix.concat("*");
+			
+			context.addServletMappingDecoded(urlprefix, "webdav");
 			context.setSessionTimeout(30);
+			
+			if(!quiet)
+				log.info(String.format("Webdav servlet running at %s://%s:%s%s", 
+					(keystorefile!=null && keystorepasswd != null) ? "https" : "http", 
+					shost, Integer.toString(port), urlprefix.substring(0,urlprefix.length()-1)));
 
 			tomcat.start();
 			tomcat.getServer().await();
@@ -322,6 +336,9 @@ public class WebDavServer
 		options.addOption(Option.builder("P").longOpt("path")
 				.desc("set path, default current working dir")
 				.hasArg().argName("path").build());
+		options.addOption(Option.builder("x").longOpt("urlprefix")
+				.desc("set urlprefix, default /webdav")
+				.hasArg().argName("urlprefix").build());
 		options.addOption(Option.builder("b").longOpt("basedir")
 				.desc("set basedir, a work folder for tomcat, default [current working dir]/tomcat.port")
 				.hasArg().argName("path").build());
@@ -377,6 +394,10 @@ public class WebDavServer
 			if (cmd.hasOption("basedir")) {
 				String p = cmd.getOptionValue("basedir");
 				basedir = new File(p).getAbsolutePath();
+			}
+			
+			if (cmd.hasOption("urlprefix")) {
+				urlprefix = cmd.getOptionValue("urlprefix");
 			}
 			
 			if (cmd.hasOption("realm")) {
@@ -772,7 +793,7 @@ public class WebDavServer
 	}
 
 	/**
-	 * Sets the authentication realm, for BASIC/DIGEST authentication
+	 * Sets the authentication realm, for BASIC/DIGEST authentication.
 	 *
 	 * @param realm the new realm
 	 */
@@ -780,6 +801,29 @@ public class WebDavServer
 		this.realm = realm;
 	}
 
+	/**
+	 * Gets the urlprefix.
+	 * 
+	 * default "/webdav"
+	 *  
+	 * @return the urlprefix
+	 */
+	public String getUrlprefix() {
+		return urlprefix;
+	}
+
+	/**
+	 * Sets the urlprefix.
+	 * 
+	 * default "/webdav"
+	 *
+	 * @param urlprefix the new urlprefix
+	 */
+	public void setUrlprefix(String urlprefix) {
+		this.urlprefix = urlprefix;
+	}
+
+	
     /**
      * The main method, starting point of this app.
      * 
@@ -791,5 +835,6 @@ public class WebDavServer
         WebDavServer app = new WebDavServer();
         app.run(args);
     }
+
 
 }

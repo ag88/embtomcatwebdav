@@ -5,7 +5,7 @@
 
 	<groupId>io.github.ag88</groupId>
 	<artifactId>embtomcatwebdav</artifactId>
-	<version>0.3.0</version>
+	<version>0.3.1</version>
 	<packaging>jar</packaging>
 
 	<name>embtomcatwebdav</name>
@@ -181,7 +181,7 @@
 						<executions>
 							<execution>
 								<id>copy-resources-2</id>
-								<phase>pre-integration-test</phase>
+								<phase>pre-site</phase>
 								<goals>
 									<goal>copy-resources</goal>
 								</goals>
