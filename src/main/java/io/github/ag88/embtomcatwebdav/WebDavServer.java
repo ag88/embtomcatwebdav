@@ -17,12 +17,10 @@
 
 package io.github.ag88.embtomcatwebdav;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -43,8 +41,6 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.swing.SwingUtilities;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
@@ -393,6 +389,7 @@ public class WebDavServer
 		try {
 			CommandLineParser parser = new DefaultParser();
 			CommandLine cmd = parser.parse(options, args);
+			Scanner scanner = new Scanner(System.in);
 
 			if(cmd.hasOption("help")) {
 				HelpFormatter formatter = new HelpFormatter();
@@ -463,9 +460,7 @@ public class WebDavServer
 
 			if (user != null && passwd == null) {
 				log.info(String.format("enter password for %s:", user));
-				Scanner input = new Scanner(System.in);
-				passwd = input.nextLine();
-				input.close();
+				passwd = scanner.nextLine();
 			}
 			
 			if (cmd.hasOption("secure")) {
@@ -476,17 +471,19 @@ public class WebDavServer
 					keystorepasswd = f[1];
 				} else {
 					keystorefile = arg;
-					log.info("Enter password for keystore:");
-					Scanner s = new Scanner(System.in);
-					keystorepasswd = s.nextLine();
-					s.close();
-				}
-				if(!Files.exists(Paths.get(keystorefile))) {
-					log.error("keystore file not found!");
-					System.exit(0);
 				}
 			}
-
+			
+			if(keystorefile != null && keystorepasswd == null) {
+				log.info("Enter password for keystore:");
+				keystorepasswd = scanner.nextLine();
+			}
+			
+			if(keystorefile != null && !Files.exists(Paths.get(keystorefile))) {
+				log.error("keystore file not found!");
+				System.exit(0);
+			}
+			
 			if(cmd.hasOption("digest")) {
 				digest = true;
 			}
@@ -494,6 +491,8 @@ public class WebDavServer
 			if(cmd.hasOption("quiet")) {
 				quiet = true;
 			}
+			
+			scanner.close();
 						
 		} catch (ParseException e) {
 			log.error(e.getMessage(),e);
