@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.authenticator.BasicAuthenticator;
@@ -98,7 +99,7 @@ public class WebDavServer
 	
 	/** The keystorepasswd. used for SSL*/
 	String keystorepasswd = null;
-	
+		
 	/** The port. default 8080*/
 	int port = 8080;
 	
@@ -151,7 +152,7 @@ public class WebDavServer
 	
 	/** Quiet flag, reduce the amount of logs/info messages on running the embedded Tomcat Server */
 	boolean quiet = false;
-	
+		
 	/**
 	 * Instantiates a new web dav server, no arg constructor.
 	 */
@@ -190,6 +191,8 @@ public class WebDavServer
 			
 			tomcat = new Tomcat();			
 			tomcat.setBaseDir(basedir);
+			long id = System.identityHashCode(tomcat);
+			tomcat.getEngine().setName(tomcat.getEngine().getName()+"-"+id);
 			tomcat.setSilent(quiet);
 			if(keystorefile != null && keystorepasswd != null) { //enable SSL
 				try {
@@ -227,12 +230,7 @@ public class WebDavServer
 			Thread hook = new Thread() {
 				@Override
 				public void run() {
-					try {
-						tomcat.stop();
-						tomcat.destroy();
-					} catch (LifecycleException e) {
-						log.error(e.getMessage(), e);
-					}				
+					stopserver();
 				}			
 			};			
 			Runtime.getRuntime().addShutdownHook(hook);
@@ -325,6 +323,30 @@ public class WebDavServer
 			log.error(e.getMessage(), e);
 		}		
 	}
+	    
+    
+    /**
+     * Runs server in its own background thread.
+     * 
+     * if it is intrrupted, the server likely did not startup appropriately.
+     *
+     * @return the server thread
+     * @throws InterruptedException the interrupted exception
+     */
+    public WebDAVServerThread runserverfork() throws InterruptedException {    	
+    	
+    	// Run the server in its own thread
+    	WebDAVServerThread thread = new WebDAVServerThread("WebDAVServer", this);
+    	thread.start();
+    	
+    	//let the server startup
+    	Thread.sleep(20);
+    	//check that it is fully started
+		while(!isRunning());
+			Thread.sleep(1);
+    	    	
+    	return thread;
+    }
 	
 	/**
 	 * Gets default basedir, Tomcat's work folder 
@@ -339,6 +361,29 @@ public class WebDavServer
 			basedir = Paths.get(System.getProperty("user.dir"), 
 				"tomcat.".concat(Integer.toString(port))).toString();
 		return basedir;
+	}
+	
+	/**
+	 * Checks if is running.
+	 *
+	 * @return true, if is running
+	 */
+	public boolean isRunning() {
+		return tomcat.getService().getState().equals(LifecycleState.STARTED);
+	}
+	
+	/**
+	 * Stop server
+	 */
+	public void stopserver() {
+		try {
+			if(isRunning()) {
+				tomcat.stop();
+				tomcat.destroy();
+			}
+		} catch (LifecycleException e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 
 	/**
@@ -491,7 +536,7 @@ public class WebDavServer
 			if(cmd.hasOption("quiet")) {
 				quiet = true;
 			}
-			
+						
 			scanner.close();
 						
 		} catch (ParseException e) {
@@ -564,10 +609,9 @@ public class WebDavServer
 		p.setProperty("realm", realm);
 		p.setProperty("user", user == null ? "" : user);
 		p.setProperty("password", passwd == null ? "" : passwd);
-		p.setProperty("quiet", Boolean.toString(quiet));		
+		p.setProperty("quiet", Boolean.toString(quiet));
 		p.setProperty("keystorefile", keystorefile == null ? "" : keystorefile);
 		p.setProperty("keystorepasswd", keystorepasswd == null ? "" : keystorepasswd);
-		
 		
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(configfile));
@@ -716,7 +760,7 @@ public class WebDavServer
 	 * 
 	 * @param shost the new shost
 	 */
-	public void setShost(String shost) {
+	public void setHost(String shost) {
 		this.shost = shost;
 	}
 
@@ -955,8 +999,29 @@ public class WebDavServer
 		this.urlprefix = urlprefix;
 	}
 
-	
-    /**
+		
+	/**
+     * Gets the embedded tomcat instance (Tomcat class)
+     *
+     * @return the tomcat
+     */
+    public Tomcat getTomcat() {
+		return tomcat;
+	}
+
+	/**
+	 * Sets the embedded tomcat instance (Tomcat class)
+	 * 
+	 * Normally the embedded Tomcat object should be setup by calling {@link #runserver()}.
+	 * One should know what one is doing while calling this ;)
+	 *
+	 * @param tomcat the new tomcat
+	 */
+	public void setTomcat(Tomcat tomcat) {
+		this.tomcat = tomcat;
+	}
+
+	/**
      * The main method, starting point of this app.
      * 
      * As this is mainly an App, this is the main entry point to start the App.
