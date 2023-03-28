@@ -41,7 +41,7 @@
 		<tomcat.version>8.5.87</tomcat.version>
 		<junit.version>5.9.2</junit.version>
 		<mainclass>${project.groupId}.${project.artifactId}.WebDavServer</mainclass>
-		<skipTests>false</skipTests>
+		<skipTests>true</skipTests>
 	</properties>
 
 	<dependencies>

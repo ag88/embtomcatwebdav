@@ -15,6 +15,10 @@ Current status: alpha/test
 - Added option to change urlprefix '/webdav' - v0.3.1
 - Added loading of options from properties file, and option to generate a default config file - v0.3.2
 - Added a dialog to generate DIGEST passwords that can be used in the config file. - v0.3.2
+- v0.3.3 various bug fixes
+- v0.3.3 is a rather major bugfix release, this release is released to maven central
+- v0.3.3 this app can be embedded, see the junit test cases to see how that is done
+- added runserverfork() method which lets apps embedding this to run the server in a separate thread.
 - It requires a folder 'tomcat.port' for the embedded Tomcat instance, if the folder isn't present,
 it is created.
 
@@ -122,6 +126,39 @@ https://tomcat.apache.org/tomcat-8.5-doc/ssl-howto.html#Installing_a_Certificate
 Generally, for temporary use it'd be costly/overwhelming to get a true CA signed cert. In addition, browsers and apps may validate the cert against DNS data that the domain names matches the certs etc, this could make it practically unfeasible to run https:// SSL on an arbitrary device/system.
 
 There are rather tricky ways to be your own CA, make certs. But it may involve installing your own CA root certs manually on the client devices/browsers etc. This again is beyond scope of covering it here, but a web (e.g. Google) search may get you some leads on how to do that.
+
+# Development/Embedding
+
+v0.3.3 is a rather major bugfix release, this release is released to maven central
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.3.3
+```
+<dependency>
+    <groupId>io.github.ag88</groupId>
+    <artifactId>embtomcatwebdav</artifactId>
+    <version>0.3.3</version>
+</dependency>
+```
+
+This app can be embedded, to see how this can be done, take a look at the unit tests in
+[src/test/java](src/test/java/io/github/ag88/embtomcatwebdav/WebDavServerTest.java).
+Basically, create a new [WebDavServer](src/main/java/io/github/ag88/embtomcatwebdav/WebDavServer.java)
+object, setup all the instance variables as desired using the getters and setters methods and call [runserver()](https://github.com/ag88/embtomcatwebdav/blob/99163bd8e5a90691da2f51351068a3677e32f102/src/main/java/io/github/ag88/embtomcatwebdav/WebDavServer.java#L185) or
+[runserverfork()](https://github.com/ag88/embtomcatwebdav/blob/99163bd8e5a90691da2f51351068a3677e32f102/src/main/java/io/github/ag88/embtomcatwebdav/WebDavServer.java#L336) method.
+
+v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread.
+By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
+``runserverfork()`` method returns a [WebDAVServerThread](src/main/java/io/github/ag88/embtomcatwebdav/WebDAVServerThread.java) object. This is the thread the server is running on. You may want to keep it in an instance variable for shutdown later, e.g.
+```
+// note that runserverfork() actually start and run the server in its own thread
+WebDAVServerThread thread = webdavserver.runserverfork();
+... do other things
+// shutdown the server
+thread.getServer().stopserver();
+thread.interrupt(); 
+```
+There are some race conditions as Tomcat takes some time to startup (possibly a few seconds).
+Hence, for more stable embedded operations, after calling runserverfork(), use e.g. Thread.sleep(2000),
+to pause for a while before doing other operations that interact with the server.
 
 ## Attributions
 
