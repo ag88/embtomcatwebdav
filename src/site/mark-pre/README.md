@@ -127,7 +127,7 @@ Generally, for temporary use it'd be costly/overwhelming to get a true CA signed
 
 There are rather tricky ways to be your own CA, make certs. But it may involve installing your own CA root certs manually on the client devices/browsers etc. This again is beyond scope of covering it here, but a web (e.g. Google) search may get you some leads on how to do that.
 
-# Development/Embedding
+## Development/Embedding
 
 v0.3.3 is a rather major bugfix release, this release is released to maven central
 https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.3.3
