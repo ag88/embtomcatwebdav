@@ -18,7 +18,8 @@ Current status: alpha/test
 - v0.3.3 various bug fixes
 - v0.3.3 is a rather major bugfix release, this release is released to maven central
 - v0.3.3 this app can be embedded, see the junit test cases to see how that is done
-- added runserverfork() method which lets apps embedding this to run the server in a separate thread.
+- v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a separate thread.
+- v0.3.4 fixed a bug related to race conditions in isRunning() method and runserverfork()
 - It requires a folder 'tomcat.port' for the embedded Tomcat instance, if the folder isn't present,
 it is created.
 
@@ -31,16 +32,16 @@ mvn package
 ## Run
 
 ```
-java -jar embtomcatwebdav-0.3.3.jar
+java -jar embtomcatwebdav-0.3.4.jar
 ```
-Note that if you build from source the file name is embtomcatwebdav-0.3.3-jar-with-dependencies.jar, in target/ folder.
+Note that if you build from source the file name is embtomcatwebdav-0.3.4-jar-with-dependencies.jar, in target/ folder.
 
 ## usage 
 
 ```
-java -jar embtomcatwebdav-0.3.3.jar -h
+java -jar embtomcatwebdav-0.3.4.jar -h
 
-usage: embtomcatwebdav-0.3.3
+usage: embtomcatwebdav-0.3.4
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
  -c,--conf <configfile>          load properties config file
@@ -112,7 +113,7 @@ Note that keytool is normally bundled with JDK distributions, it is not part of 
 Next run the app with -S option and the keystore file. If the keystore password is not
 specified on the command line, it would prompt for it. e.g.
 ```
-java -jar embtomcatwebdav-0.3.3.jar -p 8443 -S keystorefile.jkf 
+java -jar embtomcatwebdav-0.3.4.jar -p 8443 -S keystorefile.jkf 
 ```
 Note that when you run the app with the -S keystorefile.jkf option, it copies the keystore file into the 'tomcat.port' work folder, this is needed for the app to access the keystore file.
 
@@ -129,15 +130,19 @@ There are rather tricky ways to be your own CA, make certs. But it may involve i
 
 ## Development/Embedding
 
-v0.3.3 is a rather major bugfix release, this release is released to maven central
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.3.3
+This release is released to maven central
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.3.4
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.3.3</version>
+    <version>0.3.4</version>
 </dependency>
 ```
+v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread.
+By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
+
+v0.3.4 fixed a bug related to race conditions in isRunning() method and runserverfork()
 
 This app can be embedded, to see how this can be done, take a look at the unit tests in
 [src/test/java](src/test/java/io/github/ag88/embtomcatwebdav/WebDavServerTest.java).
@@ -145,8 +150,6 @@ Basically, create a new [WebDavServer](src/main/java/io/github/ag88/embtomcatweb
 object, setup all the instance variables as desired using the getters and setters methods and call [runserver()](https://github.com/ag88/embtomcatwebdav/blob/99163bd8e5a90691da2f51351068a3677e32f102/src/main/java/io/github/ag88/embtomcatwebdav/WebDavServer.java#L185) or
 [runserverfork()](https://github.com/ag88/embtomcatwebdav/blob/99163bd8e5a90691da2f51351068a3677e32f102/src/main/java/io/github/ag88/embtomcatwebdav/WebDavServer.java#L336) method.
 
-v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread.
-By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
 ``runserverfork()`` method returns a [WebDAVServerThread](src/main/java/io/github/ag88/embtomcatwebdav/WebDAVServerThread.java) object. This is the thread the server is running on. You may want to keep it in an instance variable for shutdown later, e.g.
 ```
 WebDavServer webdavserver = new WebDavServer();
@@ -170,9 +173,8 @@ WebDAVServerThread thread = webdavserver.runserverfork();
 thread.getServer().stopserver();
 thread.interrupt(); 
 ```
-There are some race conditions as Tomcat takes some time to startup (possibly a few seconds).
-Hence, for more stable embedded operations, after calling runserverfork(), use e.g. Thread.sleep(2000),
-to pause for a while before doing other operations that interact with the server.
+
+more details in the [Wiki](https://github.com/ag88/embtomcatwebdav/wiki/Development-Embedding)
 
 ## Attributions
 

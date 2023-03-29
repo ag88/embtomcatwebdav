@@ -46,6 +46,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Realm;
+import org.apache.catalina.Server;
+import org.apache.catalina.Service;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.authenticator.BasicAuthenticator;
 import org.apache.catalina.authenticator.DigestAuthenticator;
@@ -341,6 +343,7 @@ public class WebDavServer
     	
     	//let the server startup
     	Thread.sleep(20);
+    	
     	//check that it is fully started
 		while(!isRunning());
 			Thread.sleep(1);
@@ -369,7 +372,22 @@ public class WebDavServer
 	 * @return true, if is running
 	 */
 	public boolean isRunning() {
-		return tomcat.getService().getState().equals(LifecycleState.STARTED);
+		if(tomcat == null)
+			return false;
+		Server server = tomcat.getServer();
+		if(server == null)
+			return false;
+		Service[] services = server.findServices();
+		if(services == null || services.length == 0)
+			return false;
+		Service service = services[0];
+		if (service == null)
+			return false;
+		LifecycleState state = service.getState();
+		if(state == null)
+			return false;
+		
+		return state.equals(LifecycleState.STARTED);
 	}
 	
 	/**
