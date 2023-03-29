@@ -149,6 +149,20 @@ v0.3.3 added runserverfork() method which lets apps embedding this to run the se
 By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
 ``runserverfork()`` method returns a [WebDAVServerThread](src/main/java/io/github/ag88/embtomcatwebdav/WebDAVServerThread.java) object. This is the thread the server is running on. You may want to keep it in an instance variable for shutdown later, e.g.
 ```
+WebDavServer webdavserver = new WebDavServer();
+// this is the path/directory/folder served
+webdavserver.setPath(System.getProperty("user.dir")); 
+// this is the Tomcat work folder, this must be a valid directory
+// if this is null it would create a folder [user.dir]/tomcat.port 
+// and use that as Tomcat's work folder
+webdavserver.setBasedir(System.getProperty("user.dir")); 
+webdavserver.setHost("localhost");
+webdavserver.setPort(8080);
+webdavserver.setUser("user");
+webdavserver.setPasswd("password");
+webdavserver.setUrlprefix("/webdav");
+// the above setup the WebDAV server running at http://user:password@localhost:8080/webdav
+
 // note that runserverfork() actually start and run the server in its own thread
 WebDAVServerThread thread = webdavserver.runserverfork();
 ... do other things
