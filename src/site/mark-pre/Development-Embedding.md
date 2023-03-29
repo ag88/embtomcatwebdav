@@ -97,7 +97,7 @@ public class App
     webdavserver.setUrlprefix("/webdav");
     // the above setup the WebDAV server running at http://user:pass@localhost:8080/webdav
     		
-    Servlet servlet = new HttpServlet() {
+    Servlet myservlet = new HttpServlet() {
       @Override
       protected void doGet(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException {
@@ -124,7 +124,7 @@ public class App
       if(container instanceof Context) {
         Context context = (Context) container;
         //this 'hello' is the name of your servlet
-        Tomcat.addServlet(context, "hello", servlet);
+        Tomcat.addServlet(context, "hello", myservlet);
         //the first parameter is the http://prefix where you want to patch 
         //your servlet, the 2nd is the name of the above servlet
         String prefix = "/hello/*";
