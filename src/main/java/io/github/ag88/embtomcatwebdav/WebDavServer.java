@@ -19,6 +19,7 @@ package io.github.ag88.embtomcatwebdav;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.Console;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -33,6 +34,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
@@ -68,6 +70,8 @@ import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 
+import io.github.ag88.embtomcatwebdav.opt.Opt;
+import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 
 /**
  * This is a WebDAV server based on Apache Tomcat's WebDAV servlet and embedded Tomcat server.<p>
@@ -154,11 +158,14 @@ public class WebDavServer
 	
 	/** Quiet flag, reduce the amount of logs/info messages on running the embedded Tomcat Server */
 	boolean quiet = false;
-		
+
+	static WebDavServer instance = null;
+	
 	/**
-	 * Instantiates a new web dav server, no arg constructor.
+	 * Instantiates a new web dav server, no arg constructor.	 * 
 	 */
 	public WebDavServer() {
+		OptFactory.getInstance().registeropts();
 	}
 		
 	/**
@@ -410,6 +417,12 @@ public class WebDavServer
 	 * @param args command line args passed to {@link #main(String[])}
 	 */
 	private void parseargs(String[] args) {
+		
+		Options options = new Options();
+		OptFactory.getInstance().genoptions(options);
+		OptFactory.getInstance().setWdav(this);
+		
+		/*
 		Options options = new Options();
 		options.addOption(Option.builder("h").longOpt("help").desc("help").build());		
 		options.addOption(Option.builder("H").longOpt("host").desc("set host")
@@ -448,12 +461,84 @@ public class WebDavServer
 				.hasArg().argName("configfile").build());
 		options.addOption(Option.builder().longOpt("genpass")
 				.desc("dialog to generate digest password").build());
+		*/
 		
 		try {
 			CommandLineParser parser = new DefaultParser();
 			CommandLine cmd = parser.parse(options, args);
+			Iterator<Opt> iter = OptFactory.getInstance().iterator();
+			
+			while (iter.hasNext()) {
+				Opt opt = iter.next();
+				if (opt.getType().equals(Opt.PropType.Norm) || opt.getType().equals(Opt.PropType.CLI)) {
+
+					if (cmd.hasOption(opt.getLongopt())) {
+						if (opt.isCmdproc()) {
+							opt.process(cmd);
+						} else {
+							Object value;
+							try {
+								value = cmd.getParsedOptionValue(opt.getLongopt());
+							} catch (Exception e) {
+								log.warn(String.format("invalid value for %s", opt.getLongopt()), e);
+								value = opt.getDefaultval();
+							}
+							opt.setValue(value);
+						}
+					}
+				}
+			}
+			
+			/* 
+			 * prompt for missing passwords
+			 */
+			Scanner scanner = new Scanner(System.in);
+			Console console = System.console();
+			
+			user = (String) OptFactory.getInstance().getOpt("user").getValue();
+			passwd = (String) OptFactory.getInstance().getOpt("passwd").getValue();
+			if (user != null && passwd == null) {
+				log.info(String.format("enter password for %s:", user));
+				if(console != null)
+					passwd = new String(console.readPassword());
+				else
+					passwd = scanner.nextLine();
+				OptFactory.getInstance().getOpt("passwd").setValue(passwd);
+			}
+			
+			keystorefile = (String) OptFactory.getInstance().getOpt("keystorefile").getValue();
+			keystorepasswd = (String) OptFactory.getInstance().getOpt("keystorepasswd").getValue();
+			
+			if(keystorefile.equals("")) {
+				OptFactory.getInstance().getOpt("keystorefile").setValue(null);
+				keystorefile = null;
+			}
+			
+			if(keystorepasswd.equals("")) {
+				OptFactory.getInstance().getOpt("keystorepasswd").setValue(null);
+				keystorepasswd = null;
+			}
+			
+			if(keystorefile != null && keystorepasswd == null) {
+				log.info("Enter password for keystore:");
+				if(console != null)
+					keystorepasswd = new String(console.readPassword());
+				else
+					keystorepasswd = scanner.nextLine();
+				OptFactory.getInstance().getOpt("keystorepasswd").setValue(keystorepasswd);
+			}
+			
+			if(keystorefile != null && !Files.exists(Paths.get(keystorefile))) {
+				log.error("keystore file not found!");
+				System.exit(0);
+			}
+
+			scanner.close();
+			
+			/*
 			Scanner scanner = new Scanner(System.in);
 
+			
 			if(cmd.hasOption("help")) {
 				HelpFormatter formatter = new HelpFormatter();
 				Map<String, String> mkv = readManifest();
@@ -554,8 +639,8 @@ public class WebDavServer
 			if(cmd.hasOption("quiet")) {
 				quiet = true;
 			}
-						
-			scanner.close();
+									
+			*/
 						
 		} catch (ParseException e) {
 			log.error(e.getMessage(),e);
@@ -571,10 +656,23 @@ public class WebDavServer
 	 */
 	public void loadconfigprop(String configfile) {				
 		try {
-			Properties p = new Properties();
+			Properties properties = new Properties();
 			BufferedReader reader = new BufferedReader(new FileReader(configfile));
-			p.load(reader);
+			properties.load(reader);
 			
+			OptFactory.getInstance().loadproperties(properties);
+			Iterator<Opt> iter = OptFactory.getInstance().iterator();
+			StringBuilder sb = new StringBuilder(1024);
+			while(iter.hasNext()) {
+				Opt o = iter.next();
+				sb.append(o.toString());
+				sb.append(System.lineSeparator());				
+			}
+			log.info(sb.toString());
+			
+			OptFactory.getInstance().updateBean(this);			
+			
+			/*
 			shost = p.getProperty("host", shost);
 			port = Integer.parseInt(p.getProperty("port", "8080"));
 			urlprefix = p.getProperty("urlprefix", "/webdav");
@@ -592,6 +690,7 @@ public class WebDavServer
 			if (keystorefile.equals("")) keystorefile = null;
 			keystorepasswd = p.getProperty("keystorepasswd", "");
 			if (keystorepasswd.equals("")) keystorepasswd = null;
+			*/
 			
 		} catch (FileNotFoundException e) {
 			log.error(String.format("config file %s not found %s", configfile), e);
@@ -618,6 +717,8 @@ public class WebDavServer
 		basedir = getDefbasedir(basedir);
 		
 		Properties p = new Properties();
+		OptFactory.getInstance().genproperties(p);
+		/*
 		p.setProperty("host", shost);
 		p.setProperty("port", Integer.toString(port));
 		p.setProperty("urlprefix", urlprefix);
@@ -630,7 +731,7 @@ public class WebDavServer
 		p.setProperty("quiet", Boolean.toString(quiet));
 		p.setProperty("keystorefile", keystorefile == null ? "" : keystorefile);
 		p.setProperty("keystorepasswd", keystorepasswd == null ? "" : keystorepasswd);
-		
+		*/		
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(configfile));
 			p.store(writer, "Embedded Tomcat Webdav server properties");
@@ -715,7 +816,7 @@ public class WebDavServer
 	 *
 	 * @return the map
 	 */
-	private Map<String, String> readManifest() {
+	public Map<String, String> readManifest() {
 		TreeMap<String, String> mret = new TreeMap<String, String>();
 		try {
 
@@ -1038,7 +1139,8 @@ public class WebDavServer
 	public void setTomcat(Tomcat tomcat) {
 		this.tomcat = tomcat;
 	}
-
+	
+	
 	/**
      * The main method, starting point of this app.
      * 
@@ -1050,6 +1152,7 @@ public class WebDavServer
         WebDavServer app = new WebDavServer();
         app.run(args);
     }
+
 
 
 }
