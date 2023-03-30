@@ -146,4 +146,4 @@ public class App
 ```
 With the above codes, the wabdav servlet runs at http://localhost:8080/webdav, and your servlet runs at http://localhost:8080/hello , in the same app.
 
-
+Note that in the interest of leaner binaries, WebDavServer drop the JSP container when setting up Tomcat. In addition, various Servlet API 3.0+ java annotations may not be scanned. Hence, mainly POJO java servlets are supported.
