@@ -42,6 +42,8 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.Servlet;
+
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
@@ -154,6 +156,11 @@ public class WebDavServer
 	
 	/** Quiet flag, reduce the amount of logs/info messages on running the embedded Tomcat Server */
 	boolean quiet = false;
+	
+	/** 
+	 * use upload servlet
+	 */
+	boolean uploadservlet = false;
 		
 	/**
 	 * Instantiates a new web dav server, no arg constructor.
@@ -298,8 +305,13 @@ public class WebDavServer
 				context.addConstraint(secconstr);				
 			}			
 			
-			WebdavServlet webdav = new WebdavServlet();
-			Wrapper ws = Tomcat.addServlet(context, "webdav", webdav);			
+			Servlet servlet;
+			if(uploadservlet)
+				servlet = (Servlet) new WDavUploadServlet();
+			else
+				servlet = (Servlet) new WebdavServlet();
+			
+			Wrapper ws = Tomcat.addServlet(context, "webdav", servlet);			
 			ws.addInitParameter("debug", "0");
 			ws.addInitParameter("listings", "true");
 			ws.addInitParameter("sortListings", "true");
@@ -436,6 +448,7 @@ public class WebDavServer
 				.hasArg().argName("realmname").build());
 		options.addOption(Option.builder("q").longOpt("quiet").desc("mute (most) logs").build());
 		options.addOption(Option.builder("D").longOpt("digest").desc("use digest authentication").build());
+		options.addOption(Option.builder("U").longOpt("upservlet").desc("use upload servlet").build());
 		options.addOption(Option.builder("S").longOpt("secure")
 				.desc("enable SSL, you need to supply a keystore file and keystore passwd, " +
 		          "if passwd is omitted it'd be prompted.")
@@ -551,6 +564,10 @@ public class WebDavServer
 				digest = true;
 			}
 			
+			if(cmd.hasOption("upservlet")) {
+				uploadservlet = true;
+			}
+			
 			if(cmd.hasOption("quiet")) {
 				quiet = true;
 			}
@@ -587,6 +604,7 @@ public class WebDavServer
 			passwd = p.getProperty("password", "");
 			if (passwd.equals("")) passwd = null;
 			quiet = Boolean.parseBoolean(p.getProperty("quiet", "false"));
+			uploadservlet = Boolean.parseBoolean(p.getProperty("upservlet", "false"));
 			
 			keystorefile = p.getProperty("keystorefile", "");
 			if (keystorefile.equals("")) keystorefile = null;
@@ -628,6 +646,7 @@ public class WebDavServer
 		p.setProperty("user", user == null ? "" : user);
 		p.setProperty("password", passwd == null ? "" : passwd);
 		p.setProperty("quiet", Boolean.toString(quiet));
+		p.setProperty("upservlet", Boolean.toString(uploadservlet));		
 		p.setProperty("keystorefile", keystorefile == null ? "" : keystorefile);
 		p.setProperty("keystorepasswd", keystorepasswd == null ? "" : keystorepasswd);
 		
@@ -1015,6 +1034,24 @@ public class WebDavServer
 	 */
 	public void setUrlprefix(String urlprefix) {
 		this.urlprefix = urlprefix;
+	}
+
+	/**
+	 * Checks if is uploadservlet.
+	 *
+	 * @return true, if is uploadservlet
+	 */
+	public boolean isUploadservlet() {
+		return uploadservlet;
+	}
+
+	/**
+	 * Sets uploadservlet, true = use upload servlet
+	 *
+	 * @param uploadservlet the new uploadservlet
+	 */
+	public void setUploadservlet(boolean uploadservlet) {
+		this.uploadservlet = uploadservlet;
 	}
 
 		
