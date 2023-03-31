@@ -1,7 +1,10 @@
 package io.github.ag88.embtomcatwebdav;
 
+import java.io.BufferedReader;
 import java.io.Console;
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -54,11 +57,11 @@ public class App {
 	}
 
 	/**
-	 * Parseargs.
+	 * Parse args.
 	 *
 	 * @param args command line args passed to {@link #main(String[])}
 	 */
-	private void parseargs(String[] args) {
+	public void parseargs(String[] args) {
 		
 		Options options = new Options();
 		OptFactory.getInstance().genoptions(options);		
@@ -156,7 +159,12 @@ public class App {
 			/* 
 			 * prompt for missing passwords
 			 */
-			Scanner scanner = new Scanner(System.in);
+			Scanner scanner = new Scanner(new FilterInputStream(System.in) {
+			    @Override
+			    public void close() throws IOException {
+			        //don't close System.in! 
+			    }
+			});
 			Console console = System.console();
 			
 			String user = (String) OptFactory.getInstance().getOpt("user").getValue();
@@ -189,6 +197,7 @@ public class App {
 					keystorepasswd = new String(console.readPassword());
 				else
 					keystorepasswd = scanner.nextLine();
+				
 				OptFactory.getInstance().getOpt("keystorepasswd").setValue(keystorepasswd);
 			}
 			
@@ -196,7 +205,7 @@ public class App {
 				log.error("keystore file not found!");
 				System.exit(0);
 			}
-
+			
 			scanner.close();
 			
 			/*

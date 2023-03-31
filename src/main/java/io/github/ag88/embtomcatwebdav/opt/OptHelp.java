@@ -1,5 +1,8 @@
 package io.github.ag88.embtomcatwebdav.opt;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
@@ -55,7 +58,13 @@ public class OptHelp extends Opt {
 		//String name = mkv.get("artifactId")
 		//		.concat("-").concat(mkv.get("version"));
 		formatter.printHelp(name, "", options, sb.toString());
-		System.exit(0);
+			
+        try {
+            Class.forName("org.junit.jupiter.api.Test");
+        } catch (ClassNotFoundException e) {
+        	System.exit(0);
+        }
+		
 		
 	}
 
