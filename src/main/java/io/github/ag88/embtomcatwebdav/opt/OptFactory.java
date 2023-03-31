@@ -163,6 +163,24 @@ public class OptFactory {
 				if (val != null)
 					defval = val.toString();
 				String sval = properties.getProperty(o.getName(), defval);
+				
+				//validation
+				if (o.isValidate()) {
+					if(!o.isvalid(sval)) {
+						if(o.isReplace()) {
+							Object value = o.replace(sval);
+							log.error(String.format("opt: %s, invalid value: %s, replaced with: %s",
+									o.getName(), sval, value));
+							o.setValue(value);
+							continue;
+						} else {
+							log.error(String.format("opt: %s, invalid value: %s, skipped",
+									o.getName(), sval));
+							continue;
+						}
+					} // else valid fall through 						
+				}
+				
 				if (o.getValclass().equals(Integer.class)) {
 					try {
 						int value = Integer.parseInt(sval);
@@ -184,6 +202,7 @@ public class OptFactory {
 					}
 				} else
 					o.setValue(sval);
+				
 			}
 		}
 	}

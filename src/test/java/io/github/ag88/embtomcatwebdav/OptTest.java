@@ -172,6 +172,10 @@ public class OptTest {
 			sb.append(System.lineSeparator());
 			sb.append(factory.getOpt("quiet").getValue());
 			sb.append(System.lineSeparator());
+			sb.append(factory.getOpt("path").getValue());
+			sb.append(System.lineSeparator());
+			sb.append(factory.getOpt("basedir").getValue());
+			sb.append(System.lineSeparator());
 			reporter.publishEntry("test", Arrays.toString(args));
 			reporter.publishEntry("test", sb.toString());
 		}
@@ -218,6 +222,10 @@ public class OptTest {
 			sb.append(factory.getOpt("digest").getValue());
 			sb.append(System.lineSeparator());
 			sb.append(factory.getOpt("quiet").getValue());
+			sb.append(System.lineSeparator());
+			sb.append(factory.getOpt("path").getValue());
+			sb.append(System.lineSeparator());
+			sb.append(factory.getOpt("basedir").getValue());
 			sb.append(System.lineSeparator());
 			reporter.publishEntry("test", Arrays.toString(args));
 			reporter.publishEntry("test", sb.toString());
@@ -269,6 +277,10 @@ public class OptTest {
 			sb.append(factory.getOpt("digest").getValue());
 			sb.append(System.lineSeparator());
 			sb.append(factory.getOpt("quiet").getValue());
+			sb.append(System.lineSeparator());
+			sb.append(factory.getOpt("path").getValue());
+			sb.append(System.lineSeparator());
+			sb.append(factory.getOpt("basedir").getValue());
 			sb.append(System.lineSeparator());
 			reporter.publishEntry("test", Arrays.toString(args));
 			reporter.publishEntry("test", sb.toString());

@@ -11,7 +11,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import io.github.ag88.embtomcatwebdav.App;
-import io.github.ag88.embtomcatwebdav.WebDavServer;
 
 public class OptHelp extends Opt {	
 
@@ -54,9 +53,12 @@ public class OptHelp extends Opt {
 		sb.append("Project web: https://github.com/ag88/embtomcatwebdav");		
 		
 		Map<String, String> mkv = app.readManifest();
-		String name = "embtomcatwdav";
-		//String name = mkv.get("artifactId")
-		//		.concat("-").concat(mkv.get("version"));
+		String name;
+		if(mkv.get("artifactId") != null) {
+			name = mkv.get("artifactId").concat("-").concat(mkv.get("version"));			
+		} else {
+			name = "embtomcatwebdav";	
+		}		
 		formatter.printHelp(name, "", options, sb.toString());
 			
         try {

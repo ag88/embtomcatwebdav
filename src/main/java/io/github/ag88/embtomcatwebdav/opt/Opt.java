@@ -62,6 +62,13 @@ public class Opt implements Comparable<Opt> {
 	/** Has args. */
 	protected boolean hasarg = true;
 	
+	
+	/** validate flag, true = validation on */
+	protected boolean validate = false;
+	
+	/** replace flag, true = validation on */
+	protected boolean replace = false;	
+	
 	/** The priority. lower is higher prority*/
 	protected int priority = 50;
 	
@@ -218,7 +225,6 @@ public class Opt implements Comparable<Opt> {
 	public void setValclass(Class valclazz) {
 		this.valclazz = valclazz;
 	}
-
 	
 	/**
 	 * Gets the value.
@@ -330,6 +336,31 @@ public class Opt implements Comparable<Opt> {
 		this.hasarg = hasarg;
 	}
 
+	
+	/**
+	 * Checks if is validate.
+	 *
+	 * if isvalidate is true, {@link #isvalid(Object)} would be run
+	 * at when value is provided
+	 * 
+	 * @return true, if is validate
+	 */
+	public boolean isValidate() {
+		return validate;
+	}
+
+	/**
+	 * Sets the validate.
+	 * 
+	 * if isvalidate is true, {@link #isvalid(Object)} would be run
+	 * at when value is provided
+	 * 
+	 * @param validate the new validate
+	 */
+	public void setValidate(boolean validate) {
+		this.validate = validate;
+	}
+
 	/**
 	 * Gets the priority.
 	 *
@@ -349,6 +380,33 @@ public class Opt implements Comparable<Opt> {
 		this.priority = priority;
 	}
 
+		
+	/**
+	 * Checks if is replace.
+	 *
+	 * @return true, if is replace
+	 */
+	public boolean isReplace() {
+		return replace;
+	}
+
+
+
+	/**
+	 * Sets the replace flag
+	 * 
+	 * if true, 
+	 *
+	 * @param replace the new replace flag
+	 */
+	public void setReplace(boolean replace) {
+		this.replace = replace;
+	}
+
+
+	/**
+	 * methods to be override
+	 */
 	
 	/**
 	 * Gets the command line option, when cmdproc is set
@@ -358,7 +416,7 @@ public class Opt implements Comparable<Opt> {
 	public Option getOption() {
 		return null;
 	}
-	
+			
 	/**
 	 * Process the command line options, when cmdproc is set
 	 *
@@ -367,6 +425,27 @@ public class Opt implements Comparable<Opt> {
 	public void process(CommandLine cmd, Object... objects ) {		
 	}
 		
+	
+	/**
+	 * Checks if is valid.
+	 *
+	 * @param object the object
+	 * @return true, if is valid
+	 */
+	public boolean isvalid(Object object) {
+		return true;
+	}
+	
+	/**
+	 * Replace.
+	 *
+	 * @param object the object
+	 * @return the replaced object 
+	 */
+	public Object replace(Object object) {
+		return null;		
+	}
+
 	
 	@Override
 	public String toString() {
@@ -416,6 +495,10 @@ public class Opt implements Comparable<Opt> {
 		else 
 			return Integer.valueOf(priority).compareTo(o.getPriority());
 	}
+
+
+
+
 
 
 	

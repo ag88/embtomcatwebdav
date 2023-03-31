@@ -51,7 +51,7 @@ public class App {
 	 */
 	public void run(String[] args) {
 		parseargs(args);
-		OptFactory.getInstance().printOpts();
+		//OptFactory.getInstance().printOpts();
 		wdav.loadparams(OptFactory.getInstance().getOpts());
 		wdav.runserver();
 	}
@@ -126,6 +126,23 @@ public class App {
 						} else {
 							if (opt.isHasarg()) {
 								String sval = cmd.getOptionValue(opt.getLongopt());
+								
+								if (opt.isValidate()) {
+									if(!opt.isvalid(sval)) {
+										if(opt.isReplace()) {
+											Object value = opt.replace(sval);
+											log.error(String.format("opt: %s, invalid value: %s, replaced with: %s",
+													opt.getName(), sval, value));
+											opt.setValue(value);
+											continue;
+										} else {
+											log.error(String.format("opt: %s, invalid value: %s, skipped",
+													opt.getName(), sval));
+											continue;
+										}
+									} // else valid fall through 						
+								}
+								
 								Object value;
 								if (opt.getValclass().equals(Integer.class)) {
 									try {
