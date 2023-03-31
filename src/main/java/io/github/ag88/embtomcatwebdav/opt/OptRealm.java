@@ -6,6 +6,7 @@ public class OptRealm extends Opt {
 		this.name = "realm";
 		this.description = "set realm name, default 'Simple'";
 		this.defaultval = "Simple";
+		this.value = defaultval;
 		this.opt = "R";
 		this.longopt = "realm";
 		this.argname = "realmname";

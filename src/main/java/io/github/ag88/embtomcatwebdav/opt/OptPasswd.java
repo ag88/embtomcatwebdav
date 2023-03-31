@@ -6,7 +6,7 @@ import org.apache.commons.cli.Option;
 public class OptPasswd extends Opt {
 
 	public OptPasswd() {
-		this.name = "passwd";
+		this.name = "password";
 		this.description = "set password, you may omit this, it would prompt for it if -u is specified";
 		this.defaultval = null;
 		this.opt = "w";

@@ -494,9 +494,8 @@ public class WebDavServer
 		this.urlprefix = (String) opts.get("urlprefix").getValue();
 		this.realm = (String) opts.get("realm").getValue();
 		this.user = (String) opts.get("user").getValue();
-		this.passwd = (String) opts.get("passwd").getValue();
-		this.digest = ((Boolean) opts.get("digest").getValue()).booleanValue();
-		this.passwd = (String) opts.get("passwd").getValue();
+		this.passwd = (String) opts.get("password").getValue();
+		this.digest = ((Boolean) opts.get("digest").getValue()).booleanValue();		
 		
 		this.keystorefile = (String) opts.get("keystorefile").getValue();
 		this.keystorepasswd = (String) opts.get("keystorepasswd").getValue();

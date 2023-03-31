@@ -6,6 +6,7 @@ public class OptHost extends Opt {
 		this.name = "host";
 		this.description = "set host";
 		this.defaultval = "localhost";
+		this.value = defaultval;
 		this.opt = "H";
 		this.longopt = "host";
 		this.argname = "hostname";

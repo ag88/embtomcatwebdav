@@ -48,6 +48,7 @@ public class App {
 	 */
 	public void run(String[] args) {
 		parseargs(args);
+		OptFactory.getInstance().printOpts();
 		wdav.loadparams(OptFactory.getInstance().getOpts());
 		wdav.runserver();
 	}
@@ -120,14 +121,33 @@ public class App {
 							// Object[2] Options object for cmdline
 							opt.process(cmd, this, wdav, options);
 						} else {
-							Object value;
-							try {
-								value = cmd.getParsedOptionValue(opt.getLongopt());
-							} catch (Exception e) {
-								log.warn(String.format("invalid value for %s", opt.getLongopt()), e);
-								value = opt.getDefaultval();
+							if (opt.isHasarg()) {
+								String sval = cmd.getOptionValue(opt.getLongopt());
+								Object value;
+								if (opt.getValclass().equals(Integer.class)) {
+									try {
+										value = Integer.parseInt(sval);
+									} catch (NumberFormatException e) {
+										log.warn(String.format("opt: %s, invalid value: %s, using default: %s",
+												opt.getName(), sval, opt.getDefaultval()));
+										value = opt.getDefaultval();
+									}
+								} else if (opt.getValclass().equals(Boolean.class)) {
+									try {
+										value = Boolean.parseBoolean(sval);
+									} catch (Exception e) {
+										log.warn(String.format("opt: %s, invalid value: %s, using default: %s",
+												opt.getName(), sval, opt.getDefaultval()));
+										value = opt.getDefaultval();
+									}
+								} else // string
+									value = cmd.getOptionValue(opt.getLongopt());
+
+								opt.setValue(value);
+							} else { // no arg, a flag
+								if(opt.getValclass().equals(Boolean.class))
+									opt.setValue(Boolean.valueOf(true));
 							}
-							opt.setValue(value);
 						}
 					}
 				}
@@ -140,25 +160,25 @@ public class App {
 			Console console = System.console();
 			
 			String user = (String) OptFactory.getInstance().getOpt("user").getValue();
-			String passwd = (String) OptFactory.getInstance().getOpt("passwd").getValue();
-			if (user != null && passwd == null) {
+			String passwd = (String) OptFactory.getInstance().getOpt("password").getValue();
+			if (user != null && passwd == null ) {
 				log.info(String.format("enter password for %s:", user));
 				if(console != null)
 					passwd = new String(console.readPassword());
 				else
 					passwd = scanner.nextLine();
-				OptFactory.getInstance().getOpt("passwd").setValue(passwd);
+				OptFactory.getInstance().getOpt("password").setValue(passwd);
 			}
 			
 			String keystorefile = (String) OptFactory.getInstance().getOpt("keystorefile").getValue();
 			String keystorepasswd = (String) OptFactory.getInstance().getOpt("keystorepasswd").getValue();
 			
-			if(keystorefile.equals("")) {
+			if(keystorepasswd != null && keystorefile.equals("")) {
 				OptFactory.getInstance().getOpt("keystorefile").setValue(null);
 				keystorefile = null;
 			}
 			
-			if(keystorepasswd.equals("")) {
+			if(keystorepasswd != null && keystorepasswd.equals("")) {
 				OptFactory.getInstance().getOpt("keystorepasswd").setValue(null);
 				keystorepasswd = null;
 			}
@@ -178,16 +198,6 @@ public class App {
 			}
 
 			scanner.close();
-
-			iter = OptFactory.getInstance().iterator();
-			StringBuilder sb = new StringBuilder(1024);
-			while(iter.hasNext()) {
-				Opt o = iter.next();
-				sb.append(o.toString());
-				sb.append(System.lineSeparator());				
-			}
-			log.info(sb.toString());
-
 			
 			/*
 			Scanner scanner = new Scanner(System.in);
@@ -332,6 +342,16 @@ public class App {
 
 	
 	/**
+	 * Gets the log.
+	 *
+	 * @return the log
+	 */
+	public Log getLog() {
+		return log;
+	}
+
+	
+	/**
      * The main method, starting point of this app.
      * 
      * As this is mainly an App, this is the main entry point to start the App.
@@ -342,5 +362,6 @@ public class App {
         App app = new App();
         app.run(args);
     }
+
 
 }

@@ -18,6 +18,7 @@ public class OptBaseDir extends Opt {
 		this.description = "set basedir, a work folder for tomcat, default [current working dir]/tomcat.port";
 		this.defaultval = Paths.get(System.getProperty("user.dir"),
 				"tomcat.".concat(Integer.toString(port))).toString();
+		this.value = null;
 		this.opt = "b";
 		this.longopt = "basedir";
 		this.argname = "basedir";

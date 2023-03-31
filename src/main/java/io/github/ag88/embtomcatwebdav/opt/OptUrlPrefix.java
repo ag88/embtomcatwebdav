@@ -6,6 +6,7 @@ public class OptUrlPrefix extends Opt {
 		this.name = "urlprefix";
 		this.description = "set urlprefix, default /webdav";
 		this.defaultval = "/webdav";
+		this.value = defaultval;
 		this.opt = "x";
 		this.longopt = "urlprefix";
 		this.argname = "urlprefix";

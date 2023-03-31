@@ -45,7 +45,7 @@ public class Opt implements Comparable<Opt> {
 	protected Class valclazz = String.class;
 	
 	/** The value. */
-	protected Object value;
+	protected Object value = null;
 	
 	/** The defaultval. */
 	protected Object defaultval;
@@ -366,7 +366,7 @@ public class Opt implements Comparable<Opt> {
 	 */
 	public void process(CommandLine cmd, Object... objects ) {		
 	}
-	
+		
 	
 	@Override
 	public String toString() {

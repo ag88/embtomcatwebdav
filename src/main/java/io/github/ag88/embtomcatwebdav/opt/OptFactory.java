@@ -32,8 +32,6 @@ public class OptFactory {
 	WebDavServer wdav;
 	
 	App app;
-
-	Options options;
 	
 	Properties properties;
 	
@@ -47,6 +45,11 @@ public class OptFactory {
 	private OptFactory() {
 	}
 
+	/**
+	 * Gets the single instance of OptFactory.
+	 *
+	 * @return single instance of OptFactory
+	 */
 	public static OptFactory getInstance() {
 		// Double lock for thread safety.
 		if (m_instance == null) {
@@ -59,6 +62,9 @@ public class OptFactory {
 		return m_instance;
 	}
 
+	/**
+	 * Registers the Opts in Opts Map
+	 */
 	public void registeropts() {
 		addOpt(new OptHelp());
 		addOpt(new OptConf());
@@ -79,6 +85,13 @@ public class OptFactory {
 		addOpt(new OptGenpasswd());
 	}
 
+	/**
+	 * Generate options for commons-cli.
+	 * 
+	 * This takes the preconfigured Opts map and generate the options in options
+	 *
+	 * @param options the options
+	 */
 	public void genoptions(Options options) {
 		Iterator<Opt> iter = iterator();
 
@@ -105,8 +118,41 @@ public class OptFactory {
 		}
 	}
 
-	public void loadproperties(Properties properties) {
-		this.properties = properties;
+	
+	/**
+	 * Load config options from properties file.
+	 *
+	 * @param configfile this should be a properties text file in the appropriate format
+	 * e.g. generated using {@link #genconfigprop(String)}
+	 */
+	public void loadconfigprop(String configfile) {				
+		try {
+			Properties properties = new Properties();
+			BufferedReader reader = new BufferedReader(new FileReader(configfile));
+			properties.load(reader);
+			
+			this.properties = properties;
+			
+			OptFactory.getInstance().loadproperties(properties);
+									
+		} catch (FileNotFoundException e) {
+			log.error(String.format("config file %s not found %s", configfile), e);
+			System.exit(1);
+		} catch (IOException e) {
+			log.error(String.format("config file %s not found %s", configfile), e);
+			System.exit(1);
+		}		
+	}
+
+	/**
+	 * Load properties into Opts
+	 * 
+	 * The properties should be loaded from a config file.
+	 * This populates the configured Opts map with values from the properties.
+	 *
+	 * @param properties the properties
+	 */
+	public void loadproperties(Properties properties) {		
 		
 		Iterator<Opt> iter = iterator();
 		while (iter.hasNext()) {
@@ -142,30 +188,6 @@ public class OptFactory {
 		}
 	}
 
-	
-	/**
-	 * Load config options from properties file.
-	 *
-	 * @param configfile this should be a properties text file in the appropriate format
-	 * e.g. generated using {@link #genconfigprop(String)}
-	 */
-	public void loadconfigprop(String configfile) {				
-		try {
-			Properties properties = new Properties();
-			BufferedReader reader = new BufferedReader(new FileReader(configfile));
-			properties.load(reader);
-			
-			OptFactory.getInstance().loadproperties(properties);
-									
-		} catch (FileNotFoundException e) {
-			log.error(String.format("config file %s not found %s", configfile), e);
-			System.exit(1);
-		} catch (IOException e) {
-			log.error(String.format("config file %s not found %s", configfile), e);
-			System.exit(1);
-		}		
-	}
-	
 	/**
 	 * Generate config options properties file template.
 	 * 
@@ -178,8 +200,7 @@ public class OptFactory {
 			log.error("file exists, not overwriting, specify a new name");
 			System.exit(1);
 		}
-		
-		
+				
 		Properties p = new Properties();
 		OptFactory.getInstance().genproperties(p);
 
@@ -198,6 +219,12 @@ public class OptFactory {
 		
 	}
 
+	
+	/**
+	 * Gen properties with default value from Opts Map in the passed properties
+	 *
+	 * @param properties the properties
+	 */
 	public void genproperties(Properties properties) {
 		Iterator<Opt> iter = iterator();
 		while (iter.hasNext()) {
@@ -217,6 +244,29 @@ public class OptFactory {
 		}
 	}
 
+	
+	/**
+	 * Prints the opts.
+	 */
+	public void printOpts() {
+		
+		Iterator<Opt> iter = OptFactory.getInstance().iterator();
+		StringBuilder sb = new StringBuilder(1024);
+		while(iter.hasNext()) {
+			Opt o = iter.next();
+			sb.append(o.toString());
+			sb.append(System.lineSeparator());				
+		}
+		log.info(sb.toString());
+
+	}
+
+	/**
+	 * Adds the opt.
+	 *
+	 * @param opt the opt
+	 * @throws IllegalArgumentException the illegal argument exception
+	 */
 	public void addOpt(Opt opt) throws IllegalArgumentException {
 		
 		if (chkdup) {
@@ -239,14 +289,30 @@ public class OptFactory {
 		opts.put(opt.getName(), opt);
 	}
 
+	/**
+	 * Gets the opt.
+	 *
+	 * @param name the name
+	 * @return the opt
+	 */
 	public Opt getOpt(String name) {
 		return opts.get(name);
 	}
 
+	/**
+	 * Del opt.
+	 *
+	 * @param name the name
+	 */
 	public void delOpt(String name) {
 		opts.remove(name);
 	}
 
+	/**
+	 * Iterator.
+	 *
+	 * @return the iterator
+	 */
 	public Iterator<Opt> iterator() {
 
 		TreeSet<Opt> os = new TreeSet<>();
@@ -254,50 +320,92 @@ public class OptFactory {
 		return os.iterator();
 	}
 
+	/**
+	 * Gets the opts.
+	 *
+	 * @return the opts
+	 */
 	public TreeMap<String, Opt> getOpts() {
 		return opts;
 	}
 
+	/**
+	 * Sets the opts.
+	 *
+	 * @param props the props
+	 */
 	public void setOpts(TreeMap<String, Opt> props) {
 		this.opts = props;
 	}
 
-	public Options getOptions() {
-		return options;
-	}
-
-	public void setOptions(Options options) {
-		this.options = options;
-	}
-
+	/**
+	 * Gets the properties.
+	 *
+	 * @return the properties
+	 */
 	public Properties getProperties() {
 		return properties;
 	}
 
+	/**
+	 * Sets the properties.
+	 *
+	 * @param properties the new properties
+	 */
 	public void setProperties(Properties properties) {
 		this.properties = properties;
 	}
 
+	/**
+	 * Checks if is chkdup.
+	 *
+	 * @return true, if is chkdup
+	 */
 	public boolean isChkdup() {
 		return chkdup;
 	}
 
+	/**
+	 * Sets the chkdup.
+	 *
+	 * @param chkdup the new chkdup
+	 */
 	public void setChkdup(boolean chkdup) {
 		this.chkdup = chkdup;
 	}
 	
+	/**
+	 * Gets the WebDAVserver.
+	 *
+	 * @return the wdav
+	 */
 	public WebDavServer getWdav() {
 		return wdav;
 	}
 
+	/**
+	 * Sets the WebDAVserver.
+	 *
+	 * @param wdav the new wdav
+	 */
 	public void setWdav(WebDavServer wdav) {
 		this.wdav = wdav;
 	}
 
+	/**
+	 * Gets the app.
+	 *
+	 * @return the app
+	 */
 	public App getApp() {
 		return app;
 	}
 
+	/**
+	 * Sets the app.
+	 *
+	 * @param app the new app
+	 */
 	public void setApp(App app) {
 		this.app = app;
 	}

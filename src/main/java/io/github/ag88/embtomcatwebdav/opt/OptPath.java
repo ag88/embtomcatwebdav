@@ -6,6 +6,7 @@ public class OptPath extends Opt {
 		this.name = "path";
 		this.description = "set path, default current working dir";
 		this.defaultval = System.getProperty("user.dir");
+		this.value = defaultval;
 		this.opt = "P";
 		this.longopt = "path";
 		this.argname = "path";

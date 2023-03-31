@@ -6,9 +6,11 @@ public class OptDigest extends Opt {
 		this.name = "digest";
 		this.description = "use digest authentication";
 		this.defaultval = Boolean.FALSE;
+		this.value = Boolean.FALSE;
 		this.opt = "D";
 		this.longopt = "digest";
 		this.argname = "";
+		this.hasarg = false;
 		this.valclazz = Boolean.class;
 		this.priority = 18;
 	}

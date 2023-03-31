@@ -6,6 +6,7 @@ public class OptPort extends Opt {
 		this.name = "port";
 		this.description = "set port";
 		this.defaultval = Integer.valueOf(8080);
+		this.value = Integer.valueOf(8080);
 		this.opt = "p";
 		this.longopt = "port";
 		this.argname = "port";
