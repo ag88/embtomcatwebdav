@@ -230,7 +230,11 @@ public class OptFactory {
 			writer.close();
 			
 			log.info("config file saveed to ".concat(configfile));
-			System.exit(0);
+	        try {
+	            Class.forName("org.junit.jupiter.api.Test");
+	        } catch (ClassNotFoundException e) {
+	        	System.exit(0);
+	        }
 		} catch (IOException e) {
 			log.error(String.format("unable to write config file %s",configfile), e);
 			System.exit(1);
