@@ -430,6 +430,10 @@ public class OptTest {
 			reporter.publishEntry("test", sb.toString());
 		}
 
+		assertThat(factory.getOpt("keystorefile").getValue(),
+				equalTo(tempdir.resolve("keystorefile.jkf").toString()));
+		assertThat(factory.getOpt("keystorepasswd").getValue(),	equalTo("kspasswdS1"));
+		
     }
 
     
