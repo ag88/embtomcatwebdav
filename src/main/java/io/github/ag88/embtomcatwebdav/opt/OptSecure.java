@@ -14,7 +14,6 @@ public class OptSecure extends Opt {
 		this.longopt = "secure";
 		this.argname = "keystore,passwd";
 		this.cmdproc = true; //process command
-		this.notarget = true;
 		this.type = PropType.CLI;
 		this.valclazz = Boolean.class;
 		this.priority = 22;
@@ -27,7 +26,7 @@ public class OptSecure extends Opt {
 	}
 
 	@Override
-	public void process(CommandLine cmd) {
+	public void process(CommandLine cmd, Object... objects) {
 	}
 
 }

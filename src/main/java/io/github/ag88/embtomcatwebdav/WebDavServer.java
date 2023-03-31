@@ -71,7 +71,24 @@ import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 
 import io.github.ag88.embtomcatwebdav.opt.Opt;
+import io.github.ag88.embtomcatwebdav.opt.OptBaseDir;
+import io.github.ag88.embtomcatwebdav.opt.OptConf;
+import io.github.ag88.embtomcatwebdav.opt.OptDigest;
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
+import io.github.ag88.embtomcatwebdav.opt.OptGenconf;
+import io.github.ag88.embtomcatwebdav.opt.OptGenpasswd;
+import io.github.ag88.embtomcatwebdav.opt.OptHelp;
+import io.github.ag88.embtomcatwebdav.opt.OptHost;
+import io.github.ag88.embtomcatwebdav.opt.OptKeystoreFile;
+import io.github.ag88.embtomcatwebdav.opt.OptKeystorePasswd;
+import io.github.ag88.embtomcatwebdav.opt.OptPasswd;
+import io.github.ag88.embtomcatwebdav.opt.OptPath;
+import io.github.ag88.embtomcatwebdav.opt.OptPort;
+import io.github.ag88.embtomcatwebdav.opt.OptQuiet;
+import io.github.ag88.embtomcatwebdav.opt.OptRealm;
+import io.github.ag88.embtomcatwebdav.opt.OptSecure;
+import io.github.ag88.embtomcatwebdav.opt.OptUrlPrefix;
+import io.github.ag88.embtomcatwebdav.opt.OptUser;
 
 /**
  * This is a WebDAV server based on Apache Tomcat's WebDAV servlet and embedded Tomcat server.<p>
@@ -164,23 +181,9 @@ public class WebDavServer
 	/**
 	 * Instantiates a new web dav server, no arg constructor.	 * 
 	 */
-	public WebDavServer() {
-		OptFactory.getInstance().registeropts();
+	public WebDavServer() {		
 	}
 		
-	/**
-	 * Run
-	 * 
-	 * This method is actually called by {@link #main(String[])}.
-	 * It calls a method to parse the command line variables and setup the instance variables.
-	 * It then calls {@link #runserver()} to start the embedded Tomcat server
-	 *
-	 * @param args the args
-	 */
-	public void run(String[] args) {
-		parseargs(args);
-		runserver();
-	}
 	
 	/**
 	 * Runserver
@@ -410,342 +413,7 @@ public class WebDavServer
 			log.error(e.getMessage(), e);
 		}
 	}
-
-	/**
-	 * Parseargs.
-	 *
-	 * @param args command line args passed to {@link #main(String[])}
-	 */
-	private void parseargs(String[] args) {
-		
-		Options options = new Options();
-		OptFactory.getInstance().genoptions(options);
-		OptFactory.getInstance().setWdav(this);
-		
-		/*
-		Options options = new Options();
-		options.addOption(Option.builder("h").longOpt("help").desc("help").build());		
-		options.addOption(Option.builder("H").longOpt("host").desc("set host")
-				.hasArg().argName("hostname").build());
-		options.addOption(Option.builder("p").longOpt("port").desc("set port")
-				.hasArg().argName("port").build());
-		options.addOption(Option.builder("P").longOpt("path")
-				.desc("set path, default current working dir")
-				.hasArg().argName("path").build());
-		options.addOption(Option.builder("x").longOpt("urlprefix")
-				.desc("set urlprefix, default /webdav")
-				.hasArg().argName("urlprefix").build());
-		options.addOption(Option.builder("b").longOpt("basedir")
-				.desc("set basedir, a work folder for tomcat, default [current working dir]/tomcat.port")
-				.hasArg().argName("path").build());
-		options.addOption(Option.builder("u").longOpt("user")
-				.desc("set user")
-				.hasArg().argName("username").build());
-		options.addOption(Option.builder("w").longOpt("passwd")
-				.desc("set password, you may omit this, it would prompt for it if -u is specified")
-				.hasArg().argName("password").build());
-		options.addOption(Option.builder("R").longOpt("realm")
-				.desc("set realm name, default 'Simple'")
-				.hasArg().argName("realmname").build());
-		options.addOption(Option.builder("q").longOpt("quiet").desc("mute (most) logs").build());
-		options.addOption(Option.builder("D").longOpt("digest").desc("use digest authentication").build());
-		options.addOption(Option.builder("S").longOpt("secure")
-				.desc("enable SSL, you need to supply a keystore file and keystore passwd, " +
-		          "if passwd is omitted it'd be prompted.")
-				.hasArg().argName("keystore,passwd").build());
-		options.addOption(Option.builder("c").longOpt("conf")
-				.desc("load properties config file")
-				.hasArg().argName("configfile").build());
-		options.addOption(Option.builder().longOpt("genconf")
-				.desc("generate properties config file")
-				.hasArg().argName("configfile").build());
-		options.addOption(Option.builder().longOpt("genpass")
-				.desc("dialog to generate digest password").build());
-		*/
-		
-		try {
-			CommandLineParser parser = new DefaultParser();
-			CommandLine cmd = parser.parse(options, args);
-			Iterator<Opt> iter = OptFactory.getInstance().iterator();
-			
-			while (iter.hasNext()) {
-				Opt opt = iter.next();
-				if (opt.getType().equals(Opt.PropType.Norm) || opt.getType().equals(Opt.PropType.CLI)) {
-
-					if (cmd.hasOption(opt.getLongopt())) {
-						if (opt.isCmdproc()) {
-							opt.process(cmd);
-						} else {
-							Object value;
-							try {
-								value = cmd.getParsedOptionValue(opt.getLongopt());
-							} catch (Exception e) {
-								log.warn(String.format("invalid value for %s", opt.getLongopt()), e);
-								value = opt.getDefaultval();
-							}
-							opt.setValue(value);
-						}
-					}
-				}
-			}
-			
-			/* 
-			 * prompt for missing passwords
-			 */
-			Scanner scanner = new Scanner(System.in);
-			Console console = System.console();
-			
-			user = (String) OptFactory.getInstance().getOpt("user").getValue();
-			passwd = (String) OptFactory.getInstance().getOpt("passwd").getValue();
-			if (user != null && passwd == null) {
-				log.info(String.format("enter password for %s:", user));
-				if(console != null)
-					passwd = new String(console.readPassword());
-				else
-					passwd = scanner.nextLine();
-				OptFactory.getInstance().getOpt("passwd").setValue(passwd);
-			}
-			
-			keystorefile = (String) OptFactory.getInstance().getOpt("keystorefile").getValue();
-			keystorepasswd = (String) OptFactory.getInstance().getOpt("keystorepasswd").getValue();
-			
-			if(keystorefile.equals("")) {
-				OptFactory.getInstance().getOpt("keystorefile").setValue(null);
-				keystorefile = null;
-			}
-			
-			if(keystorepasswd.equals("")) {
-				OptFactory.getInstance().getOpt("keystorepasswd").setValue(null);
-				keystorepasswd = null;
-			}
-			
-			if(keystorefile != null && keystorepasswd == null) {
-				log.info("Enter password for keystore:");
-				if(console != null)
-					keystorepasswd = new String(console.readPassword());
-				else
-					keystorepasswd = scanner.nextLine();
-				OptFactory.getInstance().getOpt("keystorepasswd").setValue(keystorepasswd);
-			}
-			
-			if(keystorefile != null && !Files.exists(Paths.get(keystorefile))) {
-				log.error("keystore file not found!");
-				System.exit(0);
-			}
-
-			scanner.close();
-			
-			/*
-			Scanner scanner = new Scanner(System.in);
-
-			
-			if(cmd.hasOption("help")) {
-				HelpFormatter formatter = new HelpFormatter();
-				Map<String, String> mkv = readManifest();
-				String name = mkv.get("artifactId")
-						.concat("-").concat(mkv.get("version"));
-				formatter.printHelp(name, options);
-				System.exit(0);
-			}
-
-			if (cmd.hasOption("conf")) {
-				String configfile = cmd.getOptionValue("conf");
-				loadconfigprop(configfile);
-			} 
-			
-			if (cmd.hasOption("genconf")) {
-				String configfile = cmd.getOptionValue("genconf");
-				genconfigprop(configfile);
-			} 
-			
-			if (cmd.hasOption("genpass")) {
-				DigestPWGenDlg dlg = new DigestPWGenDlg(this);
-				dlg.pack();
-				dlg.setLocationRelativeTo(null);
-				dlg.setVisible(true);
-				System.exit(0);
-			} 
-			
-			if (cmd.hasOption("host")) {
-				shost = cmd.getOptionValue("host");
-			} 
-			
-			if (cmd.hasOption("port")) {
-				try {
-					port = Integer.parseInt(cmd.getOptionValue("port"));
-				} catch (NumberFormatException e) {
-					log.warn("invalid port: ".concat(cmd.getOptionValue("port"))
-							.concat(", using default 8080 instead"));
-					port = 8080;
-				}
-			} 
-			
-			if (cmd.hasOption("path")) {
-				String p = cmd.getOptionValue("path");
-				path = new File(p).getAbsolutePath();
-			} 
-			
-			if (cmd.hasOption("basedir")) {
-				String p = cmd.getOptionValue("basedir");
-				basedir = new File(p).getAbsolutePath();
-			}
-			
-			if (cmd.hasOption("urlprefix")) {
-				urlprefix = cmd.getOptionValue("urlprefix");
-			}
-			
-			if (cmd.hasOption("realm")) {
-				realm = cmd.getOptionValue("realm");
-			} 
-			
-			if (cmd.hasOption("user")) {
-				user = cmd.getOptionValue("user");
-			} 
-			
-			if (cmd.hasOption("passwd")) {
-				passwd = cmd.getOptionValue("passwd");
-			}
-
-			if (user != null && passwd == null) {
-				log.info(String.format("enter password for %s:", user));
-				passwd = scanner.nextLine();
-			}
-			
-			if (cmd.hasOption("secure")) {
-				String arg = cmd.getOptionValue("secure");
-				if (arg.contains(",")) {
-					String[] f = arg.split(",");
-					keystorefile = f[0];
-					keystorepasswd = f[1];
-				} else {
-					keystorefile = arg;
-				}
-			}
-			
-			if(keystorefile != null && keystorepasswd == null) {
-				log.info("Enter password for keystore:");
-				keystorepasswd = scanner.nextLine();
-			}
-			
-			if(keystorefile != null && !Files.exists(Paths.get(keystorefile))) {
-				log.error("keystore file not found!");
-				System.exit(0);
-			}
-			
-			if(cmd.hasOption("digest")) {
-				digest = true;
-			}
-			
-			if(cmd.hasOption("quiet")) {
-				quiet = true;
-			}
-									
-			*/
-						
-		} catch (ParseException e) {
-			log.error(e.getMessage(),e);
-		}
-		
-	}	
 	
-	/**
-	 * Load config options from properties file.
-	 *
-	 * @param configfile this should be a properties text file in the appropriate format
-	 * e.g. generated using {@link #genconfigprop(String)}
-	 */
-	public void loadconfigprop(String configfile) {				
-		try {
-			Properties properties = new Properties();
-			BufferedReader reader = new BufferedReader(new FileReader(configfile));
-			properties.load(reader);
-			
-			OptFactory.getInstance().loadproperties(properties);
-			Iterator<Opt> iter = OptFactory.getInstance().iterator();
-			StringBuilder sb = new StringBuilder(1024);
-			while(iter.hasNext()) {
-				Opt o = iter.next();
-				sb.append(o.toString());
-				sb.append(System.lineSeparator());				
-			}
-			log.info(sb.toString());
-			
-			OptFactory.getInstance().updateBean(this);			
-			
-			/*
-			shost = p.getProperty("host", shost);
-			port = Integer.parseInt(p.getProperty("port", "8080"));
-			urlprefix = p.getProperty("urlprefix", "/webdav");
-			path = p.getProperty("path", System.getProperty("user.dir"));
-			basedir = p.getProperty("basedir", getDefbasedir(basedir));
-			digest = Boolean.parseBoolean(p.getProperty("digest", "false"));
-			realm = p.getProperty("realm", "Simple");
-			user = p.getProperty("user", "");
-			if (user.equals("")) user = null;
-			passwd = p.getProperty("password", "");
-			if (passwd.equals("")) passwd = null;
-			quiet = Boolean.parseBoolean(p.getProperty("quiet", "false"));
-			
-			keystorefile = p.getProperty("keystorefile", "");
-			if (keystorefile.equals("")) keystorefile = null;
-			keystorepasswd = p.getProperty("keystorepasswd", "");
-			if (keystorepasswd.equals("")) keystorepasswd = null;
-			*/
-			
-		} catch (FileNotFoundException e) {
-			log.error(String.format("config file %s not found %s", configfile), e);
-			System.exit(1);
-		} catch (IOException e) {
-			log.error(String.format("config file %s not found %s", configfile), e);
-			System.exit(1);
-		}		
-	}
-	
-	/**
-	 * Generate config options properties file template.
-	 * 
-	 * It would fill up some default values
-	 *
-	 * @param configfile new properties config file name.
-	 */
-	public void genconfigprop(String configfile) {
-		if(Files.exists(Paths.get(configfile))) {
-			log.error("file exists, not overwriting, specify a new name");
-			System.exit(1);
-		}
-		
-		basedir = getDefbasedir(basedir);
-		
-		Properties p = new Properties();
-		OptFactory.getInstance().genproperties(p);
-		/*
-		p.setProperty("host", shost);
-		p.setProperty("port", Integer.toString(port));
-		p.setProperty("urlprefix", urlprefix);
-		p.setProperty("path", path == null ? "" : path);
-		p.setProperty("basedir", basedir == null ? "" : basedir);
-		p.setProperty("digest", Boolean.toString(digest));
-		p.setProperty("realm", realm);
-		p.setProperty("user", user == null ? "" : user);
-		p.setProperty("password", passwd == null ? "" : passwd);
-		p.setProperty("quiet", Boolean.toString(quiet));
-		p.setProperty("keystorefile", keystorefile == null ? "" : keystorefile);
-		p.setProperty("keystorepasswd", keystorepasswd == null ? "" : keystorepasswd);
-		*/		
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(configfile));
-			p.store(writer, "Embedded Tomcat Webdav server properties");
-			writer.flush();
-			writer.close();
-			
-			log.info("config file saveed to ".concat(configfile));
-			System.exit(0);
-		} catch (IOException e) {
-			log.error(String.format("unable to write config file %s",configfile), e);
-			System.exit(1);
-		}		
-		
-	}
 
 
 	/**
@@ -811,33 +479,30 @@ public class WebDavServer
 		return dpw;
 	}
 	
+	
 	/**
-	 * Read manifest.
+	 * Load params from a Map of options parsed from command line and config files
 	 *
-	 * @return the map
+	 * @param opts the opts
 	 */
-	public Map<String, String> readManifest() {
-		TreeMap<String, String> mret = new TreeMap<String, String>();
-		try {
-
-			Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
-			while (resources.hasMoreElements()) {
-				Manifest manifest = new Manifest(resources.nextElement().openStream());
-
-				Attributes a = manifest.getMainAttributes();
-				for (Object o : a.keySet()) {
-					String k = o.toString();
-					String v = a.get(o).toString();
-					mret.put(k, v);
-				}
-
-				return mret;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}	
+	public void loadparams(Map<String, Opt> opts) {
+		
+		this.shost = (String) opts.get("host").getValue();
+		this.port = ((Integer) opts.get("port").getValue()).intValue();
+		this.path =  (String) opts.get("path").getValue();
+		this.basedir =  (String) opts.get("basedir").getValue();
+		this.urlprefix = (String) opts.get("urlprefix").getValue();
+		this.realm = (String) opts.get("realm").getValue();
+		this.user = (String) opts.get("user").getValue();
+		this.passwd = (String) opts.get("passwd").getValue();
+		this.digest = ((Boolean) opts.get("digest").getValue()).booleanValue();
+		this.passwd = (String) opts.get("passwd").getValue();
+		
+		this.keystorefile = (String) opts.get("keystorefile").getValue();
+		this.keystorepasswd = (String) opts.get("keystorepasswd").getValue();
+		this.quiet = ((Boolean) opts.get("quiet").getValue()).booleanValue();		
+				
+	}
 		
 	/**
 	 * Gets the port.
@@ -1139,20 +804,7 @@ public class WebDavServer
 	public void setTomcat(Tomcat tomcat) {
 		this.tomcat = tomcat;
 	}
-	
-	
-	/**
-     * The main method, starting point of this app.
-     * 
-     * As this is mainly an App, this is the main entry point to start the App.
-     *
-     * @param args the arguments
-     */
-    public static void main(String[] args)  {
-        WebDavServer app = new WebDavServer();
-        app.run(args);
-    }
-
+		
 
 
 }

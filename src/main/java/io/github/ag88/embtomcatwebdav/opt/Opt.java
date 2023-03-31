@@ -58,10 +58,7 @@ public class Opt implements Comparable<Opt> {
 	
 	/** The process command line options. */
 	protected boolean cmdproc = false;
-	
-	/** The if true do not set property value in target object */
-	protected boolean notarget = false;
-	
+		
 	/** Has args. */
 	protected boolean hasarg = true;
 	
@@ -74,6 +71,8 @@ public class Opt implements Comparable<Opt> {
 	 */
 	public Opt() {
 	}	
+
+
 
 	/**
 	 * Instantiates a new opt.
@@ -89,13 +88,12 @@ public class Opt implements Comparable<Opt> {
 	 * @param passwd the passwd
 	 * @param type the type
 	 * @param cmdproc the cmdproc
-	 * @param notarget the notarget
 	 * @param hasarg the hasarg
 	 * @param priority the priority
 	 */
 	public Opt(String name, String description, String opt, String longopt, String argname, Class valclazz,
-			Object value, Object defaultval, boolean passwd, PropType type, boolean cmdproc, boolean notarget,
-			boolean hasarg, int priority) {
+			Object value, Object defaultval, boolean passwd, PropType type, boolean cmdproc, boolean hasarg,
+			int priority) {
 		super();
 		this.name = name;
 		this.description = description;
@@ -108,7 +106,6 @@ public class Opt implements Comparable<Opt> {
 		this.passwd = passwd;
 		this.type = type;
 		this.cmdproc = cmdproc;
-		this.notarget = notarget;
 		this.hasarg = hasarg;
 		this.priority = priority;
 	}
@@ -313,24 +310,6 @@ public class Opt implements Comparable<Opt> {
 		this.cmdproc = cmdproc;
 	}
 
-	/**
-	 * Checks if is notarget.
-	 *
-	 * @return true, if is notarget
-	 */
-	public boolean isNotarget() {
-		return notarget;
-	}
-
-	/**
-	 * Sets the notarget.
-	 *
-	 * @param notarget the new notarget
-	 */
-	public void setNotarget(boolean notarget) {
-		this.notarget = notarget;
-	}
-
 	
 	/**
 	 * Checks if it hasarg.
@@ -385,7 +364,7 @@ public class Opt implements Comparable<Opt> {
 	 *
 	 * @param cmd the cmd
 	 */
-	public void process(CommandLine cmd) {		
+	public void process(CommandLine cmd, Object... objects ) {		
 	}
 	
 	
@@ -419,8 +398,6 @@ public class Opt implements Comparable<Opt> {
 		sb.append(type.name());
 		sb.append(", iscmdproc: ");
 		sb.append(Boolean.toString(cmdproc));
-		sb.append(", isnotarget: ");
-		sb.append(Boolean.toString(notarget));
 		
 		return sb.toString();
 	}

@@ -7,19 +7,19 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import io.github.ag88.embtomcatwebdav.App;
 import io.github.ag88.embtomcatwebdav.WebDavServer;
 
 public class OptHelp extends Opt {	
 
 	public OptHelp() {
 		this.name = "help";
-		this.description = "dialog to generate digest password";
+		this.description = "help";
 		this.defaultval = null;
 		this.opt = "h";
 		this.longopt = "help";
 		this.argname = null;
 		this.cmdproc = true; //process command
-		this.notarget = true;
 		this.type = PropType.CLI;
 		this.hasarg = false;
 		this.priority = 1;
@@ -31,12 +31,12 @@ public class OptHelp extends Opt {
 	}
 
 	@Override
-	public void process(CommandLine cmd) {
+	public void process(CommandLine cmd, Object... objects) {
 		
-		OptFactory factory = OptFactory.getInstance();
-		WebDavServer wdav = factory.getWdav();
-		Options options = factory.getOptions();
-		
+		App app = (App) objects[0];
+		//WebDavServer wdav = (WebDavServer) objects[1];
+		Options options = (Options) objects[2];
+				
 		HelpFormatter formatter = new HelpFormatter();
 		StringBuilder sb = new StringBuilder(100);
 		sb.append(System.lineSeparator());
@@ -50,7 +50,7 @@ public class OptHelp extends Opt {
 		sb.append(System.lineSeparator());
 		sb.append("Project web: https://github.com/ag88/embtomcatwebdav");		
 		
-		Map<String, String> mkv = wdav.readManifest();
+		Map<String, String> mkv = app.readManifest();
 		String name = "embtomcatwdav";
 		//String name = mkv.get("artifactId")
 		//		.concat("-").concat(mkv.get("version"));

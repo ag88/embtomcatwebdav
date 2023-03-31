@@ -1,17 +1,26 @@
 package io.github.ag88.embtomcatwebdav.opt;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+import io.github.ag88.embtomcatwebdav.App;
 import io.github.ag88.embtomcatwebdav.WebDavServer;
 
 public class OptFactory {
@@ -21,10 +30,19 @@ public class OptFactory {
 	TreeMap<String, Opt> opts = new TreeMap<String, Opt>();
 
 	WebDavServer wdav;
+	
+	App app;
 
 	Options options;
-
+	
+	Properties properties;
+	
 	private static OptFactory m_instance;
+	
+	private TreeSet<String> optc = new TreeSet<String>();
+	private TreeSet<String> optl = new TreeSet<String>();
+	
+	private boolean chkdup = false;
 
 	private OptFactory() {
 	}
@@ -59,15 +77,6 @@ public class OptFactory {
 		addOpt(new OptSecure());
 		addOpt(new OptQuiet());
 		addOpt(new OptGenpasswd());
-
-		Iterator<Opt> iter = iterator();
-		StringBuilder sb = new StringBuilder(1024);
-		while (iter.hasNext()) {
-			Opt o = iter.next();
-			sb.append(o.toString());
-			sb.append(System.lineSeparator());
-		}
-		log.info(sb.toString());
 	}
 
 	public void genoptions(Options options) {
@@ -94,32 +103,11 @@ public class OptFactory {
 				}
 			}
 		}
-		this.options = options;
-	}
-
-	public void updateBean(WebDavServer wdav) {
-
-		Iterator<Opt> iter = iterator();
-		while (iter.hasNext()) {
-			Opt o = iter.next();
-
-			try {
-				if (!o.notarget)
-					PropertyUtils.setSimpleProperty(wdav, o.getName(), o.getValue());
-			} catch (IllegalArgumentException e) {
-				log.error("property: ".concat(o.getName()), e);
-			} catch (IllegalAccessException e) {
-				log.error("property: ".concat(o.getName()), e);
-			} catch (InvocationTargetException e) {
-				log.error("property: ".concat(o.getName()), e);
-			} catch (NoSuchMethodException e) {
-				log.error("property: ".concat(o.getName()), e);
-			}
-		}
-
 	}
 
 	public void loadproperties(Properties properties) {
+		this.properties = properties;
+		
 		Iterator<Opt> iter = iterator();
 		while (iter.hasNext()) {
 			Opt o = iter.next();
@@ -154,6 +142,62 @@ public class OptFactory {
 		}
 	}
 
+	
+	/**
+	 * Load config options from properties file.
+	 *
+	 * @param configfile this should be a properties text file in the appropriate format
+	 * e.g. generated using {@link #genconfigprop(String)}
+	 */
+	public void loadconfigprop(String configfile) {				
+		try {
+			Properties properties = new Properties();
+			BufferedReader reader = new BufferedReader(new FileReader(configfile));
+			properties.load(reader);
+			
+			OptFactory.getInstance().loadproperties(properties);
+									
+		} catch (FileNotFoundException e) {
+			log.error(String.format("config file %s not found %s", configfile), e);
+			System.exit(1);
+		} catch (IOException e) {
+			log.error(String.format("config file %s not found %s", configfile), e);
+			System.exit(1);
+		}		
+	}
+	
+	/**
+	 * Generate config options properties file template.
+	 * 
+	 * It would fill up some default values
+	 *
+	 * @param configfile new properties config file name.
+	 */
+	public void genconfigprop(String configfile) {
+		if(Files.exists(Paths.get(configfile))) {
+			log.error("file exists, not overwriting, specify a new name");
+			System.exit(1);
+		}
+		
+		
+		Properties p = new Properties();
+		OptFactory.getInstance().genproperties(p);
+
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(configfile));
+			p.store(writer, "Embedded Tomcat Webdav server properties");
+			writer.flush();
+			writer.close();
+			
+			log.info("config file saveed to ".concat(configfile));
+			System.exit(0);
+		} catch (IOException e) {
+			log.error(String.format("unable to write config file %s",configfile), e);
+			System.exit(1);
+		}		
+		
+	}
+
 	public void genproperties(Properties properties) {
 		Iterator<Opt> iter = iterator();
 		while (iter.hasNext()) {
@@ -173,8 +217,26 @@ public class OptFactory {
 		}
 	}
 
-	public void addOpt(Opt prop) {
-		opts.put(prop.getName(), prop);
+	public void addOpt(Opt opt) throws IllegalArgumentException {
+		
+		if (chkdup) {
+			if(opts.containsKey(opt.getName()))
+				throw new IllegalArgumentException("duplicate opt");
+		
+			if(opt.getOpt() != null) 
+			if(optc.contains(opt.getOpt())) {
+				throw new IllegalArgumentException("duplicate short cmdline opt: ".concat(opt.getOpt()));
+			} else
+				optc.add(opt.getOpt());
+
+			if(opt.getLongopt() != null)
+			if(optl.contains(opt.getLongopt()))
+				throw new IllegalArgumentException("duplicate long cmdline opt:".concat(opt.getLongopt()));
+			else
+				optl.add(opt.getLongopt());
+		}
+		
+		opts.put(opt.getName(), opt);
 	}
 
 	public Opt getOpt(String name) {
@@ -186,7 +248,7 @@ public class OptFactory {
 	}
 
 	public Iterator<Opt> iterator() {
-		// return opts.values().iterator();
+
 		TreeSet<Opt> os = new TreeSet<>();
 		os.addAll(opts.values());
 		return os.iterator();
@@ -200,6 +262,30 @@ public class OptFactory {
 		this.opts = props;
 	}
 
+	public Options getOptions() {
+		return options;
+	}
+
+	public void setOptions(Options options) {
+		this.options = options;
+	}
+
+	public Properties getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Properties properties) {
+		this.properties = properties;
+	}
+
+	public boolean isChkdup() {
+		return chkdup;
+	}
+
+	public void setChkdup(boolean chkdup) {
+		this.chkdup = chkdup;
+	}
+	
 	public WebDavServer getWdav() {
 		return wdav;
 	}
@@ -208,12 +294,14 @@ public class OptFactory {
 		this.wdav = wdav;
 	}
 
-	public Options getOptions() {
-		return options;
+	public App getApp() {
+		return app;
 	}
 
-	public void setOptions(Options options) {
-		this.options = options;
+	public void setApp(App app) {
+		this.app = app;
 	}
+
+
 
 }

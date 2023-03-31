@@ -13,20 +13,10 @@ public class OptKeystorePasswd extends Opt {
 		this.longopt = null;
 		this.argname = null;
 		this.cmdproc = false; //process command
-		this.notarget = false;
 		this.passwd = true;
 		this.type = PropType.Prop;
 		this.valclazz = String.class;
 		this.priority = 21;
 	}
 	
-	@Override
-	public Option getOption() {
-		return null;
-	}
-
-	@Override
-	public void process(CommandLine cmd) {
-	}
-
 }

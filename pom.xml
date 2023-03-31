@@ -40,8 +40,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tomcat.version>8.5.87</tomcat.version>
 		<junit.version>5.9.2</junit.version>
-		<mainclass>${project.groupId}.${project.artifactId}.WebDavServer</mainclass>
-		<skipTests>true</skipTests>
+		<mainclass>${project.groupId}.${project.artifactId}.App</mainclass>
+		<skipTests>false</skipTests>
 	</properties>
 
 	<dependencies>
@@ -65,11 +65,6 @@
 			<artifactId>tomcat-juli</artifactId>
 			<version>${tomcat.version}</version>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>1.9.4</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>

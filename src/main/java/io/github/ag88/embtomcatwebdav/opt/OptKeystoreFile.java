@@ -13,19 +13,10 @@ public class OptKeystoreFile extends Opt {
 		this.longopt = null;
 		this.argname = null;
 		this.cmdproc = false; //process command
-		this.notarget = false;
 		this.type = PropType.Prop;
 		this.valclazz = String.class;
 		this.priority = 20;
 	}
 	
-	@Override
-	public Option getOption() {
-		return null;
-	}
-
-	@Override
-	public void process(CommandLine cmd) {
-	}
 
 }

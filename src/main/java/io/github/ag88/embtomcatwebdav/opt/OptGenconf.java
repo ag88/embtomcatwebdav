@@ -13,7 +13,6 @@ public class OptGenconf extends Opt {
 		this.longopt = "genconf";
 		this.argname = "configfile";
 		this.cmdproc = true; //process command
-		this.notarget = true;
 		this.type = PropType.CLI;
 		this.valclazz = String.class;
 		this.priority = 3;
@@ -26,9 +25,9 @@ public class OptGenconf extends Opt {
 	}
 
 	@Override
-	public void process(CommandLine cmd) {
+	public void process(CommandLine cmd, Object... objects) {
 		String configfile = cmd.getOptionValue("genconf");
-		OptFactory.getInstance().getWdav().genconfigprop(configfile);
+		OptFactory.getInstance().genconfigprop(configfile);
 	}
 
 }

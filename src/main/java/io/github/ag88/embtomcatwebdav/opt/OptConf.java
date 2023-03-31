@@ -15,7 +15,6 @@ public class OptConf extends Opt {
 		this.longopt = "conf";
 		this.argname = "configfile";
 		this.cmdproc = true; //process command
-		this.notarget = true;
 		this.type = PropType.CLI;
 		this.valclazz = String.class;
 		this.priority = 2;
@@ -27,11 +26,11 @@ public class OptConf extends Opt {
 				hasArg().argName(argname).build();
 	}
 
+	
 	@Override
-	public void process(CommandLine cmd) {
+	public void process(CommandLine cmd, Object... objects ) {
 		String configfile = cmd.getOptionValue("conf");
-		WebDavServer wdav = OptFactory.getInstance().getWdav();
-		wdav.loadconfigprop(configfile);
+		OptFactory.getInstance().loadconfigprop(configfile);		
 	}
 
 }
