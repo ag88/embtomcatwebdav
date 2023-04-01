@@ -151,3 +151,249 @@ public class App
 With the above codes, the wabdav servlet runs at http://localhost:8080/webdav, and your servlet runs at http://localhost:8080/hello , in the same app.
 
 Note that in the interest of leaner binaries, WebDavServer drop the JSP container when setting up Tomcat. In addition, various Servlet API 3.0+ java annotations may not be scanned. Hence, mainly POJO java servlets are supported.
+
+### How to access properties from the config file specified by the -c configfile option
+
+With version v0.4.0, a refactored command line options and config properties processing engine is added, this makes it feasible for apps linking the library to add command line options and config properties in the same app.
+
+An example is as follows:
+```
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Properties;
+
+import io.github.ag88.embtomcatwebdav.WebDavServer;
+import io.github.ag88.embtomcatwebdav.opt.OptFactory;
+
+public class App {
+
+  public App() {
+  }
+
+  public void run(String[] args) {
+    io.github.ag88.embtomcatwebdav.App embtcapp = new io.github.ag88.embtomcatwebdav.App();
+    WebDavServer dav = OptFactory.getInstance().getWebDAVserv();
+
+    embtcapp.parseargs(args);
+    dav.loadparams(OptFactory.getInstance().getOpts());
+    dav.runserver();
+  }
+
+  public static void main(String[] args) {
+    App app = new App();
+    app.run(args);
+  }
+}
+```
+With the above codes and say that your app is packaged with 
+[Maven Assembly Plugin](https://maven.apache.org/plugins/maven-assembly-plugin/)
+, that the above is also the main entry point for your app. After building the assembled jar archive, you could possibly run e.g. 
+```
+java -jar myapp-0.0.1-SNAPSHOT-jar-with-dependencies.jar -h
+
+usage: myapp-0.0.1-SNAPSHOT
+ -b,--basedir <basedir>          set basedir, a work folder for tomcat,
+                                 default [current working dir]/tomcat.port
+ -c,--conf <configfile>          load properties config file
+ -D,--digest                     use digest authentication
+    --genconf <configfile>       generate properties config file
+    --genpass                    dialog to generate digest password
+ -h,--help                       help
+ -H,--host <hostname>            set host
+ -p,--port <port>                set port
+ -P,--path <path>                set path, default current working dir
+ -q,--quiet                      mute (most) logs
+ -R,--realm <realmname>          set realm name, default 'Simple'
+ -S,--secure <keystore,passwd>   enable SSL, you need to supply a keystore
+                                 file and keystore passwd, if passwd is
+                                 omitted it'd be prompted.
+ -u,--user <username>            set user
+ -w,--passwd <password>          set password, you may omit this, it would
+                                 prompt for it if -u is specified
+ -x,--urlprefix <urlprefix>      set urlprefix, default /webdav
+```
+With a few lines of codes above, you get a *full* app as like the distributed release jars.
+
+The important parts of the code are in the 
+```
+  public void run(String[] args) {
+    io.github.ag88.embtomcatwebdav.App embtcapp = new io.github.ag88.embtomcatwebdav.App();
+    WebDavServer dav = OptFactory.getInstance().getWebDAVserv();
+
+    embtcapp.parseargs(args);
+    dav.loadparams(OptFactory.getInstance().getOpts());
+    dav.runserver();
+  }
+```
+These few calls needs to be run in that order to get the WebDAV server started up properly, 
+and with the parameters properly loaded. 
+
+
+The [parseargs(String[] args)](https://github.com/ag88/embtomcatwebdav/blob/4f1190a06dcb5e1e226c21ebc2d3f63e2151ffe8/src/main/java/io/github/ag88/embtomcatwebdav/App.java#L101) parses the command line using [commons cli](https://commons.apache.org/proper/commons-cli/)
+. If the -c configfile option is specified, the configfile is loaded as well using java [Properties](https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html).
+
+The data is registered with the singleton
+[OptFactory](https://github.com/ag88/embtomcatwebdav/blob/main/src/main/java/io/github/ag88/embtomcatwebdav/opt/OptFactory.java)
+ object.
+
+The [OptFactory](https://github.com/ag88/embtomcatwebdav/blob/main/src/main/java/io/github/ag88/embtomcatwebdav/opt/OptFactory.java) is a singleton object should be accessed with OptFactory.getInstance() method. This is *only* works properly if the main 
+[io.github.ag88.embtomcatwebdav.App](https://github.com/ag88/embtomcatwebdav/blob/main/src/main/java/io/github/ag88/embtomcatwebdav/App.java) object is used.
+
+The [Properties](https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html) are available after the
+[parseargs(String[] args)](https://github.com/ag88/embtomcatwebdav/blob/4f1190a06dcb5e1e226c21ebc2d3f63e2151ffe8/src/main/java/io/github/ag88/embtomcatwebdav/App.java#L101)
+call.  
+The [Properties](https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html) are accessible in the 
+[OptFactory](https://github.com/ag88/embtomcatwebdav/blob/main/src/main/java/io/github/ag88/embtomcatwebdav/opt/OptFactory.java) instance.
+
+
+In the above example, edit ``public void run(String[] args) {`` as follows:
+```
+public void run(String[] args) {
+  io.github.ag88.embtomcatwebdav.App embtcapp = new io.github.ag88.embtomcatwebdav.App();
+  WebDavServer dav = OptFactory.getInstance().getWebDAVserv();
+
+  embtcapp.parseargs(args);
+
+  // this part is added
+  Properties properties = OptFactory.getInstance().getProperties();
+  if (properties != null) {
+    PrintWriter writer = new PrintWriter(new FilterOutputStream(System.out) {@Override
+      public void close() throws IOException {
+        //don't close System.out
+      }
+    });
+    properties.list(writer);
+    writer.flush();
+    writer.close();
+  }
+  // 
+
+  dav.loadparams(OptFactory.getInstance().getOpts());
+  dav.runserver();
+
+}
+```
+sample run
+```
+java -jar myapp-0.0.1-SNAPSHOT-jar-with-dependencies.jar -c configfile.ini
+
+Apr 01, 2023 8:36:05 PM io.github.ag88.embtomcatwebdav.opt.OptFactory loadproperties
+SEVERE: opt: path, invalid value: , replaced with: /path
+Apr 01, 2023 8:36:05 PM io.github.ag88.embtomcatwebdav.opt.OptFactory loadproperties
+SEVERE: opt: basedir, invalid value: , replaced with: /path/tomcat.8082
+-- listing properties --
+basedir=
+path=
+password=pass
+keystorepasswd=
+urlprefix=/webdav
+port=8082
+host=localhost
+digest=true
+realm=myrealm
+quiet=false
+keystorefile=
+user=user
+Apr 01, 2023 8:36:05 PM io.github.ag88.embtomcatwebdav.WebDavServer runserver
+INFO: tomcat basedir: /path/tomcat.8082
+Apr 01, 2023 8:36:05 PM io.github.ag88.embtomcatwebdav.WebDavServer runserver
+INFO: serving path: /path
+Apr 01, 2023 8:36:05 PM io.github.ag88.embtomcatwebdav.WebDavServer runserver
+INFO: Realm name: myrealm
+Apr 01, 2023 8:36:05 PM io.github.ag88.embtomcatwebdav.WebDavServer runserver
+INFO: Auth method: DIGEST
+Apr 01, 2023 8:36:05 PM io.github.ag88.embtomcatwebdav.WebDavServer runserver
+INFO: Webdav servlet running at http://localhost:8082/webdav/
+...
+```
+
+### How to add a new command line parameter/variable in the app
+
+With version v0.4.0, a refactored command line options and config properties processing engine is added, this makes it feasible for apps linking the library to add command line options and config properties in the same app.
+
+This section is an addition to the above 
+[How to access properties from the config file specified by the -c configfile option](Development-Embedding#how-to-access-properties-from-the-config-file-specified-by-the--c-configfile-option)
+section. An example as follows:
+
+Create a class that extends ``io.github.ag88.embtomcatwebdav.opt.Opt``.
+
+```
+import io.github.ag88.embtomcatwebdav.opt.Opt;
+class MyOpt extends Opt {
+  public MyOpt() {
+    this.name = "myopt";
+    this.description = "set myopt";
+    this.defaultval = null;
+    this.opt = "M";
+    this.longopt = "myopt";
+    this.argname = "value";
+    // only 3 classes supported: String, Integer, Boolean
+    this.valclazz = String.class;
+  }
+}
+```
+The option is identified by the name, the rest of the instance variables are inputs to 
+[Commons CLI](https://commons.apache.org/proper/commons-cli/usage.html) to build an 
+[Option](https://commons.apache.org/proper/commons-cli/apidocs/org/apache/commons/cli/Option.html).
+
+The run() method as like the 
+[previous section's](Development-Embedding#how-to-access-properties-from-the-config-file-specified-by-the--c-configfile-option)
+ example is modified as follows:
+```
+public void run(String[] args) {
+  io.github.ag88.embtomcatwebdav.App embtcapp = new io.github.ag88.embtomcatwebdav.App();
+  WebDavServer dav = OptFactory.getInstance().getWebDAVserv();
+
+  MyOpt myopt = new MyOpt();
+  OptFactory.getInstance().addOpt(myopt);
+
+  embtcapp.parseargs(args);
+
+  if (OptFactory.getInstance().getOpt("myopt").getValue() != null) {
+    System.out.println(String.format("opt: %s, value: %s", myopt.getName(),
+      OptFactory.getInstance().getOpt("myopt").getValue().toString()
+      ));
+  }
+
+  dav.loadparams(OptFactory.getInstance().getOpts());
+  dav.runserver();		
+}
+```
+The key is make a new object of ``MyOpt`` and register it with the [OptFactory](https://github.com/ag88/embtomcatwebdav/blob/main/src/main/java/io/github/ag88/embtomcatwebdav/opt/OptFactory.java) singleton object,
+using the [addOpt()](https://github.com/ag88/embtomcatwebdav/blob/4f1190a06dcb5e1e226c21ebc2d3f63e2151ffe8/src/main/java/io/github/ag88/embtomcatwebdav/opt/OptFactory.java#L331) method.
+[OptFactory](https://github.com/ag88/embtomcatwebdav/blob/main/src/main/java/io/github/ag88/embtomcatwebdav/opt/OptFactory.java)
+should be accessed with OptFactory.getInstance() method. 
+This is *only* works properly if the main [io.github.ag88.embtomcatwebdav.App](https://github.com/ag88/embtomcatwebdav/blob/main/src/main/java/io/github/ag88/embtomcatwebdav/App.java) object is used.
+
+Next call 
+[parseargs(String[] args)](https://github.com/ag88/embtomcatwebdav/blob/4f1190a06dcb5e1e226c21ebc2d3f63e2151ffe8/src/main/java/io/github/ag88/embtomcatwebdav/App.java#L101) to parse the command line.
+If the -c configfile option is specified, the configfile is loaded as well using java [Properties](https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html) as well.
+
+A sample run as is as follows
+```
+java -jar myapp-0.0.1-SNAPSHOT-jar-with-dependencies.jar -h
+
+usage: myapp-0.0.1-SNAPSHOT
+ -b,--basedir <basedir>          set basedir, a work folder for tomcat,
+                                 default [current working dir]/tomcat.port
+...
+ -M,--myopt <value>              set myopt
+...
+```
+
+```
+java -jar myapp-0.0.1-SNAPSHOT-jar-with-dependencies.jar -M hello_world
+
+opt: myopt, value: hello_world
+...
+```
+
+The evaluated command line parameter values or property values is accessible in the [OptFactory](https://github.com/ag88/embtomcatwebdav/blob/main/src/main/java/io/github/ag88/embtomcatwebdav/opt/OptFactory.java) singleton object, 
+using the [getOpt()](https://github.com/ag88/embtomcatwebdav/blob/4f1190a06dcb5e1e226c21ebc2d3f63e2151ffe8/src/main/java/io/github/ag88/embtomcatwebdav/opt/OptFactory.java#L359) method, after [parseargs(String[] args)](https://github.com/ag88/embtomcatwebdav/blob/4f1190a06dcb5e1e226c21ebc2d3f63e2151ffe8/src/main/java/io/github/ag88/embtomcatwebdav/App.java#L101) call.  
+The key used for retreval is the *name* instance variable as defined in the [Opt](https://github.com/ag88/embtomcatwebdav/blob/main/src/main/java/io/github/ag88/embtomcatwebdav/opt/Opt.java) object.
+e.g. 
+```
+OptFactory.getInstance().getOpt("myopt").getValue().toString()
+```
+
