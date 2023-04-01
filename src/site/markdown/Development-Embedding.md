@@ -3,16 +3,20 @@
 ## Maven coordinates
 
 This is released to maven central.
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.3.4
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.4.0
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.3.4</version>
+    <version>0.4.0</version>
 </dependency>
 ```
 - v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread. By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
 - v0.3.4 fixed a bug related to race conditions in isRunning() method and runserverfork()
+- v0.4.0 is a a rather major refactored release, this release is released to maven central
+- v0.4.0 added a refactored command line options and config properties processing engine, this makes it feasible 
+  for apps linking the library to add command line options and config properties in the same app.
+
 
 ## Embedding
 
@@ -146,4 +150,4 @@ public class App
 ```
 With the above codes, the wabdav servlet runs at http://localhost:8080/webdav, and your servlet runs at http://localhost:8080/hello , in the same app.
 
-
+Note that in the interest of leaner binaries, WebDavServer drop the JSP container when setting up Tomcat. In addition, various Servlet API 3.0+ java annotations may not be scanned. Hence, mainly POJO java servlets are supported.

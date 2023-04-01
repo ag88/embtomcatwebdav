@@ -15,11 +15,17 @@ Current status: alpha/test
 - Added option to change urlprefix '/webdav' - v0.3.1
 - Added loading of options from properties file, and option to generate a default config file - v0.3.2
 - Added a dialog to generate DIGEST passwords that can be used in the config file. - v0.3.2
-- v0.3.3 various bug fixes
 - v0.3.3 is a rather major bugfix release, this release is released to maven central
 - v0.3.3 this app can be embedded, see the junit test cases to see how that is done
 - v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a separate thread.
 - v0.3.4 fixed a bug related to race conditions in isRunning() method and runserverfork()
+- v0.4.0 is a a rather major refactored release, this release is released to maven central
+- v0.4.0 added a refactored command line options and config properties processing engine, this makes it feasible 
+  for apps linking the library to add command line options and config properties in the same app.
+- v0.4.0 use console.readPassword() to avoid displaying the password in the console during entry. 
+  This is more secure in case there is a crowd nearby ;)  
+  Note that System.console() isn't available in all situations, e.g. in various IDEs,
+  in that case it falls back to reading from System.in, in which case character echo can't be avoided.
 - It requires a folder 'tomcat.port' for the embedded Tomcat instance, if the folder isn't present,
 it is created.
 
@@ -32,16 +38,16 @@ mvn package
 ## Run
 
 ```
-java -jar embtomcatwebdav-0.3.4.jar
+java -jar embtomcatwebdav-0.4.0.jar
 ```
-Note that if you build from source the file name is embtomcatwebdav-0.3.4-jar-with-dependencies.jar, in target/ folder.
+Note that if you build from source the file name is embtomcatwebdav-0.4.0-jar-with-dependencies.jar, in target/ folder.
 
 ## usage 
 
 ```
-java -jar embtomcatwebdav-0.3.4.jar -h
+java -jar embtomcatwebdav-0.4.0.jar -h
 
-usage: embtomcatwebdav-0.3.4
+usage: embtomcatwebdav-0.4.0
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
  -c,--conf <configfile>          load properties config file
@@ -113,7 +119,7 @@ Note that keytool is normally bundled with JDK distributions, it is not part of 
 Next run the app with -S option and the keystore file. If the keystore password is not
 specified on the command line, it would prompt for it. e.g.
 ```
-java -jar embtomcatwebdav-0.3.4.jar -p 8443 -S keystorefile.jkf 
+java -jar embtomcatwebdav-0.4.0.jar -p 8443 -S keystorefile.jkf 
 ```
 Note that when you run the app with the -S keystorefile.jkf option, it copies the keystore file into the 'tomcat.port' work folder, this is needed for the app to access the keystore file.
 
@@ -131,18 +137,19 @@ There are rather tricky ways to be your own CA, make certs. But it may involve i
 ## Development/Embedding
 
 This release is released to maven central
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.3.4
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.4.0
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.3.4</version>
+    <version>0.4.0</version>
 </dependency>
 ```
 v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread.
 By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
 
-v0.3.4 fixed a bug related to race conditions in isRunning() method and runserverfork()
+v0.3.4 fixed a bug related to race conditions in isRunning() method and runserverfork().
+use this or later releases to avoid the runserverfork() bug.
 
 This app can be embedded, to see how this can be done, take a look at the unit tests in
 [src/test/java](src/test/java/io/github/ag88/embtomcatwebdav/WebDavServerTest.java).
