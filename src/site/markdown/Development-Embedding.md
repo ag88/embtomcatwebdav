@@ -168,13 +168,11 @@ import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 
 public class App {
 
-  io.github.ag88.embtomcatwebdav.App embtcapp;
-
   public App() {
-    embtcapp = new io.github.ag88.embtomcatwebdav.App();
   }
 
   public void run(String[] args) {
+    io.github.ag88.embtomcatwebdav.App embtcapp = new io.github.ag88.embtomcatwebdav.App();
     WebDavServer dav = OptFactory.getInstance().getWebDAVserv();
 
     embtcapp.parseargs(args);
@@ -220,6 +218,7 @@ With a few lines of codes above, you get a *full* app as like the distributed re
 The important parts of the code are in the 
 ```
   public void run(String[] args) {
+    io.github.ag88.embtomcatwebdav.App embtcapp = new io.github.ag88.embtomcatwebdav.App();
     WebDavServer dav = OptFactory.getInstance().getWebDAVserv();
 
     embtcapp.parseargs(args);
@@ -251,6 +250,7 @@ The [Properties](https://docs.oracle.com/javase/8/docs/api/java/util/Properties.
 In the above example, edit ``public void run(String[] args) {`` as follows:
 ```
 public void run(String[] args) {
+  io.github.ag88.embtomcatwebdav.App embtcapp = new io.github.ag88.embtomcatwebdav.App();
   WebDavServer dav = OptFactory.getInstance().getWebDAVserv();
 
   embtcapp.parseargs(args);
@@ -342,6 +342,7 @@ The run() method as like the
  example is modified as follows:
 ```
 public void run(String[] args) {
+  io.github.ag88.embtomcatwebdav.App embtcapp = new io.github.ag88.embtomcatwebdav.App();
   WebDavServer dav = OptFactory.getInstance().getWebDAVserv();
 
   MyOpt myopt = new MyOpt();
