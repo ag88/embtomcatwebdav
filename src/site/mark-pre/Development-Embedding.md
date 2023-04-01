@@ -13,6 +13,10 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/${project.v
 ```
 - v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread. By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
 - v0.3.4 fixed a bug related to race conditions in isRunning() method and runserverfork()
+- v0.4.0 is a a rather major refactored release, this release is released to maven central
+- v0.4.0 added a refactored command line options and config properties processing engine, this makes it feasible 
+  for apps linking the library to add command line options and config properties in the same app.
+
 
 ## Embedding
 

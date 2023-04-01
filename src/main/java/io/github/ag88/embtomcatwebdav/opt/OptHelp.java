@@ -18,6 +18,7 @@ package io.github.ag88.embtomcatwebdav.opt;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
@@ -60,7 +61,8 @@ public class OptHelp extends Opt {
 		HelpFormatter formatter = new HelpFormatter();
 		StringBuilder sb = new StringBuilder(100);
 		sb.append(System.lineSeparator());
-		sb.append("Copyright (C) 2023 Andrew Goh");
+		int year = LocalDate.now().getYear();
+		sb.append(String.format("Copyright (C) %d Andrew Goh", year));
 		sb.append(System.lineSeparator());
 		sb.append(System.lineSeparator());
 		sb.append("Licensed under the Apache License, Version 2.0");
