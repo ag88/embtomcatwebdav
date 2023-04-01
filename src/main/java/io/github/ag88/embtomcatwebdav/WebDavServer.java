@@ -14,7 +14,6 @@
    limitations under the License.
  */
 
-
 package io.github.ag88.embtomcatwebdav;
 
 import java.io.BufferedReader;
@@ -96,12 +95,10 @@ import io.github.ag88.embtomcatwebdav.opt.OptUser;
  * The parameters required to start the Tomcat server and WebDAV servlet are maintained as 
  * instance variables in this class.<p>
  * 
- * Normally, this class's {@link #main(String[])} is the main entry point of this App.<br>
- * {@link #main(String[])} in turns calls {@link #run(String[])} which in turns calls a private method
- * to process command line parameters, and when done, calls {@link #runserver()} which starts the Tomcat
- * server/instance and host the WebDAV servlet.<p>
+ * Normally, {@link App} class's  is the main entry point of this App. 
+ * See {@link App} class for more detail.<p>
  * 
- * To use this class as an embedded application, first call the various getter/setter methods to setup
+ * To use this class in an embedded application, first call the various getter/setter methods to setup
  * parameters for the app.<p>
  * 
  * Then call {@link #runserver()} which starts the Tomcat server/instance and host the WebDAV servlet.

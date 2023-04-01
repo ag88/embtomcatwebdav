@@ -7,7 +7,12 @@ import io.github.ag88.embtomcatwebdav.WebDavServer;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class Prop.
+ * This class abstracts the configs for command line options and config properties.<p>
+ * 
+ * This class abstracts the command line options and properties maintained
+ *  in config (java properties) files.
+ * It constitute the configuration for those options.
+ * 
  */
 public class Opt implements Comparable<Opt> {
 	
@@ -409,7 +414,11 @@ public class Opt implements Comparable<Opt> {
 	 */
 	
 	/**
-	 * Gets the command line option, when cmdproc is set
+	 * Gets the command line option, to be override.
+	 * 
+	 * This method returns the {@link Option} if {@link #isCmdproc()} is set.
+	 * If {@link #isCmdproc()} is set, classes that inherit this should override this 
+	 * method and provide an implementation
 	 *
 	 * @return the option
 	 */
@@ -418,17 +427,27 @@ public class Opt implements Comparable<Opt> {
 	}
 			
 	/**
-	 * Process the command line options, when cmdproc is set
+	 * Process the command line arguments, to be override.
+	 * 
+	 * This method process the command line arguments if {@link #isCmdproc()} is set.
+	 * If {@link #isCmdproc()} is set, classes that inherit this should override this 
+	 * method and provide an implementation
 	 *
 	 * @param cmd the cmd
+	 * @param objects the objects
 	 */
 	public void process(CommandLine cmd, Object... objects ) {		
 	}
 		
 	
 	/**
-	 * Checks if is valid.
+	 * Checks if is valid, to be override.
 	 *
+	 * This method validate the variable loaded from properties file or entered via 
+	 * command line if {@link #isValidate()} is set.
+	 * If {@link #isValidate()} is set, classes that inherit this should override this 
+	 * method and provide an implementation
+	 *  
 	 * @param object the object
 	 * @return true, if is valid
 	 */
@@ -437,7 +456,14 @@ public class Opt implements Comparable<Opt> {
 	}
 	
 	/**
-	 * Replace.
+	 * Replace, to be override.
+	 * 
+	 * This method returns a replacement for the variable loaded from properties file or entered via 
+	 * command line if {@link #isValidate()} is set. The variable is passed in the object parameter 
+	 * in this method. Normally a {@link java.lang.String}.
+	 * 
+	 * If {@link #isReplace()} is set, classes that inherit this should override this 
+	 * method and provide an implementation
 	 *
 	 * @param object the object
 	 * @return the replaced object 

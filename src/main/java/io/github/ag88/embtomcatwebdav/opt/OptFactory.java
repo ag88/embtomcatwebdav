@@ -1,3 +1,19 @@
+/*
+ Copyright 2023 Andrew Goh http://github.com/ag88
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package io.github.ag88.embtomcatwebdav.opt;
 
 import java.io.BufferedReader;
@@ -23,6 +39,28 @@ import org.apache.juli.logging.LogFactory;
 import io.github.ag88.embtomcatwebdav.App;
 import io.github.ag88.embtomcatwebdav.WebDavServer;
 
+/**
+* This class is a singleton object that host the options and variables for the App.<p>
+* 
+* The instance object should be accessed using {@link #getInstance()} method.<p>
+* 
+* In particular it maintain a {@link Map} of {@link Opt} objects which constitute
+* the command line parameters and properties maintained in config (java properties) files.<p>
+* 
+* The {@link Opt} objects need to be registered with this instance using {@link #addOpt(Opt)} option.
+* The default {@link Opt} objects needs to registered by calling {@link #registeropts()}. 
+* That is done by the {@link App} when the app is started.<p>
+* 
+* If a config file is loaded using {@link #loadconfigprop(String)}, 
+* this class also maintain a {@link java.util.Properties} instance variable.<br> 
+* That can be accessed via {@link #getProperties()};<p>
+* 
+* Some auxillary objects that can be set in this class includes
+* {@link #getApp()} and {@link #getWebDAVserv()} objects. Those objects are setup 
+* by {@link App} object.
+* 
+* 
+*/
 public class OptFactory {
 
 	Log log = LogFactory.getLog(OptFactory.class);
@@ -402,7 +440,7 @@ public class OptFactory {
 	 *
 	 * @return the wdav
 	 */
-	public WebDavServer getWdav() {
+	public WebDavServer getWebDAVserv() {
 		return wdav;
 	}
 
@@ -411,7 +449,7 @@ public class OptFactory {
 	 *
 	 * @param wdav the new wdav
 	 */
-	public void setWdav(WebDavServer wdav) {
+	public void setWebDAVserv(WebDavServer wdav) {
 		this.wdav = wdav;
 	}
 
