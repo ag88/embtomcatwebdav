@@ -13,8 +13,8 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/${project.v
 ```
 - v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread. By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
 - v0.3.4 fixed a bug related to race conditions in isRunning() method and runserverfork()
-- v0.4.0 is a a rather major refactored release, this release is released to maven central
-- v0.4.0 added a refactored command line options and config properties processing engine, this makes it feasible 
+- v0.4.1 is a a rather major refactored release, this release is released to maven central
+- v0.4.1 added a refactored command line options and config properties processing engine, this makes it feasible 
   for apps linking the library to add command line options and config properties in the same app.
 
 
@@ -154,7 +154,7 @@ Note that in the interest of leaner binaries, WebDavServer drop the JSP containe
 
 ### How to access properties from the config file specified by the -c configfile option
 
-With version v0.4.0, a refactored command line options and config properties processing engine is added, this makes it feasible for apps linking the library to add command line options and config properties in the same app.
+With version v0.4.1, a refactored command line options and config properties processing engine is added, this makes it feasible for apps linking the library to add command line options and config properties in the same app.
 
 An example is as follows:
 ```
@@ -310,7 +310,7 @@ INFO: Webdav servlet running at http://localhost:8082/webdav/
 
 ### How to add a new command line parameter/variable in the app
 
-With version v0.4.0, a refactored command line options and config properties processing engine is added, this makes it feasible for apps linking the library to add command line options and config properties in the same app.
+With version v0.4.1, a refactored command line options and config properties processing engine is added, this makes it feasible for apps linking the library to add command line options and config properties in the same app.
 
 This section is an addition to the above 
 [How to access properties from the config file specified by the -c configfile option](Development-Embedding#how-to-access-properties-from-the-config-file-specified-by-the--c-configfile-option)
