@@ -69,10 +69,11 @@ public class App {
 	WebDavServer wdav;
 
 	public App() {
-		wdav = new WebDavServer();		
+		wdav = new WebDavServer();
 		OptFactory.getInstance().registeropts();
 		OptFactory.getInstance().setWebDAVserv(wdav);
 		OptFactory.getInstance().setApp(this);
+		
 	}
 	
 	
@@ -87,6 +88,7 @@ public class App {
 	 * @param args the args
 	 */
 	public void run(String[] args) {
+		
 		parseargs(args);
 		//OptFactory.getInstance().printOpts();
 		wdav.loadparams(OptFactory.getInstance().getOpts());

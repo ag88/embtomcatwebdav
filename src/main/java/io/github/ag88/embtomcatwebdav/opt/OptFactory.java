@@ -120,6 +120,7 @@ public class OptFactory {
 		addOpt(new OptKeystorePasswd());
 		addOpt(new OptSecure());
 		addOpt(new OptQuiet());
+		addOpt(new OptUploadServ());
 		addOpt(new OptGenpasswd());
 	}
 

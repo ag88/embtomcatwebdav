@@ -36,7 +36,7 @@ public class OptGenpasswd extends Opt {
 		this.cmdproc = true; //process command
 		this.type = PropType.CLI;
 		this.hasarg = false;
-		this.priority = 25;
+		this.priority = 30;
 	}
 	
 	@Override

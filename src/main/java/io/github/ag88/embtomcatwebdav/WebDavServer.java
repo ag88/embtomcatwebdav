@@ -505,7 +505,8 @@ public class WebDavServer
 		
 		this.keystorefile = (String) opts.get("keystorefile").getValue();
 		this.keystorepasswd = (String) opts.get("keystorepasswd").getValue();
-		this.quiet = ((Boolean) opts.get("quiet").getValue()).booleanValue();		
+		this.quiet = ((Boolean) opts.get("quiet").getValue()).booleanValue();
+		this.uploadservlet = ((Boolean) opts.get("uploadservlet").getValue()).booleanValue();
 				
 	}
 		
