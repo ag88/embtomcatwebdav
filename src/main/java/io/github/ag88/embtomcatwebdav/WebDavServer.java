@@ -311,9 +311,11 @@ public class WebDavServer
 			}			
 			
 			Servlet servlet;
-			if(uploadservlet)
+			if(uploadservlet) {
 				servlet = (Servlet) new WDavUploadServlet();
-			else
+				if(!quiet)
+					log.info("running Upload servlet");
+			} else
 				servlet = (Servlet) new WebdavServlet();
 			
 			Wrapper ws = Tomcat.addServlet(context, "webdav", servlet);			
@@ -327,7 +329,7 @@ public class WebDavServer
 				urlprefix = urlprefix.concat("/*");
 			else
 				urlprefix = urlprefix.concat("*");
-			
+						
 			context.addServletMappingDecoded(urlprefix, "webdav");
 			context.setSessionTimeout(30);
 			
