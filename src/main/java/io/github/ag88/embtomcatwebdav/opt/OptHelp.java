@@ -57,22 +57,27 @@ public class OptHelp extends Opt {
 		App app = (App) objects[0];
 		//WebDavServer wdav = (WebDavServer) objects[1];
 		Options options = (Options) objects[2];
-				
+		Map<String, String> mkv = app.readManifest();
+		
 		HelpFormatter formatter = new HelpFormatter();
 		StringBuilder sb = new StringBuilder(100);
-		sb.append(System.lineSeparator());
-		int year = LocalDate.now().getYear();
-		sb.append(String.format("Copyright (C) %d Andrew Goh", year));
-		sb.append(System.lineSeparator());
-		sb.append(System.lineSeparator());
-		sb.append("Licensed under the Apache License, Version 2.0");
-		sb.append(System.lineSeparator());
-		sb.append("http://www.apache.org/licenses/LICENSE-2.0");
-		sb.append(System.lineSeparator());
-		sb.append(System.lineSeparator());
-		sb.append("Project web: https://github.com/ag88/embtomcatwebdav");		
-		
-		Map<String, String> mkv = app.readManifest();
+		String helpfoot1 = mkv.get("helpfoot1");
+		if(helpfoot1 != null) {			
+			int year = LocalDate.now().getYear();
+			helpfoot1 = helpfoot1.replaceAll("#n", System.lineSeparator());
+			helpfoot1 = helpfoot1.replaceAll("#YEAR", Integer.toString(year));
+			sb.append(helpfoot1);
+		}
+		String helpfoot2 = mkv.get("helpfoot2");
+		if(helpfoot2 != null) {			
+			helpfoot2 = helpfoot2.replaceAll("#n", System.lineSeparator());
+			sb.append(helpfoot2);
+		}
+		String helpfoot3 = mkv.get("helpfoot3");
+		if(helpfoot3 != null) {			
+			helpfoot3 = helpfoot3.replaceAll("#n", System.lineSeparator());
+			sb.append(helpfoot3);
+		}
 		String name;
 		if(mkv.get("artifactId") != null) {
 			name = mkv.get("artifactId").concat("-").concat(mkv.get("version"));			

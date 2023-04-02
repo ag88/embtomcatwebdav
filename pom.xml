@@ -5,7 +5,7 @@
 
 	<groupId>io.github.ag88</groupId>
 	<artifactId>embtomcatwebdav</artifactId>
-	<version>0.4.0</version>
+	<version>0.4.1</version>
 	<packaging>jar</packaging>
 
 	<name>embtomcatwebdav</name>
@@ -221,6 +221,9 @@
 									<artifactId>${project.artifactId}</artifactId>
 									<groupId>${project.groupId}</groupId>
 									<version>${project.version}</version>
+									<helpfoot1>#nCopyright (C) #YEAR Andrew Goh#n</helpfoot1>
+									<helpfoot2>#nLicensed under the Apache License, Version 2.0#nhttp://www.apache.org/licenses/LICENSE-2.0#n</helpfoot2>
+									<helpfoot3>#nProject website: https://github.com/ag88/embtomcatwebdav</helpfoot3>
 								</manifestEntries>
 							</archive>
 						</configuration>

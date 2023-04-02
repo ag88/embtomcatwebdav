@@ -19,10 +19,10 @@ Current status: alpha/test
 - v0.3.3 this app can be embedded, see the junit test cases to see how that is done
 - v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a separate thread.
 - v0.3.4 fixed a bug related to race conditions in isRunning() method and runserverfork()
-- v0.4.0 is a a rather major refactored release, this release is released to maven central
-- v0.4.0 added a refactored command line options and config properties processing engine, this makes it feasible 
+- v0.4.1 is a a rather major refactored release, this release is released to maven central
+- v0.4.1 added a refactored command line options and config properties processing engine, this makes it feasible 
   for apps linking the library to add command line options and config properties in the same app.
-- v0.4.0 use console.readPassword() to avoid displaying the password in the console during entry. 
+- v0.4.1 use console.readPassword() to avoid displaying the password in the console during entry. 
   This is more secure in case there is a crowd nearby ;)  
   Note that System.console() isn't available in all situations, e.g. in various IDEs,
   in that case it falls back to reading from System.in, in which case character echo can't be avoided.
