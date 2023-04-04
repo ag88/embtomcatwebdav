@@ -66,6 +66,7 @@ public class WDavUploadServlet extends WebdavServlet {
 			session.setAttribute("nocookies", Boolean.TRUE);
 			String encodedURL = response.encodeRedirectURL(request.getRequestURL().toString());
 			response.sendRedirect(encodedURL);
+			return;
 		} else {			
 			boolean nocookies;
 			if(session.getAttribute("nocookies") == null)
@@ -76,8 +77,8 @@ public class WDavUploadServlet extends WebdavServlet {
 				Cookie[] cookies = request.getCookies();
 				if (cookies != null)
 					for (Cookie c : cookies) {
-						if(c.getName().equals("JSESSIONID") &&
-							c.getValue().equals(session.getId())) {
+						if(c.getName().equals("JSESSIONID")) { 
+							//&&c.getValue().equals(session.getId())) {
 							nocookies = false;
 							break;
 						}
@@ -511,7 +512,7 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append("<form action=\"" + prefix  + directoryWebappPath + "\"" +
         		" enctype=\"multipart/form-data\" method=post>");        
         sb.append("<label for=\"files\">Select file:</label>\n");
-        sb.append("<input type=\"file\" id=\"files\" name=\"files\" single><br><br>\n");        
+        sb.append("<input type=\"file\" id=\"files\" name=\"files\" multiple><br><br>\n");        
         sb.append("<input type=\"submit\" value=\"upload\">\n");
         sb.append("</form><br>\n");
         
