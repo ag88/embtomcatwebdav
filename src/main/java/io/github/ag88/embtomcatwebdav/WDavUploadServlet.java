@@ -67,7 +67,11 @@ public class WDavUploadServlet extends WebdavServlet {
 			String encodedURL = response.encodeRedirectURL(request.getRequestURL().toString());
 			response.sendRedirect(encodedURL);
 		} else {			
-			boolean nocookies = (Boolean) session.getAttribute("nocookies");
+			boolean nocookies;
+			if(session.getAttribute("nocookies") == null)
+				nocookies = true;
+			else
+				nocookies = (Boolean) session.getAttribute("nocookies");
 			if (nocookies) {
 				Cookie[] cookies = request.getCookies();
 				if (cookies != null)
@@ -210,15 +214,22 @@ public class WDavUploadServlet extends WebdavServlet {
 					
 					InputStream stream = item.openStream();
 					if (!item.isFormField()) { // is file
-						OutputStream target = Files.newOutputStream(dirpath.resolve(filename));
-					    byte[] buf = new byte[8192];
-					    int length;
-					    while ((length = stream.read(buf)) != -1) {
-					        target.write(buf, 0, length);
-					    }
-					    target.flush();
-					    target.close();
-					    stream.close();
+						try {
+							OutputStream target = Files.newOutputStream(dirpath.resolve(filename));
+							byte[] buf = new byte[8192];
+							int length;
+							while ((length = stream.read(buf)) != -1) {
+							    target.write(buf, 0, length);
+							}
+							target.flush();
+							target.close();
+							stream.close();
+						} catch (IOException e) {
+							String msg = errormsg(dirpath.toString(), filename, "error writing file", e);
+							messages.add(new LogRecord(Level.SEVERE, msg));
+							log.error(msg);
+							continue;
+						}
 													
 						messages.add(new LogRecord(Level.INFO, "name: ".concat(name)));
 						messages.add(new LogRecord(Level.INFO, "uploaded filename: ".concat(filename)));
@@ -235,16 +246,20 @@ public class WDavUploadServlet extends WebdavServlet {
 				response.sendRedirect(request.getRequestURL().toString());
 				// doGet(request, response);
 	        } else {
-	        	String overwrites = request.getParameter("overwrite");
-	        	if(overwrites != null) {
-	        		overwrite = Boolean.parseBoolean(overwrites);
-	        		session.setAttribute("overwrite", Boolean.valueOf(overwrite));
-	        	}  	        	
+	        	log.error(String.format("directory %s do not exist", resource.getCanonicalPath()));
 	        	doGet(request, response);
 	        }	        		        
 
-		} else 	
-			doGet(request, response);
+		} else {
+        	String overwrites = request.getParameter("overwrite");
+        	if(overwrites != null) {
+        		overwrite = Boolean.parseBoolean(overwrites);
+        		session.setAttribute("overwrite", Boolean.valueOf(overwrite));
+        	}  	        	
+        	response.sendRedirect(request.getRequestURL().toString());
+			//doGet(request, response);
+		}
+			
 	}
 
 	
@@ -476,6 +491,22 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append("server path: " + prefix + directoryWebappPath + "<br><br>\n");
         sb.append("request.pathinfo: " + request.getPathInfo() + "<br><br>\n");        
         sb.append("canonnical path: " + resource.getCanonicalPath() + "<br><br>\n");
+        
+        sb.append("<form action=\"" + prefix  + directoryWebappPath + "\" + method=post>");
+        sb.append("<label>Overwrite</label><br>\n");
+        boolean overwrite = false;
+        if(request.getSession().getAttribute("overwrite") != null)
+        	overwrite = (Boolean) request.getSession().getAttribute("overwrite");
+        sb.append("<input type=\"radio\" id=\"false\" name=\"overwrite\" value=\"false\" ");
+        sb.append(overwrite ? "" : "checked");
+        sb.append(">\n");
+        sb.append("<label for=\"false\">false</label><br>\n");
+        sb.append("<input type=\"radio\" id=\"true\" name=\"overwrite\" value=\"true\" ");
+        sb.append(overwrite ? "checked" : "");
+        sb.append(">\n");        
+        sb.append("<label for=\"true\">true</label><br>");
+        sb.append("<input type=\"submit\" value=\"update\">\n");        
+        sb.append("</form><br>\n");
         
         sb.append("<form action=\"" + prefix  + directoryWebappPath + "\"" +
         		" enctype=\"multipart/form-data\" method=post>");        
