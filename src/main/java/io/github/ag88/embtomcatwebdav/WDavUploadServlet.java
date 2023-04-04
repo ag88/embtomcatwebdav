@@ -75,21 +75,18 @@ public class WDavUploadServlet extends WebdavServlet {
 				        */
 				        sb.append("<head>\r\n");
 				        sb.append("<title>");
-				        sb.append("Enable (sessionn) cookies");
+				        sb.append("Enable (session) cookies");
 				        sb.append("</title>\r\n");
 				        sb.append("<style>");
 				        sb.append(org.apache.catalina.util.TomcatCSS.TOMCAT_CSS);
 				        sb.append("</style> ");
 				        sb.append("</head>\r\n");
 				        sb.append("<body>\n");
-				        sb.append("<h1>Please enable session cookies for this website/app</h1>\n\n");
+				        sb.append("<h1>Please enable session cookies for this app/website</h1>\n\n");
 				        sb.append("This website / app requires (session) cookies to orderly function.  ");
 				        sb.append("It does not track as the data is normally cleared when the browser is closed.<br>");
 				        sb.append("It is also required as it is mainly to maintain a session id, ");
-				        sb.append("which partly alleviate ");
-				        sb.append("<a href=\"https://owasp.org/www-community/attacks/csrf\">");
-				        sb.append("CSRF</a> attacks, though it won't fully prevent that. ");
-				        sb.append("It is simply worse(or worst) without the session cookies.<br><br>");
+				        sb.append("for more secure functioning of the app/website.<br><br>");
 				        sb.append("It is adequate to enable cookies in your browser for this site/app ");
 				        sb.append("that is deleted when the browser is closed. Or to simply enable cookies for this website.<br>");
 				        sb.append("</body></html>");
@@ -353,6 +350,8 @@ public class WDavUploadServlet extends WebdavServlet {
         String prefix = request.getServletPath();
         sb.append("<h2>Upload File</h2>");
         sb.append("server path: " + prefix + directoryWebappPath + "<br><br>\n");
+        sb.append("request.pathinfo: " + request.getPathInfo() + "<br><br>\n");        
+        sb.append("canonnical path: " + resource.getCanonicalPath() + "<br><br>\n");
         
         sb.append("<form action=\"" + prefix  + directoryWebappPath + "\"" +
         		" enctype=\"multipart/form-data\" method=post>");        
