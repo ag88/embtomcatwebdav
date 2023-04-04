@@ -7,11 +7,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
@@ -33,14 +41,21 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.util.Streams;
 import org.apache.tomcat.util.security.Escape;
 
+import io.github.ag88.embtomcatwebdav.util.DefFilePathNameValidator;
+import io.github.ag88.embtomcatwebdav.util.FilePathNameValidator;
+
 public class WDavUploadServlet extends WebdavServlet {
 	
 	Log log = LogFactory.getLog(WDavUploadServlet.class);
-
+		
 	public WDavUploadServlet() {
 		super();
 	}
-		
+	
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+	}
 	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -110,64 +125,173 @@ public class WDavUploadServlet extends WebdavServlet {
 			throws IOException, ServletException {
 		log.info(request.getContentType());
 		
+		boolean overwrite = false;		
+
 		HttpSession session = request.getSession();
-		if(session.isNew())
+		if (session.isNew())
 			log.warn("session is new ".concat(session.getId()));
-		if(session.isNew()) {
-			//String encodedURL = response.encodeRedirectURL(request.getRequestURL().toString());
-			//response.sendRedirect(encodedURL);
+		if (session.isNew()) {
+			// String encodedURL =
+			// response.encodeRedirectURL(request.getRequestURL().toString());
+			// response.sendRedirect(encodedURL);
 			response.sendRedirect(request.getRequestURL().toString());
-		}			
+		}
 		
-		if(ServletFileUpload.isMultipartContent(request)) {
+		if(request.getSession().getAttribute("overwrite") != null) 
+			overwrite = (Boolean) request.getSession().getAttribute("overwrite");
+
+		if (ServletFileUpload.isMultipartContent(request)) {
+
+			// Identify the requested resource path
+			String path = getRelativePath(request, true);
+			if (path.length() == 0) {
+				// Context root redirect
+				doDirectoryRedirect(request, response);
+				return;
+			}
+
+			WebResource resource = resources.getResource(path);
+			//String prefix = request.getServletPath();
+			//String pathinfo = request.getPathInfo();
+			// sb.append("server path: " + prefix + directoryWebappPath + "<br><br>\n");
+			// sb.append("request.pathinfo: " + request.getPathInfo() + "<br><br>\n");
+			// sb.append("canonnical path: " + resource.getCanonicalPath() + "<br><br>\n");
 			
-			/*
-			BufferedReader reader = request.getReader();
-			StringBuilder sb = new StringBuilder(1024);
-			String line = null;
-			while((line = reader.readLine())!= null) {
-				sb.append(line);
-				sb.append(System.lineSeparator());
-			}
-			log.info(sb.toString());
-			*/
-						
-			ArrayList<LogRecord> messages = new ArrayList<LogRecord>(4);
-			ServletFileUpload upload = new ServletFileUpload();
-			FileItemIterator iterStream = upload.getItemIterator(request);
-			while (iterStream.hasNext()) {
-			    FileItemStream item = iterStream.next();
-			    String name = item.getFieldName();
-			    String filename = item.getName();
-			    InputStream stream = item.openStream();
-			    if (!item.isFormField()) { //is file			    	
-			    	StringBuilder sb = new StringBuilder(1024);
-			    	BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			    	String line = null;
-			    	while((line = reader.readLine())!=null) {
-			    		sb.append(line);
-			    		sb.append("<br>");
-			    	}
-			    	messages.add(new LogRecord(Level.INFO, "name: ".concat(name)));
-			    	messages.add(new LogRecord(Level.INFO, "filename: ".concat(filename)));
-			    	messages.add(new LogRecord(Level.INFO, "contents:<br>".concat(sb.toString())));
-			    	log.info(sb.toString());
-			    } else {
-			        String formFieldValue = Streams.asString(stream);			        
-			        messages.add(new LogRecord(Level.INFO, "field: ".concat(name)));
-			        messages.add(new LogRecord(Level.INFO, "value: ".concat(formFieldValue)));
-			        log.info(formFieldValue);
-			    }
-			}
-			session.setAttribute("msgupload", messages);
-						
-			response.sendRedirect(request.getRequestURL().toString());
-			//doGet(request, response);
+			if (resource.exists() && resource.isDirectory()) {
+				
+				ArrayList<LogRecord> messages = new ArrayList<LogRecord>(4);
+				ServletFileUpload upload = new ServletFileUpload();
+				FileItemIterator iterStream = upload.getItemIterator(request);
+				while (iterStream.hasNext()) {
+					FileItemStream item = iterStream.next();
+					String name = item.getFieldName();
+					String filename = item.getName();
+
+					// validate filename
+					FilePathNameValidator validator = new DefFilePathNameValidator();
+					validator.setReadonly(false);
+					if(!validator.isValidFilename(filename, messages)) {
+						dolog(messages);
+						continue;
+					}
+
+					// validate path, filename				
+					Path dirpath = null;
+					try {
+						String dir = resource.getCanonicalPath();
+						dirpath = Paths.get(dir);
+					} catch (Exception e) {
+						String errmsg = errormsg(dirpath.toString(), filename, "Paths.get(dir)", e);
+						LogRecord lr = new LogRecord(Level.SEVERE, errmsg);
+						messages.add(lr);
+						log.error(errmsg);
+						continue;
+					}
+					
+					if(dirpath == null || !validator.isValidPathname(dirpath, filename, messages)) {
+						if(dirpath == null) {
+							LogRecord lr = new LogRecord(Level.SEVERE, "basepath is null");
+							messages.add(lr);
+							log.error("basepath is null");
+						}
+						dolog(messages);
+						continue;
+					}
+					
+					if(Files.exists(dirpath.resolve(filename))) {
+						if(! overwrite) {
+							LogRecord lr = new LogRecord(Level.WARNING, 
+								String.format("file %s exists, not overwriting", filename));
+							messages.add(lr);
+							log.warn(String.format("file %s exists, not overwriting", dirpath.resolve(filename)));							
+							continue;
+						}
+					}
+					
+					InputStream stream = item.openStream();
+					if (!item.isFormField()) { // is file
+						OutputStream target = Files.newOutputStream(dirpath.resolve(filename));
+					    byte[] buf = new byte[8192];
+					    int length;
+					    while ((length = stream.read(buf)) != -1) {
+					        target.write(buf, 0, length);
+					    }
+					    target.flush();
+					    target.close();
+					    stream.close();
+													
+						messages.add(new LogRecord(Level.INFO, "name: ".concat(name)));
+						messages.add(new LogRecord(Level.INFO, "uploaded filename: ".concat(filename)));
+						log.info("uploaded filename:".concat(filename));
+					} else {
+						String formFieldValue = Streams.asString(stream);
+						messages.add(new LogRecord(Level.INFO, "field: ".concat(name)));
+						messages.add(new LogRecord(Level.INFO, "value: ".concat(formFieldValue)));
+						log.info(formFieldValue);
+					}
+				}
+				session.setAttribute("msgupload", messages);
+
+				response.sendRedirect(request.getRequestURL().toString());
+				// doGet(request, response);
+	        } else {
+	        	String overwrites = request.getParameter("overwrite");
+	        	if(overwrites != null) {
+	        		overwrite = Boolean.parseBoolean(overwrites);
+	        		session.setAttribute("overwrite", Boolean.valueOf(overwrite));
+	        	}  	        	
+	        	doGet(request, response);
+	        }	        		        
+
 		} else 	
 			doGet(request, response);
 	}
 
 	
+    private void doDirectoryRedirect(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        StringBuilder location = new StringBuilder(request.getRequestURI());
+        location.append('/');
+        if (request.getQueryString() != null) {
+            location.append('?');
+            location.append(request.getQueryString());
+        }
+        // Avoid protocol relative redirects
+        while (location.length() > 1 && location.charAt(1) == '/') {
+            location.deleteCharAt(0);
+        }
+        response.sendRedirect(response.encodeRedirectURL(location.toString()));
+    }
+    
+	private String errormsg(String basepath, String filename, String message, Exception e) {
+		StringBuilder sb = new StringBuilder(100);
+		sb.append("invalid file path: ");
+		sb.append(basepath);
+		sb.append(", ");
+		sb.append(filename);
+		sb.append(System.lineSeparator());
+		if(message != null) {
+			sb.append(message);
+			sb.append(System.lineSeparator());
+		}
+		sb.append(e.getMessage());
+		sb.append(System.lineSeparator());
+		sb.append(e.getStackTrace());
+		return sb.toString();
+	}
+	
+	private void dolog(List<LogRecord> messages) {
+		for(LogRecord lr : messages) {
+			if(lr.getLevel().equals(Level.SEVERE))
+				log.error(lr.getMessage());
+			else if (lr.getLevel().equals(Level.WARNING)) 
+				log.warn(lr.getMessage());			
+			else if (lr.getLevel().equals(Level.INFO))
+				log.info(lr.getMessage());
+		}
+	}
+
+    
 	@Override
 	protected InputStream renderHtml(HttpServletRequest request, String contextPath, WebResource resource,
 			String encoding) throws IOException {
