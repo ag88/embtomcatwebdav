@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
@@ -562,23 +563,23 @@ public class WDavUploadServlet extends WebdavServlet {
 
         if (showServerInfo) {
             sb.append("<h3>").append(ServerInfo.getServerInfo()).append("</h3>\n");        
-        }  
-        sb.append("<p>\n");
-        sb.append("<div class=\"footer\">\n");
-        String projurl = "https://github.com/ag88/embtomcatwebdav";
-        sb.append(String.format("Project website: <a href=\"%s\">", projurl));
-        sb.append(String.format("<img src=\"/res/github.png\" alt=\"github\">%s</a><p>\n",
-        	projurl));
+        }
         
-        sb.append("I've made efforts to tailor the WebDAV servlet so that it works as a standalone app. ");
-        sb.append("Developing this has taken quite some effort mainly in adding features, ");
-        sb.append(" getting it to work and rather extensive tests.");
-        
-        sb.append("if you use this app and found it useful, i'd really appreciate it if you could support ");
-        sb.append("my efforts ");
-        sb.append("<a href=\"https://donorbox.org/embedded-tomcat-webdav-server\">");
-        sb.append("<img src=\"/res/donorbox.png\" alt=\"sponsor this project\"></a>\n");
-        sb.append("</div>\n"); //footer
+        URL fturl = App.class.getResource("/resources/footeru1.txt");
+		if (fturl != null) {
+
+			sb.append("<p>\n");
+			sb.append("<div class=\"footer\">\n");
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fturl.openStream()));
+			String line = null;
+			while((line = reader.readLine()) != null) {
+				sb.append(line);
+			}
+			reader.close();
+			
+			sb.append("</div>\n"); // footer
+		}
         sb.append("</body>\r\n");
         sb.append("</html>\r\n");
 
