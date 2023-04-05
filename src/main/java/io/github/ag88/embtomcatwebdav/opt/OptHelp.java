@@ -82,7 +82,9 @@ public class OptHelp extends Opt {
 		if(mkv.get("artifactId") != null) {
 			name = mkv.get("artifactId").concat("-").concat(mkv.get("version"));			
 		} else {
-			name = "embtomcatwebdav";	
+			name = app.ownjarfile();
+			if(name == null)
+				name = "embtomcatwebdav";	
 		}		
 		formatter.printHelp(name, "", options, sb.toString());
 			
