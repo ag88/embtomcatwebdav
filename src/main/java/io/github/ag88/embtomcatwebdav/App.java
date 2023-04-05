@@ -17,10 +17,13 @@
 package io.github.ag88.embtomcatwebdav;
 
 import java.io.Console;
+import java.io.File;
 import java.io.FilterInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -257,6 +260,17 @@ public class App {
 		return null;
 	}	
 
+	
+	public String ownjarfile() {
+		try {
+			return new File(App.class.getProtectionDomain().getCodeSource().getLocation()
+				    .toURI()).getPath();
+		} catch (URISyntaxException e) {
+			log.error(e);
+			return null;
+		}
+	}
+	
 	
 	/**
 	 * Gets the log.

@@ -323,14 +323,23 @@ public class WebDavServer
 			ws.addInitParameter("listings", "true");
 			ws.addInitParameter("sortListings", "true");
 			ws.addInitParameter("readonly", "false");
-			ws.addInitParameter("allowSpecialPaths", "true");			
-
+			ws.addInitParameter("allowSpecialPaths", "true");
+			
 			if (! urlprefix.endsWith("/"))
 				urlprefix = urlprefix.concat("/*");
 			else
 				urlprefix = urlprefix.concat("*");
 						
 			context.addServletMappingDecoded(urlprefix, "webdav");
+			
+			if(uploadservlet) { 
+				//register the resource servlet
+				servlet = new CLResourceServlet();
+				ws = Tomcat.addServlet(context, "clres", servlet);
+				
+				context.addServletMappingDecoded("/res/*", "clres");	
+			}
+			
 			context.setSessionTimeout(30);
 			
 			if(!quiet)

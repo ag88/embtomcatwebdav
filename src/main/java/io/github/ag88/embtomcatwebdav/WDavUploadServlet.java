@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -55,6 +56,15 @@ public class WDavUploadServlet extends WebdavServlet {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
+		List<URL> urls = resources.getBaseUrls();
+		for(URL url : urls) {
+			log.info(url.toString());
+		}
+		WebResource[] ra = resources.getClassLoaderResources("/");
+		for(WebResource r : ra) {
+			log.info(r.getWebappPath());
+		}
+		
 	}
 	
 	@Override
@@ -562,9 +572,22 @@ public class WDavUploadServlet extends WebdavServlet {
         	
 
         if (showServerInfo) {
-            sb.append("<h3>").append(ServerInfo.getServerInfo()).append("</h3>");
+            sb.append("<h3>").append(ServerInfo.getServerInfo()).append("</h3>\n");        
         }
+        sb.append("<div>\n");
+        String projurl = "https://github.com/ag88/embtomcatwebdav";
+        sb.append(String.format("Project website: <a href=\"%s\">", projurl));
+        sb.append(String.format("<img src=\"/res/github.png\" alt=\"github\">%s</a><p>\n",
+        	projurl));
         
+        sb.append("I've made efforts to tailor the WebDAV servlet so that it works as a standalone app. ");
+        sb.append("Developing this has taken quite some effort mainly in adding features, ");
+        sb.append(" getting it to work and rather extensive tests.");
+        
+        sb.append("if you use this app and found it useful, i'd really appreciate it if you could support ");
+        sb.append("my efforts ");
+        sb.append("<a href=\"https://donorbox.org/embedded-tomcat-webdav-server\">");
+        sb.append("<img src=\"/res/donorbox.png\" alt=\"sponsor this project\"></a>\n");
         sb.append("</body>\r\n");
         sb.append("</html>\r\n");
 
