@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -46,7 +48,7 @@ public class CLResourceServlet extends HttpServlet {
 		
 		String pathinfo = req.getPathInfo();
 		
-		log.info(pathinfo);
+		log.debug(pathinfo);
 		
 		int psl = pathinfo.lastIndexOf('/');
 		if(psl == -1 || psl == pathinfo.length()-1) { 
@@ -67,11 +69,7 @@ public class CLResourceServlet extends HttpServlet {
 		}
 		
 		try {
-			Path respath = Paths.get(resurl.toURI());
-
-			log.debug(respath.toString());
-			log.debug(Files.size(respath));
-
+			
 			if(filename.indexOf('.')>=0) {
 				String ext = filename.substring(filename.indexOf('.')+1);
 				String mimetype = resources.getContext().findMimeMapping(ext);
@@ -82,9 +80,12 @@ public class CLResourceServlet extends HttpServlet {
 				log.debug(mimetype);
 			}					
 
-			resp.setContentLength((int) Files.size(respath));
+			int size = resurl.openConnection().getContentLength();
+			log.debug(String.format("size: %d", size));
+			resp.setContentLength(size);
+
 			OutputStream os = resp.getOutputStream();
-			InputStream is = Files.newInputStream(respath);
+			InputStream is = resurl.openStream();
 			byte[] buf = new byte[8192];
 			int n = 0;
 			while(( n = is.read(buf)) >= 0) {
@@ -96,8 +97,11 @@ public class CLResourceServlet extends HttpServlet {
 			resp.setStatus(HttpServletResponse.SC_OK);
 			return;
 			
-		} catch (URISyntaxException e) {
-			log.error(e);
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			log.error(sw.toString());
 			resp.setStatus(HttpServletResponse.SC_OK);
 			return;
 		}		
