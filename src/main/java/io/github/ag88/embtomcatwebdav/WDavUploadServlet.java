@@ -345,9 +345,6 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append(sm.getString("directory.title", directoryWebappPath));
         sb.append("</title>\r\n");
         sb.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
-        //sb.append("<style>");
-        //sb.append(org.apache.catalina.util.TomcatCSS.TOMCAT_CSS);
-        //sb.append("</style> ");
         sb.append("<link rel=\"stylesheet\" href=\"/res/style.css\">");
         sb.append("</head>\r\n");
         sb.append("<body>");
@@ -387,9 +384,6 @@ public class WDavUploadServlet extends WebdavServlet {
         
         // directory listing
 
-        //sb.append("<table width=\"100%\" cellspacing=\"0\"" +
-        //             " cellpadding=\"5\" align=\"center\">\r\n");
-
         /*
         SortManager.Order order;
         if(sortListings && null != request) {
@@ -400,8 +394,6 @@ public class WDavUploadServlet extends WebdavServlet {
         */
         
         // Render the column headings
-        //sb.append("<tr>\r\n");
-        //sb.append("<td align=\"left\"><font size=\"+1\"><strong>");
         
         sb.append("<div class=\"dirlist\">\n");
         sb.append("<div class=\"column-heading\">\n");
@@ -417,8 +409,6 @@ public class WDavUploadServlet extends WebdavServlet {
             sb.append(sm.getString("directory.filename"));
         }
         sb.append("</div>\n");
-        //sb.append("</strong></font></td>\r\n");
-        //sb.append("<td align=\"center\"><font size=\"+1\"><strong>");
         sb.append("<div class=\"col-3\">");
         if(sortListings && null != request) {
             //sb.append("<a href=\"?C=S;O=");
@@ -431,8 +421,6 @@ public class WDavUploadServlet extends WebdavServlet {
             sb.append(sm.getString("directory.size"));
         }
         sb.append("</div>\n");
-        //sb.append("</strong></font></td>\r\n");
-        //sb.append("<td align=\"right\"><font size=\"+1\"><strong>");
         sb.append("<div class=\"col-4\">");
         if(sortListings && null != request) {
             //sb.append("<a href=\"?C=M;O=");
@@ -445,8 +433,6 @@ public class WDavUploadServlet extends WebdavServlet {
             sb.append(sm.getString("directory.lastModified"));
         }
         sb.append("</div>\n");
-        //sb.append("</strong></font></td>\r\n");
-        //sb.append("</tr>");
         sb.append("</div>\n");  //col-heading
         /*
         if(null != sortManager && null != request) {
@@ -466,15 +452,10 @@ public class WDavUploadServlet extends WebdavServlet {
                 continue;
             }
 
-            //sb.append("<tr");
             sb.append(String.format("<div class=\"%s\">\n", shade ? "row shade" : "row" ));
-            //if (shade) {
-                //sb.append(" bgcolor=\"#eeeeee\"");
-            //}
-            //sb.append(">\r\n");
+
             shade = !shade;
             
-            //sb.append("<td align=\"left\">&nbsp;&nbsp;\r\n");
             sb.append("<div class=\"col-2\">");
             sb.append("<a href=\"");
             sb.append(rewrittenContextPath);
@@ -483,16 +464,13 @@ public class WDavUploadServlet extends WebdavServlet {
                 sb.append('/');
             }
             sb.append("\">");
-            //sb.append("\"><tt>");
             sb.append(Escape.htmlElementContent(filename));
             if (childResource.isDirectory()) {
                 sb.append('/');
             }
             sb.append("</a>");
-            //sb.append("</tt></a></td>\r\n");
             sb.append("</div>\n"); //col-2
 
-            //sb.append("<td align=\"right\"><tt>");
             sb.append("<div class=\"col-3\">");
             if (childResource.isDirectory()) {
                 sb.append("&nbsp;");
@@ -500,15 +478,11 @@ public class WDavUploadServlet extends WebdavServlet {
                 sb.append(renderSize(childResource.getContentLength()));
             }
             sb.append("</div>\n"); //col-3
-            //sb.append("</tt></td>\r\n");
 
-            //sb.append("<td align=\"right\"><tt>");
             sb.append("<div class=\"col-4\">");
             sb.append(childResource.getLastModifiedHttp());
             sb.append("</div>\n"); //col-4
-            //sb.append("</tt></td>\r\n");
 
-            //sb.append("</tr>\r\n");
             sb.append("</div>\n"); //row
             
         }
@@ -516,7 +490,6 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append("</div>\n"); //dirlist
         
         // Render the page footer
-        //sb.append("</table>\r\n");
         sb.append("<p><p>\n");        
         sb.append("<hr class=\"line\">\n");
         sb.append("<p>\n");
@@ -531,11 +504,7 @@ public class WDavUploadServlet extends WebdavServlet {
 
         sb.append("<div class=\"upload\">\n");
         sb.append("<h2>Upload File</h2>\n");
-        String prefix = request.getServletPath();
-//        sb.append("server path: " + prefix + directoryWebappPath + "<br><br>\n");
-//        sb.append("request.pathinfo: " + request.getPathInfo() + "<br><br>\n");        
-//        sb.append("canonnical path: " + resource.getCanonicalPath() + "<br><br>\n");
-                      
+        String prefix = request.getServletPath();                      
         
         sb.append("<form class=\"upload-file\" action=\"" + prefix  + directoryWebappPath + "\"" +
         		" enctype=\"multipart/form-data\" method=post>");        
@@ -544,6 +513,7 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append("<input type=\"submit\" value=\"upload\">\n");
         sb.append("</form>\n");
         sb.append("<br><br>\n");
+        
         
         sb.append("<form class=\"upload-ovrw\" action=\"" + prefix  + directoryWebappPath + "\" + method=post>");
         sb.append("<label>Overwrite</label><br>\n");
@@ -567,23 +537,6 @@ public class WDavUploadServlet extends WebdavServlet {
         String stywarn = "style=\"color: orange;\"";
         
         HttpSession session = request.getSession();        
-//        sb.append("sessionid: ");
-//        if(session.isNew())
-//        	sb.append("new ");
-//        sb.append(session.getId());
-//        sb.append("<br>\n");        
-//        sb.append("request URI:");
-//        sb.append(request.getRequestURI());
-//        sb.append("<br>\n");
-//        sb.append("request URL:");
-//        sb.append(request.getRequestURL());
-//        sb.append("<br>\n");
-//        sb.append("request method:");
-//        sb.append(request.getMethod());
-//        sb.append("<br>\n");
-//        sb.append("request querystring:");
-//        sb.append(request.getQueryString());
-//        sb.append("<br>\n");
         
         ArrayList<LogRecord> msgupload = (ArrayList<LogRecord>)
         		session.getAttribute("msgupload");
