@@ -39,7 +39,6 @@ public class CLResourceServlet extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
         resources = (WebResourceRoot) getServletContext().getAttribute(Globals.RESOURCES_ATTR);
-        App app = OptFactory.getInstance().getApp();
 	}
 	
 	@Override
