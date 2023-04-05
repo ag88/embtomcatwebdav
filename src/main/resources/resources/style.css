@@ -1,0 +1,103 @@
+* {
+	font-family:Tahoma,Arial,sans-serif;
+  	box-sizing: border-box;
+  	background-color: #fafafa;
+}
+
+.col-1 {width: 0.0%;}
+.col-2 {
+	width: 40.0%;
+	padding: 15px;	
+	display: inline-block;
+}
+.col-3 {
+	width: 25.0%;
+	text-align: right;
+	padding: 15px;
+	display: inline-block;
+}
+.col-4 {
+	width: 25.0%;
+	padding: 15px;
+	display: inline-block;
+}
+.col-5 {width: 0.0%;}
+.dirlist {
+	width: auto;
+	height: auto;
+}
+.column-heading {
+	background-color:#d8d8d8;
+	font-size: +1;
+	font-weight: bold; 
+	align-content: center;
+	width: auto;
+	border-bottom: 1px solid gray;
+}
+
+.column-heading > div, .column-heading > div > a {
+	background-color:#d8d8d8;
+}
+
+.row {
+	align-content: center;
+	width: auto;
+}
+
+.shade, .shade > div, .shade > div > a {
+	background-color:#eaeaea;
+}
+
+.upload {
+	width: auto;
+}
+
+.upload-file {
+	width: auto;
+	float: none;	
+}
+
+.upload-ovrw {	
+	width: auto;
+	float: none;
+}
+
+.upload-msg {
+	width: auto;
+	float: none;	
+}
+
+.upload-file {
+	width: auto;
+	float: none;	
+}
+
+.footer {
+	float: none;
+}
+
+/*
+body {font-family:Tahoma,Arial,sans-serif;}
+*/
+h1, h2, h3, b {
+	color:black;
+	background-color:#c0c0c0;
+}
+/*
+h1 {font-size:22px;}
+h2 {font-size:16px;}
+h3 {font-size:14px;}
+p {font-size:12px;}
+*/
+a {
+	color:dark-blue;
+}
+/* 
+.line {height:1px;background-color:#525D76;border:none;}
+*/
+.line {
+	height: 0px;
+	border-bottom: 1px solid black;
+	
+}
+

@@ -344,14 +344,18 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append("<title>");
         sb.append(sm.getString("directory.title", directoryWebappPath));
         sb.append("</title>\r\n");
-        sb.append("<style>");
-        sb.append(org.apache.catalina.util.TomcatCSS.TOMCAT_CSS);
-        sb.append("</style> ");
+        sb.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
+        //sb.append("<style>");
+        //sb.append(org.apache.catalina.util.TomcatCSS.TOMCAT_CSS);
+        //sb.append("</style> ");
+        sb.append("<link rel=\"stylesheet\" href=\"/res/style.css\">");
         sb.append("</head>\r\n");
         sb.append("<body>");
         sb.append("<h1>");
         sb.append(sm.getString("directory.title", directoryWebappPath));
 
+        // breadcrumb at top
+        
         // Render the link to our parent (if required)
         String parentDirectory = directoryWebappPath;
         if (parentDirectory.endsWith("/")) {
@@ -377,11 +381,14 @@ public class WDavUploadServlet extends WebdavServlet {
             sb.append("</a>");
         }
 
-        sb.append("</h1>");
-        sb.append("<hr class=\"line\">");
+        sb.append("</h1>\n");
+        sb.append("<hr class=\"line\">\n");
+        sb.append("<p>\n");
+        
+        // directory listing
 
-        sb.append("<table width=\"100%\" cellspacing=\"0\"" +
-                     " cellpadding=\"5\" align=\"center\">\r\n");
+        //sb.append("<table width=\"100%\" cellspacing=\"0\"" +
+        //             " cellpadding=\"5\" align=\"center\">\r\n");
 
         /*
         SortManager.Order order;
@@ -393,8 +400,12 @@ public class WDavUploadServlet extends WebdavServlet {
         */
         
         // Render the column headings
-        sb.append("<tr>\r\n");
-        sb.append("<td align=\"left\"><font size=\"+1\"><strong>");
+        //sb.append("<tr>\r\n");
+        //sb.append("<td align=\"left\"><font size=\"+1\"><strong>");
+        
+        sb.append("<div class=\"dirlist\">\n");
+        sb.append("<div class=\"column-heading\">\n");
+        sb.append("<div class=\"col-2\">");
         if(sortListings && null != request) {        	
             //sb.append("<a href=\"?C=N;O=");
             //sb.append(getOrderChar(order, 'N'));
@@ -405,8 +416,10 @@ public class WDavUploadServlet extends WebdavServlet {
         } else {
             sb.append(sm.getString("directory.filename"));
         }
-        sb.append("</strong></font></td>\r\n");
-        sb.append("<td align=\"center\"><font size=\"+1\"><strong>");
+        sb.append("</div>\n");
+        //sb.append("</strong></font></td>\r\n");
+        //sb.append("<td align=\"center\"><font size=\"+1\"><strong>");
+        sb.append("<div class=\"col-3\">");
         if(sortListings && null != request) {
             //sb.append("<a href=\"?C=S;O=");
             //sb.append(getOrderChar(order, 'S'));
@@ -417,8 +430,10 @@ public class WDavUploadServlet extends WebdavServlet {
         } else {
             sb.append(sm.getString("directory.size"));
         }
-        sb.append("</strong></font></td>\r\n");
-        sb.append("<td align=\"right\"><font size=\"+1\"><strong>");
+        sb.append("</div>\n");
+        //sb.append("</strong></font></td>\r\n");
+        //sb.append("<td align=\"right\"><font size=\"+1\"><strong>");
+        sb.append("<div class=\"col-4\">");
         if(sortListings && null != request) {
             //sb.append("<a href=\"?C=M;O=");
             //sb.append(getOrderChar(order, 'M'));
@@ -429,9 +444,10 @@ public class WDavUploadServlet extends WebdavServlet {
         } else {
             sb.append(sm.getString("directory.lastModified"));
         }
-        sb.append("</strong></font></td>\r\n");
-        sb.append("</tr>");
-
+        sb.append("</div>\n");
+        //sb.append("</strong></font></td>\r\n");
+        //sb.append("</tr>");
+        sb.append("</div>\n");  //col-heading
         /*
         if(null != sortManager && null != request) {
             sortManager.sort(entries, request.getQueryString());
@@ -450,60 +466,86 @@ public class WDavUploadServlet extends WebdavServlet {
                 continue;
             }
 
-            sb.append("<tr");
-            if (shade) {
-                sb.append(" bgcolor=\"#eeeeee\"");
-            }
-            sb.append(">\r\n");
+            //sb.append("<tr");
+            sb.append(String.format("<div class=\"%s\">\n", shade ? "row shade" : "row" ));
+            //if (shade) {
+                //sb.append(" bgcolor=\"#eeeeee\"");
+            //}
+            //sb.append(">\r\n");
             shade = !shade;
-
-            sb.append("<td align=\"left\">&nbsp;&nbsp;\r\n");
+            
+            //sb.append("<td align=\"left\">&nbsp;&nbsp;\r\n");
+            sb.append("<div class=\"col-2\">");
             sb.append("<a href=\"");
             sb.append(rewrittenContextPath);
             sb.append(rewriteUrl(childResource.getWebappPath()));
             if (childResource.isDirectory()) {
                 sb.append('/');
             }
-            sb.append("\"><tt>");
+            sb.append("\">");
+            //sb.append("\"><tt>");
             sb.append(Escape.htmlElementContent(filename));
             if (childResource.isDirectory()) {
                 sb.append('/');
             }
-            sb.append("</tt></a></td>\r\n");
+            sb.append("</a>");
+            //sb.append("</tt></a></td>\r\n");
+            sb.append("</div>\n"); //col-2
 
-            sb.append("<td align=\"right\"><tt>");
+            //sb.append("<td align=\"right\"><tt>");
+            sb.append("<div class=\"col-3\">");
             if (childResource.isDirectory()) {
                 sb.append("&nbsp;");
             } else {
                 sb.append(renderSize(childResource.getContentLength()));
             }
-            sb.append("</tt></td>\r\n");
+            sb.append("</div>\n"); //col-3
+            //sb.append("</tt></td>\r\n");
 
-            sb.append("<td align=\"right\"><tt>");
+            //sb.append("<td align=\"right\"><tt>");
+            sb.append("<div class=\"col-4\">");
             sb.append(childResource.getLastModifiedHttp());
-            sb.append("</tt></td>\r\n");
+            sb.append("</div>\n"); //col-4
+            //sb.append("</tt></td>\r\n");
 
-            sb.append("</tr>\r\n");
+            //sb.append("</tr>\r\n");
+            sb.append("</div>\n"); //row
+            
         }
 
+        sb.append("</div>\n"); //dirlist
+        
         // Render the page footer
-        sb.append("</table>\r\n");
-
-        sb.append("<hr class=\"line\">");
-
+        //sb.append("</table>\r\n");
+        sb.append("<p><p>\n");        
+        sb.append("<hr class=\"line\">\n");
+        sb.append("<p>\n");
+        
+        /*
         String readme = getReadme(resource, encoding);
         if (readme!=null) {
             sb.append(readme);
             sb.append("<hr class=\"line\">");
         }
+        */
 
+        sb.append("<div class=\"upload\">\n");
+        sb.append("<h2>Upload File</h2>\n");
         String prefix = request.getServletPath();
-        sb.append("<h2>Upload File</h2>");
-        sb.append("server path: " + prefix + directoryWebappPath + "<br><br>\n");
-        sb.append("request.pathinfo: " + request.getPathInfo() + "<br><br>\n");        
-        sb.append("canonnical path: " + resource.getCanonicalPath() + "<br><br>\n");
+//        sb.append("server path: " + prefix + directoryWebappPath + "<br><br>\n");
+//        sb.append("request.pathinfo: " + request.getPathInfo() + "<br><br>\n");        
+//        sb.append("canonnical path: " + resource.getCanonicalPath() + "<br><br>\n");
+                      
         
-        sb.append("<form action=\"" + prefix  + directoryWebappPath + "\" + method=post>");
+        sb.append("<form class=\"upload-file\" action=\"" + prefix  + directoryWebappPath + "\"" +
+        		" enctype=\"multipart/form-data\" method=post>");        
+        sb.append("<label for=\"files\">Select file:</label>\n");
+        sb.append("<input type=\"file\" id=\"files\" name=\"files\" multiple><br><br>\n");        
+        sb.append("<input type=\"submit\" value=\"upload\">\n");
+        sb.append("</form>\n");
+        sb.append("<br><br>\n");
+        
+        sb.append("<form class=\"upload-ovrw\" action=\"" + prefix  + directoryWebappPath + "\" + method=post>");
         sb.append("<label>Overwrite</label><br>\n");
         boolean overwrite = false;
         if(request.getSession().getAttribute("overwrite") != null)
@@ -517,42 +559,36 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append(">\n");        
         sb.append("<label for=\"true\">true</label><br>");
         sb.append("<input type=\"submit\" value=\"update\">\n");        
-        sb.append("</form><br>\n");
-        
-        sb.append("<form action=\"" + prefix  + directoryWebappPath + "\"" +
-        		" enctype=\"multipart/form-data\" method=post>");        
-        sb.append("<label for=\"files\">Select file:</label>\n");
-        sb.append("<input type=\"file\" id=\"files\" name=\"files\" multiple><br><br>\n");        
-        sb.append("<input type=\"submit\" value=\"upload\">\n");
-        sb.append("</form><br>\n");
+        sb.append("</form><p>\n");
+
         
         String styinfo = "style=\"color: black;\"";
         String styerr = "style=\"color: red;\"";
         String stywarn = "style=\"color: orange;\"";
         
         HttpSession session = request.getSession();        
-        sb.append("sessionid: ");
-        if(session.isNew())
-        	sb.append("new ");
-        sb.append(session.getId());
-        sb.append("<br>");        
-        sb.append("request URI:");
-        sb.append(request.getRequestURI());
-        sb.append("<br>");
-        sb.append("request URL:");
-        sb.append(request.getRequestURL());
-        sb.append("<br>");
-        sb.append("request method:");
-        sb.append(request.getMethod());
-        sb.append("<br>");
-        sb.append("request querystring:");
-        sb.append(request.getQueryString());
-        sb.append("<br>");
+//        sb.append("sessionid: ");
+//        if(session.isNew())
+//        	sb.append("new ");
+//        sb.append(session.getId());
+//        sb.append("<br>\n");        
+//        sb.append("request URI:");
+//        sb.append(request.getRequestURI());
+//        sb.append("<br>\n");
+//        sb.append("request URL:");
+//        sb.append(request.getRequestURL());
+//        sb.append("<br>\n");
+//        sb.append("request method:");
+//        sb.append(request.getMethod());
+//        sb.append("<br>\n");
+//        sb.append("request querystring:");
+//        sb.append(request.getQueryString());
+//        sb.append("<br>\n");
         
         ArrayList<LogRecord> msgupload = (ArrayList<LogRecord>)
         		session.getAttribute("msgupload");
         if (msgupload != null) {
-        	sb.append("<div>\n");
+        	sb.append("<div class=\"upload-msg\">\n");
         	for(LogRecord msg : msgupload) {
         		sb.append("<div ");
         		if (msg.getLevel().equals(Level.SEVERE)) {
@@ -566,15 +602,16 @@ public class WDavUploadServlet extends WebdavServlet {
         		sb.append(msg.getMessage());
         		sb.append("</div>\n");
         	}
-        	sb.append("</div>\n");
+        	sb.append("</div><p>\n");
         	session.removeAttribute("msgupload");
         }
         	
 
         if (showServerInfo) {
             sb.append("<h3>").append(ServerInfo.getServerInfo()).append("</h3>\n");        
-        }
-        sb.append("<div>\n");
+        }  
+        sb.append("<p>\n");
+        sb.append("<div class=\"footer\">\n");
         String projurl = "https://github.com/ag88/embtomcatwebdav";
         sb.append(String.format("Project website: <a href=\"%s\">", projurl));
         sb.append(String.format("<img src=\"/res/github.png\" alt=\"github\">%s</a><p>\n",
@@ -588,6 +625,7 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append("my efforts ");
         sb.append("<a href=\"https://donorbox.org/embedded-tomcat-webdav-server\">");
         sb.append("<img src=\"/res/donorbox.png\" alt=\"sponsor this project\"></a>\n");
+        sb.append("</div>\n"); //footer
         sb.append("</body>\r\n");
         sb.append("</html>\r\n");
 
