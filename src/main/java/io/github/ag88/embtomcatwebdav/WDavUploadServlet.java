@@ -349,10 +349,12 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append("<link rel=\"stylesheet\" href=\"/res/style.css\">");
         sb.append("</head>\r\n");
         sb.append("<body>");
-        sb.append("<h1>");
-        sb.append(sm.getString("directory.title", directoryWebappPath));
+        sb.append("<h1>");        
 
         // breadcrumb at top
+        
+        //sb.append(sm.getString("directory.title", directoryWebappPath));
+        sb.append("Directory Listing for : &nbsp; &nbsp;");
         
         // Render the link to our parent (if required)
         String parentDirectory = directoryWebappPath;
@@ -363,7 +365,7 @@ public class WDavUploadServlet extends WebdavServlet {
         int slash = parentDirectory.lastIndexOf('/');
         if (slash >= 0) {
             String parent = directoryWebappPath.substring(0, slash);
-            sb.append(" - <a href=\"");
+            sb.append(" <a href=\"");
             sb.append(rewrittenContextPath);
             if (parent.equals("")) {
                 parent = "/";
@@ -374,10 +376,18 @@ public class WDavUploadServlet extends WebdavServlet {
             }
             sb.append("\">");
             sb.append("<b>");
-            sb.append(sm.getString("directory.parent", parent));
+            //sb.append(sm.getString("directory.parent", parent));
+            sb.append(parent);
             sb.append("</b>");
             sb.append("</a>");
+            sb.append("&nbsp; &nbsp; / &nbsp;");
         }
+       
+        if(slash < directoryWebappPath.length())
+        	sb.append(directoryWebappPath.substring(slash+1));
+        else
+        	sb.append(directoryWebappPath);
+        
 
         sb.append("</h1>\n");
         sb.append("<hr class=\"line\">\n");
