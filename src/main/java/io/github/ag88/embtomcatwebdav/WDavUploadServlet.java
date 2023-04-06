@@ -1,3 +1,19 @@
+/*
+ Copyright 2023 Andrew Goh http://github.com/ag88
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package io.github.ag88.embtomcatwebdav;
 
 import java.io.BufferedReader;
@@ -33,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.catalina.WebResource;
+import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.servlets.WebdavServlet;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.juli.logging.Log;
@@ -48,16 +65,37 @@ import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 import io.github.ag88.embtomcatwebdav.util.DefFilePathNameValidator;
 import io.github.ag88.embtomcatwebdav.util.FilePathNameValidator;
 
+/**
+ * Class WDavUploadServlet - the Upload Servlet.<p>
+ * 
+ * This Upload servlet is a derived custom implementation from Apache Tomcat's {@link WebdavServlet}
+ * and {@link DefaultServlet}.<p>
+ * 
+ * It works like the {@link DefaultServlet}, but that it adds an interface for form based file upload.
+ *  
+ * 
+ */
 public class WDavUploadServlet extends WebdavServlet {
 	
+	/** The log. */
 	Log log = LogFactory.getLog(WDavUploadServlet.class);
 		
+	/** The quiet. */
 	boolean quiet;
 	
+	/**
+	 * Instantiates a new w dav upload servlet.
+	 */
 	public WDavUploadServlet() {
 		super();
 	}
 	
+	/**
+	 * Servlet init().
+	 *
+	 * @param config the config
+	 * @throws ServletException the servlet exception
+	 */
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -68,6 +106,14 @@ public class WDavUploadServlet extends WebdavServlet {
 			quiet = false;
 	}
 	
+	/**
+	 * Servlet doGet().
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws ServletException the servlet exception
+	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
@@ -136,6 +182,16 @@ public class WDavUploadServlet extends WebdavServlet {
 		super.doGet(request, response);
 	}
 	
+	/**
+	 * Servlet doPost().
+	 * 
+	 * This hanndles the actual file upload as a Servlet.
+	 *
+	 * @param request the request
+	 * @param response the response
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws ServletException the servlet exception
+	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
@@ -283,6 +339,13 @@ public class WDavUploadServlet extends WebdavServlet {
 	}
 
 	
+    /**
+     * Do directory redirect.
+     *
+     * @param request the request
+     * @param response the response
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     private void doDirectoryRedirect(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         StringBuilder location = new StringBuilder(request.getRequestURI());
@@ -298,6 +361,15 @@ public class WDavUploadServlet extends WebdavServlet {
         response.sendRedirect(response.encodeRedirectURL(location.toString()));
     }
     
+	/**
+	 * Errormsg.
+	 *
+	 * @param basepath the basepath
+	 * @param filename the filename
+	 * @param message the message
+	 * @param e the e
+	 * @return the string
+	 */
 	private String errormsg(String basepath, String filename, String message, Exception e) {
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("invalid file path: ");
@@ -315,6 +387,11 @@ public class WDavUploadServlet extends WebdavServlet {
 		return sb.toString();
 	}
 	
+	/**
+	 * Dolog.
+	 *
+	 * @param messages the messages
+	 */
 	private void dolog(List<LogRecord> messages) {
 		for(LogRecord lr : messages) {
 			if(lr.getLevel().equals(Level.SEVERE))
@@ -327,6 +404,20 @@ public class WDavUploadServlet extends WebdavServlet {
 	}
 
     
+	/**
+	 * Render the directory list.
+	 *
+	 * This render the directory list as like {@link DefaultServlet}. 
+	 * However, that this is substantiatially customized to add a file upload form.
+	 * And use a responsive html layout rather than a table.
+	 * 
+	 * @param request the request
+	 * @param contextPath the context path
+	 * @param resource the resource
+	 * @param encoding the encoding
+	 * @return the input stream
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	@Override
 	protected InputStream renderHtml(HttpServletRequest request, String contextPath, WebResource resource,
 			String encoding) throws IOException {
