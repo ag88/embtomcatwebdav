@@ -18,6 +18,12 @@ public class DefFilePathNameValidator extends FilePathNameValidator {
 	@Override
 	public boolean isValidFilename(String filename, List<LogRecord> logrec) {
 
+		if(filename == null) {
+	        LogRecord lr = new LogRecord(Level.SEVERE, "Illegal filename, null: ");
+	        logrec.add(lr);
+	        return false;
+		}
+			
 		if (filename.length() == 0) {
         	LogRecord lr = new LogRecord(Level.SEVERE, "Illegal filename, zero length: ".concat(filename));
         	logrec.add(lr);

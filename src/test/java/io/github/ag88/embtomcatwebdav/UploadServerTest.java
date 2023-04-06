@@ -2,10 +2,8 @@ package io.github.ag88.embtomcatwebdav;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,25 +15,27 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import javax.imageio.metadata.IIOMetadataNode;
-import javax.xml.namespace.QName;
-
-import org.apache.catalina.LifecycleState;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -45,14 +45,10 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
-import com.github.sardine.model.Allprop;
-import com.github.sardine.model.Propfind;
-import com.github.sardine.util.SardineUtil;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.TestReporter;
-import org.w3c.dom.Element;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -61,11 +57,10 @@ import static org.hamcrest.Matchers.*;
 /**
  * This test runs the server
  */
-@Disabled
 @TestMethodOrder(OrderAnnotation.class)
 public class UploadServerTest {
 
-	Logger log = Logger.getLogger(WebDavServer.class.getName());
+	Logger log = Logger.getLogger(UploadServerTest.class.getName());
 	
 	private WebDAVServerThread thread;	
 	
@@ -185,7 +180,30 @@ public class UploadServerTest {
 	    	boolean status = connectAuth(reporter, httpclient, uri);
 	    	assertThat(status, is(true));
 	    	
+	    	boolean found = false;
+	    	for(Cookie c : cookieStore.getCookies()) {
+				if (verbose) {
+					StringBuilder sb = new StringBuilder(100);
+					sb.append(c.getName());
+					sb.append(", ");
+					sb.append(c.getDomain());
+					sb.append(", ");
+					sb.append(c.getPath());
+					sb.append(", ");
+					sb.append(c.getValue());
+					sb.append(", ");
+					sb.append(c.getExpiryDate());
+					reporter.publishEntry("cookie", sb.toString());
+				}
+				if(c.getName().equals("JSESSIONID")) {
+					found = true;
+					break;
+				}					
+	    	}
+	    	assertThat(found, is(true));
 	    	
+	    	status = postmultipartupload(reporter, httpclient, uri);
+	    	assertThat(status, is(true));
     }
     
     private boolean connectAuth(TestReporter reporter, CloseableHttpClient httpclient,  URI uri) 
@@ -216,6 +234,61 @@ public class UploadServerTest {
     	return found;
     }
     
+    private boolean postmultipartupload(TestReporter reporter, CloseableHttpClient httpclient,  URI uri) 
+    		throws ClientProtocolException, IOException, URISyntaxException {    	
+    	UploadServerTest test = getInstance();
+    	Path tempdir = Paths.get(test.getPath());
+
+    	Path local = tempdir.resolve("local");
+    	if(!Files.exists(local))
+    		Files.createDirectory(local);
+    	Path localfile = local.resolve("post.txt"); 
+    	makefile(localfile, "post upload");
+    	Path remote = tempdir.resolve("remote");
+    	if(!Files.exists(remote))
+    		Files.createDirectory(remote);
+    	
+    	boolean runok = false;
+        try {
+        	
+        	uri = new URI(uri.getScheme(),uri.getUserInfo(),uri.getHost(),uri.getPort(),
+        			uri.getPath().concat("/remote/"),null,null);
+        	reporter.publishEntry("post uri", uri.toString());
+        	
+            HttpPost httppost = new HttpPost(uri); 
+            
+            FileBody bin = new FileBody(localfile.toFile());
+            StringBody comment = new StringBody("A binary file of some kind", ContentType.TEXT_PLAIN);
+            
+            HttpEntity reqEntity = MultipartEntityBuilder.create()
+                    .addPart("bin", bin)
+                    .addPart("comment", comment)
+                    .build();
+
+            httppost.setEntity(reqEntity);
+
+            reporter.publishEntry("run", "executing request " + httppost.getRequestLine());
+            CloseableHttpResponse response = httpclient.execute(httppost);
+            try {                
+                reporter.publishEntry("status", response.getStatusLine().toString());
+                HttpEntity resEntity = response.getEntity();
+                if (resEntity != null) {
+                    reporter.publishEntry("Response content length: ", Long.toString(resEntity.getContentLength()));
+                }
+                EntityUtils.consume(resEntity);
+            } finally {
+                response.close();
+            }
+        } finally {
+            httpclient.close();
+        }
+        
+        runok = containstext(remote.resolve("post.txt"), "post upload");
+        assertThat(runok,is(true));
+        
+        return runok;
+    }
+    
     /**
      * WebDAV tests, upload, download, delete, rename/move, createdir
      *
@@ -227,11 +300,15 @@ public class UploadServerTest {
     public void testfilesupdowndelmovemd(TestReporter reporter) throws IOException, URISyntaxException {
     	UploadServerTest test = getInstance();
     	Path tempdir = Paths.get(test.getPath());
+
     	Path local = tempdir.resolve("local");
-    	Files.createDirectory(local);
-    	makefile(local.resolve("a.txt"),"aaa");
+    	if(!Files.exists(local))
+    		Files.createDirectory(local);
     	Path remote = tempdir.resolve("remote");
-    	Files.createDirectory(remote);
+    	if(!Files.exists(remote))
+    		Files.createDirectory(remote);
+
+    	makefile(local.resolve("a.txt"),"aaa");
     	makefile(remote.resolve("b.txt"), "bbb");
     	makefile(remote.resolve("c.txt"), "ccc");
     	

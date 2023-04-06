@@ -43,6 +43,7 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.util.Streams;
 import org.apache.tomcat.util.security.Escape;
 
+import io.github.ag88.embtomcatwebdav.opt.Opt;
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 import io.github.ag88.embtomcatwebdav.util.DefFilePathNameValidator;
 import io.github.ag88.embtomcatwebdav.util.FilePathNameValidator;
@@ -60,9 +61,11 @@ public class WDavUploadServlet extends WebdavServlet {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		
-		quiet = ((Boolean) OptFactory.getInstance().getOpt("quiet").getValue()).booleanValue();
-
+		Opt opt = OptFactory.getInstance().getOpt("quiet");
+		if(opt != null)
+			quiet = ((Boolean) opt.getValue()).booleanValue();
+		else
+			quiet = false;
 	}
 	
 	@Override
@@ -171,7 +174,7 @@ public class WDavUploadServlet extends WebdavServlet {
 			// sb.append("canonnical path: " + resource.getCanonicalPath() + "<br><br>\n");
 			
 			if (resource.exists() && resource.isDirectory()) {
-				
+
 				ArrayList<LogRecord> messages = new ArrayList<LogRecord>(4);
 				ServletFileUpload upload = new ServletFileUpload();
 				FileItemIterator iterStream = upload.getItemIterator(request);
@@ -180,58 +183,60 @@ public class WDavUploadServlet extends WebdavServlet {
 					String name = item.getFieldName();
 					String filename = item.getName();
 
-					// validate filename
-					FilePathNameValidator validator = new DefFilePathNameValidator();
-					validator.setReadonly(false);
-					if(!validator.isValidFilename(filename, messages)) {
-						dolog(messages);
-						continue;
-					}
-
-					// validate path, filename				
-					Path dirpath = null;
-					try {
-						String dir = resource.getCanonicalPath();
-						dirpath = Paths.get(dir);
-					} catch (Exception e) {
-						String errmsg = errormsg(dirpath.toString(), filename, "Paths.get(dir)", e);
-						LogRecord lr = new LogRecord(Level.SEVERE, errmsg);
-						messages.add(lr);
-						if(!quiet)
-							log.error(errmsg);
-						continue;
-					}
-					
-					if(dirpath == null || !validator.isValidPathname(dirpath, filename, messages)) {
-						if(dirpath == null) {
-							LogRecord lr = new LogRecord(Level.SEVERE, "basepath is null or path is invalid");
-							messages.add(lr);
-							if(!quiet)
-								log.error("basepath is null or path is invalid");
-						}
-						dolog(messages);
-						continue;
-					}
-					
-					if(Files.exists(dirpath.resolve(filename))) {
-						if(! overwrite) {
-							LogRecord lr = new LogRecord(Level.WARNING, 
-								String.format("file %s exists, not overwriting", filename));
-							messages.add(lr);
-							if(!quiet)
-								log.warn(String.format("file %s exists, not overwriting", dirpath.resolve(filename)));							
-							continue;
-						}
-					}
-					
 					InputStream stream = item.openStream();
 					if (!item.isFormField()) { // is file
+
+						// validate filename
+						FilePathNameValidator validator = new DefFilePathNameValidator();
+						validator.setReadonly(false);
+						if (!validator.isValidFilename(filename, messages)) {
+							dolog(messages);
+							continue;
+						}
+
+						// validate path, filename
+						Path dirpath = null;
+						try {
+							String dir = resource.getCanonicalPath();
+							dirpath = Paths.get(dir);
+						} catch (Exception e) {
+							String errmsg = errormsg(dirpath.toString(), filename, "Paths.get(dir)", e);
+							LogRecord lr = new LogRecord(Level.SEVERE, errmsg);
+							messages.add(lr);
+							if (!quiet)
+								log.error(errmsg);
+							continue;
+						}
+
+						if (dirpath == null || !validator.isValidPathname(dirpath, filename, messages)) {
+							if (dirpath == null) {
+								LogRecord lr = new LogRecord(Level.SEVERE, "basepath is null or path is invalid");
+								messages.add(lr);
+								if (!quiet)
+									log.error("basepath is null or path is invalid");
+							}
+							dolog(messages);
+							continue;
+						}
+
+						if (Files.exists(dirpath.resolve(filename))) {
+							if (!overwrite) {
+								LogRecord lr = new LogRecord(Level.WARNING,
+										String.format("file %s exists, not overwriting", filename));
+								messages.add(lr);
+								if (!quiet)
+									log.warn(String.format("file %s exists, not overwriting",
+											dirpath.resolve(filename)));
+								continue;
+							}
+						}
+
 						try {
 							OutputStream target = Files.newOutputStream(dirpath.resolve(filename));
 							byte[] buf = new byte[8192];
 							int length;
 							while ((length = stream.read(buf)) != -1) {
-							    target.write(buf, 0, length);
+								target.write(buf, 0, length);
 							}
 							target.flush();
 							target.close();
@@ -242,14 +247,14 @@ public class WDavUploadServlet extends WebdavServlet {
 							log.error(msg);
 							continue;
 						}
-													
-						//messages.add(new LogRecord(Level.INFO, "name: ".concat(name)));						
+
+						// messages.add(new LogRecord(Level.INFO, "name: ".concat(name)));
 						messages.add(new LogRecord(Level.INFO, "uploaded filename: ".concat(filename)));
-						if(!quiet)
+						if (!quiet)
 							log.info("uploaded filename:".concat(filename));
 					} else {
 						String formFieldValue = Streams.asString(stream);
-						if(!quiet) {
+						if (!quiet) {
 							messages.add(new LogRecord(Level.INFO, "field: ".concat(name)));
 							messages.add(new LogRecord(Level.INFO, "value: ".concat(formFieldValue)));
 							log.info(formFieldValue);

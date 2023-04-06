@@ -59,7 +59,7 @@ import static org.hamcrest.Matchers.*;
 @TestMethodOrder(OrderAnnotation.class)
 public class WebDavServerTest {
 
-	Logger log = Logger.getLogger(WebDavServer.class.getName());
+	Logger log = Logger.getLogger(WebDavServerTest.class.getName());
 	
 	private WebDAVServerThread thread;	
 	
