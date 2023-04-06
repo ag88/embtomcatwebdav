@@ -172,7 +172,7 @@ public class OptTest {
     	
     	
     	String[] args = { "-p", "1111", "-H", "host1", "-x", "prefix", 
-    			"-u", "user1", "-w", "pass1", "--realm", "realm1", "-D", "--quiet"};
+    			"-u", "user1", "-w", "pass1", "--realm", "realm1", "-D", "--quiet", "-U"};
     	app.parseargs(args);
     	
     	OptFactory factory = OptFactory.getInstance();
@@ -194,6 +194,8 @@ public class OptTest {
 			sb.append(System.lineSeparator());
 			sb.append(factory.getOpt("quiet").getValue());
 			sb.append(System.lineSeparator());
+			sb.append(factory.getOpt("uploadservlet").getValue());
+			sb.append(System.lineSeparator());
 			sb.append(factory.getOpt("path").getValue());
 			sb.append(System.lineSeparator());
 			sb.append(factory.getOpt("basedir").getValue());
@@ -210,6 +212,7 @@ public class OptTest {
     	assertThat(factory.getOpt("password").getValue(), equalTo("pass1"));
     	assertThat(factory.getOpt("digest").getValue(), is(true));
     	assertThat(factory.getOpt("quiet").getValue(), is(true));
+    	assertThat(factory.getOpt("uploadservlet").getValue(), is(true));
     }
 
     @Test
@@ -245,6 +248,8 @@ public class OptTest {
 			sb.append(System.lineSeparator());
 			sb.append(factory.getOpt("quiet").getValue());
 			sb.append(System.lineSeparator());
+			sb.append(factory.getOpt("uploadservlet").getValue());
+			sb.append(System.lineSeparator());
 			sb.append(factory.getOpt("path").getValue());
 			sb.append(System.lineSeparator());
 			sb.append(factory.getOpt("basedir").getValue());
@@ -261,6 +266,7 @@ public class OptTest {
     	assertThat(factory.getOpt("password").getValue(), equalTo("pass1"));
     	assertThat(factory.getOpt("digest").getValue(), is(true));
     	assertThat(factory.getOpt("quiet").getValue(), is(false));
+    	assertThat(factory.getOpt("uploadservlet").getValue(), is(true));
 
     }
     

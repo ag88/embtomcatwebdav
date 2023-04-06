@@ -43,6 +43,7 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.util.Streams;
 import org.apache.tomcat.util.security.Escape;
 
+import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 import io.github.ag88.embtomcatwebdav.util.DefFilePathNameValidator;
 import io.github.ag88.embtomcatwebdav.util.FilePathNameValidator;
 
@@ -50,6 +51,8 @@ public class WDavUploadServlet extends WebdavServlet {
 	
 	Log log = LogFactory.getLog(WDavUploadServlet.class);
 		
+	boolean quiet;
+	
 	public WDavUploadServlet() {
 		super();
 	}
@@ -57,15 +60,9 @@ public class WDavUploadServlet extends WebdavServlet {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		List<URL> urls = resources.getBaseUrls();
-		for(URL url : urls) {
-			log.info(url.toString());
-		}
-		WebResource[] ra = resources.getClassLoaderResources("/");
-		for(WebResource r : ra) {
-			log.info(r.getWebappPath());
-		}
 		
+		quiet = ((Boolean) OptFactory.getInstance().getOpt("quiet").getValue()).booleanValue();
+
 	}
 	
 	@Override
@@ -139,12 +136,12 @@ public class WDavUploadServlet extends WebdavServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
-		log.info(request.getContentType());
+		log.debug(request.getContentType());
 		
 		boolean overwrite = false;		
 
 		HttpSession session = request.getSession();
-		if (session.isNew())
+		if (session.isNew() && !quiet)
 			log.warn("session is new ".concat(session.getId()));
 		if (session.isNew()) {
 			// String encodedURL =
@@ -200,15 +197,17 @@ public class WDavUploadServlet extends WebdavServlet {
 						String errmsg = errormsg(dirpath.toString(), filename, "Paths.get(dir)", e);
 						LogRecord lr = new LogRecord(Level.SEVERE, errmsg);
 						messages.add(lr);
-						log.error(errmsg);
+						if(!quiet)
+							log.error(errmsg);
 						continue;
 					}
 					
 					if(dirpath == null || !validator.isValidPathname(dirpath, filename, messages)) {
 						if(dirpath == null) {
-							LogRecord lr = new LogRecord(Level.SEVERE, "basepath is null");
+							LogRecord lr = new LogRecord(Level.SEVERE, "basepath is null or path is invalid");
 							messages.add(lr);
-							log.error("basepath is null");
+							if(!quiet)
+								log.error("basepath is null or path is invalid");
 						}
 						dolog(messages);
 						continue;
@@ -219,7 +218,8 @@ public class WDavUploadServlet extends WebdavServlet {
 							LogRecord lr = new LogRecord(Level.WARNING, 
 								String.format("file %s exists, not overwriting", filename));
 							messages.add(lr);
-							log.warn(String.format("file %s exists, not overwriting", dirpath.resolve(filename)));							
+							if(!quiet)
+								log.warn(String.format("file %s exists, not overwriting", dirpath.resolve(filename)));							
 							continue;
 						}
 					}
@@ -243,14 +243,17 @@ public class WDavUploadServlet extends WebdavServlet {
 							continue;
 						}
 													
-						messages.add(new LogRecord(Level.INFO, "name: ".concat(name)));
+						//messages.add(new LogRecord(Level.INFO, "name: ".concat(name)));						
 						messages.add(new LogRecord(Level.INFO, "uploaded filename: ".concat(filename)));
-						log.info("uploaded filename:".concat(filename));
+						if(!quiet)
+							log.info("uploaded filename:".concat(filename));
 					} else {
 						String formFieldValue = Streams.asString(stream);
-						messages.add(new LogRecord(Level.INFO, "field: ".concat(name)));
-						messages.add(new LogRecord(Level.INFO, "value: ".concat(formFieldValue)));
-						log.info(formFieldValue);
+						if(!quiet) {
+							messages.add(new LogRecord(Level.INFO, "field: ".concat(name)));
+							messages.add(new LogRecord(Level.INFO, "value: ".concat(formFieldValue)));
+							log.info(formFieldValue);
+						}
 					}
 				}
 				session.setAttribute("msgupload", messages);
