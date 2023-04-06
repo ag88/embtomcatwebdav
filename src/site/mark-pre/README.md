@@ -26,6 +26,10 @@ Current status: alpha/test
   This is more secure in case there is a crowd nearby ;)  
   Note that System.console() isn't available in all situations, e.g. in various IDEs,
   in that case it falls back to reading from System.in, in which case character echo can't be avoided.
+- v0.5.0 is a rather major feature release
+- v0.5.0 added an Upload servlet that includes a form based file upload in the directory list.
+  This makes it possible to upload files without a WebDAV client. In addition, it is styled with
+  responsive html and css so that it is more readable on small (mobile) devices.
 - It requires a folder 'tomcat.port' for the embedded Tomcat instance, if the folder isn't present,
 it is created.
 

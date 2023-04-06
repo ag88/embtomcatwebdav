@@ -3,12 +3,12 @@
 ## Maven coordinates
 
 This is released to maven central.
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.4.1
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.5.0
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.4.1</version>
+    <version>0.5.0</version>
 </dependency>
 ```
 - v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread. By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
@@ -16,6 +16,10 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.4.1
 - v0.4.1 is a a rather major refactored release, this release is released to maven central
 - v0.4.1 added a refactored command line options and config properties processing engine, this makes it feasible 
   for apps linking the library to add command line options and config properties in the same app.
+- v0.5.0 is a rather major feature release
+- v0.5.0 added an Upload servlet that includes a form based file upload in the directory list.
+  This makes it possible to upload files without a WebDAV client. In addition, it is styled with
+  responsive html and css so that it is more readable on small (mobile) devices.
 
 
 ## Embedding
