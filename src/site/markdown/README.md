@@ -68,6 +68,7 @@ usage: embtomcatwebdav-0.5.0
                                  file and keystore passwd, if passwd is
                                  omitted it'd be prompted.
  -u,--user <username>            set user
+ -U,--uploadservlet              use upload servlet 
  -w,--passwd <password>          set password, you may omit this, it would
                                  prompt for it if -u is specified
  -x,--urlprefix <urlprefix>      set urlprefix, default /webdav
