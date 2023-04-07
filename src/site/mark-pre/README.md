@@ -102,6 +102,38 @@ config files.
 If you are bothered with illegal reflective access operation warnings, you can use the batch file run.bat or run.sh
 replace the "target/webdav-0.x.x-jar-with-dependencies.jar" with the appropriate release jar, that should mute most of those illegal reflective access warnings. Tomcat needs those reflective access which accounts for its versetile flexibility features. 
 
+## Upload servlet
+
+v0.5.0 is a rather major feature release. v0.5.0 added an Upload servlet that includes a form based file upload 
+in the directory list.  This makes it possible to upload files without a WebDAV client. In addition, it is 
+styled with responsive html and css so that it is more readable on small (mobile) devices.
+
+To use the Upload servlet, add the -U (case sensitive) or --uploadservlet option on the command line.
+It can also be maintained in the config (properties text) file using the ``uploadservlet=true`` parameter.
+
+The Upload servlet is derived from Apache Tomcat's WebDAV servlet and DefaultServlet. It is customised to handle
+a file upload form at the bottom of the directory list. Note that this is not intend to handle large files say more 
+a couple of megabytes and there may be issues with very large files. It works well for ordinary file sizes from say
+10s of kbytes to a few megs. There could also be issues uploading too many files in a single upload.
+
+It is advisable to use authentication e.g. specify a username and password and/or with the --digest option,
+as otherwise any user with access to the upload servlet website can upload files.
+This upload servlet is intended to be used in an internal network e.g. a home network or a small office network,
+and is possibly insufficiently secure to be placed on the open internet.
+A convenient use case could be to run the app as and when you need it say to upload some files from a mobile phone
+and shutdown the app/server after that.
+
+To access the servlet on your PC / desktop / laptop etc, use the -H or --host option and specify the local IP address 
+of your host (PC/desktop/laptop). Otherwise, Apache Tomcat inteprets that as a virtual host and there could be issues
+if the url don't match the virtual hostname. To get your ip address on Windows, a command is commonly
+ `ipconfig` and on Linux `ip -4 add`.
+
+![screenshot in a browser](web/UploadServlet.png "Upload servlet")  
+Upload servlet on a desktop web browser
+
+![screenshot in a browser](web/UploadServPhone.jpg "Upload on a phone")  
+Upload servlet on a phone web browser
+
 ## SSL
 
 Note that using SSL is deemed an advanced topic. While I've done some tests with this, there is no assurance if this would work in any serious context, i.e. No Warranty.
