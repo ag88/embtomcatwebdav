@@ -113,7 +113,7 @@ It can also be maintained in the config (properties text) file using the ``uploa
 
 The Upload servlet is derived from Apache Tomcat's WebDAV servlet and DefaultServlet. It is customised to handle
 a file upload form at the bottom of the directory list. Note that this is not intend to handle large files say more 
-a couple of megabytes and there may be issues with very large files. It works well for ordinary file sizes from say
+than a couple of megabytes and there may be issues with very large files. It works well for ordinary file sizes from say
 10s of kbytes to a few megs. There could also be issues uploading too many files in a single upload.
 
 It is advisable to use authentication e.g. specify a username and password and/or with the --digest option,
