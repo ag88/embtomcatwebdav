@@ -24,7 +24,7 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/${project.v
   enabled alwaysUseSession for authentication, some mobile devices do not cache authentication and keeps prompting 
   authentication every refresh and page. This is still as secure (managed by a session) and avoided the annoying 
   auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
-  doPost() whre it is needed and only if it is a new (invalid) session.
+  doPost() where it is needed and only if it is a new (invalid) session.
 
 
 ## Embedding
