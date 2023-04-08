@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
@@ -36,6 +37,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -106,81 +108,6 @@ public class WDavUploadServlet extends WebdavServlet {
 			quiet = false;
 	}
 	
-	/**
-	 * Servlet doGet().
-	 *
-	 * @param request the request
-	 * @param response the response
-	 * @throws IOException Signals that an I/O exception has occurred.
-	 * @throws ServletException the servlet exception
-	 */
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws IOException, ServletException {
-
-		HttpSession session = request.getSession();
-		if (session.isNew()) {			
-			session.setAttribute("nocookies", Boolean.TRUE);
-			String encodedURL = response.encodeRedirectURL(request.getRequestURL().toString());
-			response.sendRedirect(encodedURL);
-			return;
-		} else {			
-			boolean nocookies;
-			if(session.getAttribute("nocookies") == null)
-				nocookies = true;
-			else
-				nocookies = (Boolean) session.getAttribute("nocookies");
-			if (nocookies) {
-				Cookie[] cookies = request.getCookies();
-				if (cookies != null)
-					for (Cookie c : cookies) {
-						if(c.getName().equals("JSESSIONID")) { 
-							//&&c.getValue().equals(session.getId())) {
-							nocookies = false;
-							break;
-						}
-					}
-					if(!nocookies)
-						session.setAttribute("nocookies", Boolean.FALSE);
-					else {
-						StringBuilder sb = new StringBuilder();
-				        // Render the page header
-				        sb.append("<!doctype html><html>\r\n");
-				        /* TODO Activate this as soon as we use smClient with the request locales
-				        sb.append("<!doctype html><html lang=\"");
-				        sb.append(smClient.getLocale().getLanguage()).append("\">\r\n");
-				        */
-				        sb.append("<head>\r\n");
-				        sb.append("<title>");
-				        sb.append("Enable (session) cookies");
-				        sb.append("</title>\r\n");
-				        sb.append("<style>");
-				        sb.append(org.apache.catalina.util.TomcatCSS.TOMCAT_CSS);
-				        sb.append("</style> ");
-				        sb.append("</head>\r\n");
-				        sb.append("<body>\n");
-				        sb.append("<h1>Please enable session cookies for this app/website</h1>\n\n");
-				        sb.append("This website / app requires (session) cookies to orderly function.  ");
-				        sb.append("It does not track as the data is normally cleared when the browser is closed.<br>");
-				        sb.append("It is also required as it is mainly to maintain a session id, ");
-				        sb.append("for more secure functioning of the app/website.<br><br>");
-				        sb.append("It is adequate to enable cookies in your browser for this site/app ");
-				        sb.append("that is deleted when the browser is closed. Or to simply enable cookies for this website.<br>");
-				        sb.append("</body></html>");
-				        
-				        response.setContentType("text/html");
-				        response.setContentLength(sb.length());
-				        BufferedWriter writer = new BufferedWriter(response.getWriter());
-				        writer.write(sb.toString());
-				        writer.flush();
-				        writer.close();
-				        return;
-					}
-			}
-		}
-
-		super.doGet(request, response);
-	}
 	
 	/**
 	 * Servlet doPost().
@@ -199,16 +126,28 @@ public class WDavUploadServlet extends WebdavServlet {
 		
 		boolean overwrite = false;		
 
-		HttpSession session = request.getSession();
-		if (session.isNew() && !quiet)
-			log.warn("session is new ".concat(session.getId()));
+		HttpSession session = request.getSession();		
 		if (session.isNew()) {
 			// String encodedURL =
 			// response.encodeRedirectURL(request.getRequestURL().toString());
 			// response.sendRedirect(encodedURL);
-			response.sendRedirect(request.getRequestURL().toString());
+			if(!quiet)
+			log.warn("session is new ".concat(session.getId()));
+			
+			String referrer = request.getHeader("referer");
+			if (request.getRequestURL().toString().equals(referrer)) {
+				try {
+					URI uri = new URI(request.getRequestURL().toString());
+					uri = new URI(uri.getScheme(),uri.getUserInfo(),uri.getHost(), uri.getPort(),
+						"/res/nocookie.htm",null, null);				
+					response.sendRedirect(uri.toURL().toString());
+				} catch (URISyntaxException e) {
+					log.error(e);
+				}
+			}			
+			return;
 		}
-		
+				
 		if(request.getSession().getAttribute("overwrite") != null) 
 			overwrite = (Boolean) request.getSession().getAttribute("overwrite");
 

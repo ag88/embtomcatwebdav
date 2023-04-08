@@ -296,10 +296,17 @@ public class WebDavServer
 				if(!quiet) log.info("Auth method: ".concat(lconf.getAuthMethod()));
 				lconf.setCharset(Charset.forName("UTF-8"));
 				context.setLoginConfig(lconf);
-				if(digest) 
-					context.getPipeline().addValve(new DigestAuthenticator());
-				else				
-					context.getPipeline().addValve(new BasicAuthenticator());
+				if(digest) {
+					DigestAuthenticator auth = new DigestAuthenticator();
+					if(uploadservlet)
+						auth.setAlwaysUseSession(true);
+					context.getPipeline().addValve(auth);
+				} else {
+					BasicAuthenticator auth = new BasicAuthenticator();
+					if(uploadservlet)
+						auth.setAlwaysUseSession(true);
+					context.getPipeline().addValve(auth);					
+				}
 				
 				SecurityConstraint secconstr = new SecurityConstraint();
 				secconstr.addAuthRole("user");
