@@ -20,6 +20,11 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/${project.v
 - v0.5.0 added an Upload servlet that includes a form based file upload in the directory list.
   This makes it possible to upload files without a WebDAV client. In addition, it is styled with
   responsive html and css so that it is more readable on small (mobile) devices.
+- v0.5.1 is a bugfix release for v0.5.0, Upload servlet, some refactoring: 
+  enabled alwaysUseSession for authentication, some mobile devices do not cache authentication and keeps prompting 
+  authentication every refresh and page. This is still as secure (managed by a session) and avoided the annoying 
+  auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
+  doPost() whre it is needed and only if it is a new (invalid) session.
 
 
 ## Embedding

@@ -32,6 +32,11 @@ Current status: alpha/test
   responsive html and css so that it is more readable on small (mobile) devices.
 - It requires a folder 'tomcat.port' for the embedded Tomcat instance, if the folder isn't present,
 it is created.
+- v0.5.1 is a bugfix release for v0.5.0, Upload servlet, some refactoring: 
+  enabled alwaysUseSession for authentication, some mobile devices do not cache authentication and keeps prompting 
+  authentication every refresh and page. This is still as secure (managed by a session) and avoided the annoying 
+  auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
+  doPost() whre it is needed and only if it is a new (invalid) session.
 
 ![screenshot in a browser](web/screenshot.jpg "Screen shot")
 
@@ -42,16 +47,16 @@ mvn package
 ## Run
 
 ```
-java -jar embtomcatwebdav-0.5.0.jar
+java -jar embtomcatwebdav-0.5.1.jar
 ```
-Note that if you build from source the file name is embtomcatwebdav-0.5.0-jar-with-dependencies.jar, in target/ folder.
+Note that if you build from source the file name is embtomcatwebdav-0.5.1-jar-with-dependencies.jar, in target/ folder.
 
 ## usage 
 
 ```
-java -jar embtomcatwebdav-0.5.0.jar -h
+java -jar embtomcatwebdav-0.5.1.jar -h
 
-usage: embtomcatwebdav-0.5.0
+usage: embtomcatwebdav-0.5.1
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
  -c,--conf <configfile>          load properties config file
@@ -108,6 +113,13 @@ v0.5.0 is a rather major feature release. v0.5.0 added an Upload servlet that in
 in the directory list.  This makes it possible to upload files without a WebDAV client. In addition, it is 
 styled with responsive html and css so that it is more readable on small (mobile) devices.
 
+v0.5.1 is a bugfix release for v0.5.0, Upload servlet, some refactoring: 
+enabled alwaysUseSession for authentication, some mobile devices do not cache authentication and keeps prompting 
+authentication every refresh and page. This is still as secure (managed by a session) and avoided the annoying 
+auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
+doPost() whre it is needed and only if it is a new (invalid) session.
+
+
 To use the Upload servlet, add the -U (case sensitive) or --uploadservlet option on the command line.
 It can also be maintained in the config (properties text) file using the ``uploadservlet=true`` parameter.
 
@@ -156,7 +168,7 @@ Note that keytool is normally bundled with JDK distributions, it is not part of 
 Next run the app with -S option and the keystore file. If the keystore password is not
 specified on the command line, it would prompt for it. e.g.
 ```
-java -jar embtomcatwebdav-0.5.0.jar -p 8443 -S keystorefile.jkf 
+java -jar embtomcatwebdav-0.5.1.jar -p 8443 -S keystorefile.jkf 
 ```
 Note that when you run the app with the -S keystorefile.jkf option, it copies the keystore file into the 'tomcat.port' work folder, this is needed for the app to access the keystore file.
 
@@ -174,12 +186,12 @@ There are rather tricky ways to be your own CA, make certs. But it may involve i
 ## Development/Embedding
 
 This release is released to maven central
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.5.0
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.5.1
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.5.0</version>
+    <version>0.5.1</version>
 </dependency>
 ```
 v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread.
