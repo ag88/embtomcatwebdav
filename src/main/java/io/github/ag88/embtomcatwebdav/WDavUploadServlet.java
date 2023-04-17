@@ -66,6 +66,7 @@ import io.github.ag88.embtomcatwebdav.opt.Opt;
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 import io.github.ag88.embtomcatwebdav.util.DefFilePathNameValidator;
 import io.github.ag88.embtomcatwebdav.util.FilePathNameValidator;
+import io.github.ag88.embtomcatwebdav.util.SortManager;
 
 /**
  * Class WDavUploadServlet - the Upload Servlet.<p>
@@ -432,15 +433,14 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append("<p>\n");
         
         // directory listing
+        SortManager sortmgr = new SortManager(true);
 
-        /*
         SortManager.Order order;
         if(sortListings && null != request) {
-            order = sortManager.getOrder(request.getQueryString());
+            order = sortmgr.getOrder(request.getQueryString());
         } else {
             order = null;
         }
-        */
         
         // Render the column headings
         
@@ -448,9 +448,9 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append("<div class=\"column-heading\">\n");
         sb.append("<div class=\"col-2\">");
         if(sortListings && null != request) {        	
-            //sb.append("<a href=\"?C=N;O=");
-            //sb.append(getOrderChar(order, 'N'));
-        	sb.append("<a href=\"?C=N;O=N");
+            sb.append("<a href=\"?C=N;O=");
+            sb.append(getOrderChar(order, 'N'));
+        	//sb.append("<a href=\"?C=N;O=N");
             sb.append("\">");
             sb.append(sm.getString("directory.filename"));
             sb.append("</a>");
@@ -460,9 +460,9 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append("</div>\n");
         sb.append("<div class=\"col-3\">");
         if(sortListings && null != request) {
-            //sb.append("<a href=\"?C=S;O=");
-            //sb.append(getOrderChar(order, 'S'));
-        	sb.append("<a href=\"?C=S;O=S");
+            sb.append("<a href=\"?C=S;O=");
+            sb.append(getOrderChar(order, 'S'));
+        	//sb.append("<a href=\"?C=S;O=S");
             sb.append("\">");
             sb.append(sm.getString("directory.size"));
             sb.append("</a>");
@@ -472,9 +472,9 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append("</div>\n");
         sb.append("<div class=\"col-4\">");
         if(sortListings && null != request) {
-            //sb.append("<a href=\"?C=M;O=");
-            //sb.append(getOrderChar(order, 'M'));
-        	sb.append("<a href=\"?C=M;O=M");
+            sb.append("<a href=\"?C=M;O=");
+            sb.append(getOrderChar(order, 'M'));
+        	//sb.append("<a href=\"?C=M;O=M");
             sb.append("\">");
             sb.append(sm.getString("directory.lastModified"));
             sb.append("</a>");
@@ -483,11 +483,10 @@ public class WDavUploadServlet extends WebdavServlet {
         }
         sb.append("</div>\n");
         sb.append("</div>\n");  //col-heading
-        /*
-        if(null != sortManager && null != request) {
-            sortManager.sort(entries, request.getQueryString());
+
+        if(null != sortmgr && null != request) {
+            sortmgr.sort(entries, request.getQueryString());
         }
-        */
 
         boolean shade = false;
         for (WebResource childResource : entries) {
@@ -636,4 +635,26 @@ public class WDavUploadServlet extends WebdavServlet {
         writer.flush();
         return new ByteArrayInputStream(stream.toByteArray());
 	}
+	
+    /**
+     * Gets the ordering character to be used for a particular column.
+     *
+     * @param order  The order that is currently being applied
+     * @param column The column that will be rendered.
+     *
+     * @return Either 'A' or 'D', to indicate "ascending" or "descending" sort
+     *         order.
+     */
+    private char getOrderChar(SortManager.Order order, char column) {
+        if(column == order.column) {
+            if(order.ascending) {
+                return 'D';
+            } else {
+                return 'A';
+            }
+        } else {
+            return 'D';
+        }
+    }
+
 }
