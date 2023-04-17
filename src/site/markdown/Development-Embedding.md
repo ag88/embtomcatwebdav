@@ -3,12 +3,12 @@
 ## Maven coordinates
 
 This is released to maven central.
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.5.1
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.5.2
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.5.1</version>
+    <version>0.5.2</version>
 </dependency>
 ```
 - v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread. By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
@@ -25,6 +25,7 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.5.1
   authentication every refresh and page. This is still as secure (managed by a session) and avoided the annoying 
   auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
   doPost() where it is needed and only if it is a new (invalid) session.
+- v0.5.2 added(fixed) sorting in Upload servlet
 
 
 ## Embedding

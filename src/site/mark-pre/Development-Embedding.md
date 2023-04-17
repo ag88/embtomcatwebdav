@@ -25,6 +25,7 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/${project.v
   authentication every refresh and page. This is still as secure (managed by a session) and avoided the annoying 
   auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
   doPost() where it is needed and only if it is a new (invalid) session.
+- v0.5.2 added(fixed) sorting in Upload servlet
 
 
 ## Embedding

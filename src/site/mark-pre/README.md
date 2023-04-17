@@ -37,6 +37,7 @@ it is created.
   authentication every refresh and page. This is still as secure (managed by a session) and avoided the annoying 
   auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
   doPost() where it is needed and only if it is a new (invalid) session.
+- v0.5.2 added(fixed) sorting in Upload servlet
 
 ![screenshot in a browser](web/screenshot.jpg "Screen shot")
 
@@ -119,6 +120,7 @@ authentication every refresh and page. This is still as secure (managed by a ses
 auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
 doPost() whre it is needed and only if it is a new (invalid) session.
 
+v0.5.2 added(fixed) sorting in Upload servlet
 
 To use the Upload servlet, add the -U (case sensitive) or --uploadservlet option on the command line.
 It can also be maintained in the config (properties text) file using the ``uploadservlet=true`` parameter.
