@@ -442,6 +442,48 @@ public class OptTest {
 		
     }
 
+    @Test
+    @Order(5)
+    public void testconfAccessLog(TestReporter reporter) throws Exception {
+    	OptTest test = getInstance();
+    	Path tempdir = test.getTempDir();
+    	reporter.publishEntry("tempdir", tempdir.toString());
+    	
+    	this.app = new App();
+    	    	
+    	String configfile = Paths.get(System.getProperty("user.dir"),"src","test","resources","wdav.ini").toString();
+    	reporter.publishEntry("config file", configfile);
+    	
+    	String[] args = { "-c", configfile};
+    	
+    	app.parseargs(args);
+    	
+    	OptFactory factory = OptFactory.getInstance();
+		if (verbose) {
+	    	StringBuilder sb = new StringBuilder(1024);
+			sb = new StringBuilder(1024);
+			sb.append(System.lineSeparator());
+			sb.append("accesslog:");
+			sb.append(factory.getOpt("accesslog").getValue());
+			sb.append(System.lineSeparator());
+			sb.append("accesslog.dir:");
+			sb.append(factory.getOpt("accesslog.dir").getValue());
+			sb.append(System.lineSeparator());
+			sb.append("accesslog.rot:");
+			sb.append(factory.getOpt("accesslog.rot").getValue());
+			sb.append(System.lineSeparator());
+			sb.append("accesslog.days:");
+			sb.append(factory.getOpt("accesslog.days").getValue());
+			sb.append(System.lineSeparator());
+			reporter.publishEntry("test", Arrays.toString(args));
+			reporter.publishEntry("test", sb.toString());
+		}
+
+		assertThat(factory.getOpt("accesslog").getValue(),	is(true));
+		assertThat(factory.getOpt("accesslog.days").getValue(),	equalTo(30));
+		assertThat(factory.getOpt("accesslog.rot").getValue(),	is(true));
+    }
+    
     
     @AfterAll
 	static public void aftereall(TestReporter reporter) throws Exception {

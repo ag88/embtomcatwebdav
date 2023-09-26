@@ -27,6 +27,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -121,6 +125,12 @@ public class CLResourceServlet extends HttpServlet {
 				resp.setContentType(mimetype);
 				resp.setHeader("Content-disposition", "inline");
 				log.debug(mimetype);
+				
+				long tlms = resurl.openConnection().getLastModified();
+				if(tlms > 0) {
+					ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(tlms), ZoneId.of("GMT"));
+					resp.setHeader("Last-Modified", DateTimeFormatter.RFC_1123_DATE_TIME.format(zdt));
+				}
 			}					
 
 			int size = resurl.openConnection().getContentLength();

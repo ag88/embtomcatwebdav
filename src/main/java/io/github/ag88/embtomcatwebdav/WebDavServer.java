@@ -58,6 +58,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.realm.MessageDigestCredentialHandler;
 import org.apache.catalina.servlets.WebdavServlet;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.valves.AccessLogValve;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -72,6 +73,9 @@ import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 
 import io.github.ag88.embtomcatwebdav.opt.Opt;
+import io.github.ag88.embtomcatwebdav.opt.OptAccesslogDays;
+import io.github.ag88.embtomcatwebdav.opt.OptAccesslogDir;
+import io.github.ag88.embtomcatwebdav.opt.OptAccesslogRot;
 import io.github.ag88.embtomcatwebdav.opt.OptBaseDir;
 import io.github.ag88.embtomcatwebdav.opt.OptConf;
 import io.github.ag88.embtomcatwebdav.opt.OptDigest;
@@ -179,6 +183,13 @@ public class WebDavServer
 	 * use upload servlet
 	 */
 	boolean uploadservlet = false;
+	
+	/*
+	 * enable access log 
+	 */
+	boolean accesslog = false;
+	
+	Map<String, Opt> m_opts;
 	
 	/**
 	 * Instantiates a new web dav server, no arg constructor.	 * 
@@ -317,6 +328,28 @@ public class WebDavServer
 				context.addConstraint(secconstr);				
 			}			
 			
+			if(accesslog) {
+				AccessLogValve aclogv = new AccessLogValve();
+				OptAccesslogDir optdir = (OptAccesslogDir) m_opts.get("accesslog.dir");
+				if(optdir != null && optdir.isvalid(optdir.getValue()))
+					aclogv.setDirectory((String) optdir.getValue());
+				else
+					aclogv.setDirectory(basedir);
+				aclogv.setPattern("common");
+				OptAccesslogRot optrot = (OptAccesslogRot) m_opts.get("accesslog.rot");
+				if(optrot != null)
+					aclogv.setRotatable((Boolean) optrot.getValue()); 
+				OptAccesslogDays optdays = (OptAccesslogDays) m_opts.get("accesslog.days");
+				if(optdays != null)
+					aclogv.setMaxDays((Integer) optdays.getValue());;
+				context.getPipeline().addValve(aclogv);
+				if(!quiet) {
+					log.info("access log dir:" + aclogv.getDirectory());
+					log.info("access log rotatable:" + aclogv.isRotatable());
+					log.info("access log max days:" + aclogv.getMaxDays());
+				}
+			}
+			
 			Servlet servlet;
 			if(uploadservlet) {
 				servlet = (Servlet) new WDavUploadServlet();
@@ -353,7 +386,7 @@ public class WebDavServer
 				log.info(String.format("Webdav servlet running at %s://%s:%s%s", 
 					(keystorefile!=null && keystorepasswd != null) ? "https" : "http", 
 					shost, Integer.toString(port), urlprefix.substring(0,urlprefix.length()-1)));
-
+			
 			tomcat.start();
 			tomcat.getServer().await();
 		} catch (LifecycleException e) {
@@ -525,6 +558,9 @@ public class WebDavServer
 		this.keystorepasswd = (String) opts.get("keystorepasswd").getValue();
 		this.quiet = ((Boolean) opts.get("quiet").getValue()).booleanValue();
 		this.uploadservlet = ((Boolean) opts.get("uploadservlet").getValue()).booleanValue();
+		this.accesslog = ((Boolean) opts.get("accesslog").getValue()).booleanValue();
+		
+		m_opts = opts;
 				
 	}
 		
