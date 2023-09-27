@@ -861,7 +861,53 @@ public class WebDavServer
 		this.uploadservlet = uploadservlet;
 	}
 
+	
 		
+	/**
+	 * Checks if accesslog is enabled.
+	 *
+	 * @return true, if accesslog is enabled
+	 */
+	public boolean isAccesslog() {
+		return accesslog;
+	}
+
+
+	/**
+	 * Sets accesslog, true = accesslog enabled
+	 *
+	 * @param accesslog flag enable/disable accesslog
+	 */
+
+	public void setAccesslog(boolean accesslog) {
+		this.accesslog = accesslog;
+	}
+
+
+	/**
+	 * Gets the opts.
+	 * 
+	 * the opts is normally set by {@link loadparams}
+	 * 
+	 * @return the opts
+	 */
+	public Map<String, Opt> getOpts() {
+		return m_opts;
+	}
+
+
+	/**
+	 * Sets the opts.
+	 *
+	 * normally do not use this, the opts is set by {@link loadparams}
+	 * 
+	 * @param opts the opts
+	 */
+	public void setOpts(Map<String, Opt> opts) {
+		this.m_opts = opts;
+	}
+
+
 	/**
      * Gets the embedded tomcat instance (Tomcat class)
      *
