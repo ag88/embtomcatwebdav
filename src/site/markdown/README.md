@@ -38,6 +38,7 @@ it is created.
   auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
   doPost() where it is needed and only if it is a new (invalid) session.
 - v0.5.2 added(fixed) sorting in Upload servlet
+- v0.6.0 added access log
 
 ![screenshot in a browser](web/screenshot.jpg "Screen shot")
 
@@ -48,16 +49,17 @@ mvn package
 ## Run
 
 ```
-java -jar embtomcatwebdav-0.5.2.jar
+java -jar embtomcatwebdav-0.6.0.jar
 ```
-Note that if you build from source the file name is embtomcatwebdav-0.5.2-jar-with-dependencies.jar, in target/ folder.
+Note that if you build from source the file name is embtomcatwebdav-0.6.0-jar-with-dependencies.jar, in target/ folder.
 
 ## usage 
 
 ```
-java -jar embtomcatwebdav-0.5.2.jar -h
+java -jar embtomcatwebdav-0.6.0.jar -h
 
-usage: embtomcatwebdav-0.5.2
+usage: embtomcatwebdav-0.6.0
+    --accesslog                  enable access log
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
  -c,--conf <configfile>          load properties config file
@@ -148,6 +150,25 @@ Upload servlet on a desktop web browser
 ![screenshot in a browser](web/UploadServPhone.jpg "Upload on a phone")  
 Upload servlet on a phone web browser
 
+## Accesslog
+
+v0.6.0 added access log
+
+Accesslog can be enabled via the --accesslog option (or accesslog=true in the config file). 
+By default, the accesslog is saved in the tomcat work directory "tomcat.port". 
+Some configurations as described in the 
+[Access_Log_Valve](https://tomcat.apache.org/tomcat-8.5-doc/config/valve.html#Access_Log_Valve) 
+docs. Three of the configuration options can be specified in the config file.
+```
+# the access log dir this defaults to the tomcat work dir if not specified e.g.
+accesslog.dir: c:\embtomcatwebdav
+# this defaults to -1 which does not rotate by default
+# other values is per Apache Tomcat's Access_Log_Valve
+accesslog.days=-1
+# this defaults to rotate, if set to false the behavior is per Apache Tomcat's Access_Log_Valve
+accesslog.rot=true
+```
+
 ## SSL
 
 Note that using SSL is deemed an advanced topic. While I've done some tests with this, there is no assurance if this would work in any serious context, i.e. No Warranty.
@@ -170,7 +191,7 @@ Note that keytool is normally bundled with JDK distributions, it is not part of 
 Next run the app with -S option and the keystore file. If the keystore password is not
 specified on the command line, it would prompt for it. e.g.
 ```
-java -jar embtomcatwebdav-0.5.2.jar -p 8443 -S keystorefile.jkf 
+java -jar embtomcatwebdav-0.6.0.jar -p 8443 -S keystorefile.jkf 
 ```
 Note that when you run the app with the -S keystorefile.jkf option, it copies the keystore file into the 'tomcat.port' work folder, this is needed for the app to access the keystore file.
 
@@ -188,12 +209,12 @@ There are rather tricky ways to be your own CA, make certs. But it may involve i
 ## Development/Embedding
 
 This release is released to maven central
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.5.2
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.6.0
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.5.2</version>
+    <version>0.6.0</version>
 </dependency>
 ```
 v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread.

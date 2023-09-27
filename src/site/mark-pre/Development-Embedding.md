@@ -26,7 +26,7 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/${project.v
   auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
   doPost() where it is needed and only if it is a new (invalid) session.
 - v0.5.2 added(fixed) sorting in Upload servlet
-
+- v0.6.0 added access log
 
 ## Embedding
 

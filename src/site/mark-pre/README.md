@@ -38,6 +38,7 @@ it is created.
   auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
   doPost() where it is needed and only if it is a new (invalid) session.
 - v0.5.2 added(fixed) sorting in Upload servlet
+- v0.6.0 added access log
 
 ![screenshot in a browser](web/screenshot.jpg "Screen shot")
 
@@ -58,6 +59,7 @@ Note that if you build from source the file name is ${project.artifactId}-${proj
 java -jar ${project.artifactId}-${project.version}.jar -h
 
 usage: ${project.artifactId}-${project.version}
+    --accesslog                  enable access log
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
  -c,--conf <configfile>          load properties config file
@@ -147,6 +149,25 @@ Upload servlet on a desktop web browser
 
 ![screenshot in a browser](web/UploadServPhone.jpg "Upload on a phone")  
 Upload servlet on a phone web browser
+
+## Accesslog
+
+v0.6.0 added access log
+
+Accesslog can be enabled via the --accesslog option (or accesslog=true in the config file). 
+By default, the accesslog is saved in the tomcat work directory "tomcat.port". 
+Some configurations as described in the 
+[Access_Log_Valve](https://tomcat.apache.org/tomcat-8.5-doc/config/valve.html#Access_Log_Valve) 
+docs. Three of the configuration options can be specified in the config file.
+```
+# the access log dir this defaults to the tomcat work dir if not specified e.g.
+accesslog.dir: c:\embtomcatwebdav
+# this defaults to -1 which does not rotate by default
+# other values is per Apache Tomcat's Access_Log_Valve
+accesslog.days=-1
+# this defaults to rotate, if set to false the behavior is per Apache Tomcat's Access_Log_Valve
+accesslog.rot=true
+```
 
 ## SSL
 
