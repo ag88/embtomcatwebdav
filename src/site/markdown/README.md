@@ -47,16 +47,13 @@ it is created.
 
 ![screenshot in a browser](web/screenshot.jpg "Screen shot")
 
-## Build
-```
-mvn package
-```
 ## Run
+
+It is recommended to use the recent/latest [release jars](https://github.com/ag88/embtomcatwebdav/releases).
 
 ```
 java -jar embtomcatwebdav-0.6.1.jar
 ```
-Note that if you build from source the file name is embtomcatwebdav-0.6.1-jar-with-dependencies.jar, in target/ folder.
 
 ## usage 
 
@@ -210,6 +207,13 @@ https://tomcat.apache.org/tomcat-8.5-doc/ssl-howto.html#Installing_a_Certificate
 Generally, for temporary use it'd be costly/overwhelming to get a true CA signed cert. In addition, browsers and apps may validate the cert against DNS data that the domain names matches the certs etc, this could make it practically unfeasible to run https:// SSL on an arbitrary device/system.
 
 There are rather tricky ways to be your own CA, make certs. But it may involve installing your own CA root certs manually on the client devices/browsers etc. This again is beyond scope of covering it here, but a web (e.g. Google) search may get you some leads on how to do that.
+
+## Build
+```
+mvn package
+```
+
+Note that if you build from source the jar file is embtomcatwebdav-0.6.1-jar-with-dependencies.jar, in target/ folder.
 
 ## Development/Embedding
 
