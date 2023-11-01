@@ -385,7 +385,14 @@ public class WDavUploadServlet extends WebdavServlet {
         sb.append(sm.getString("directory.title", directoryWebappPath));
         sb.append("</title>\r\n");
         sb.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
-        sb.append("<link rel=\"stylesheet\" href=\"/res/style.css\">");
+        sb.append("<link rel=\"stylesheet\" href=\"/res/style.css\">\n");
+        sb.append("<script type=\"text/javascript\">\n");
+        sb.append("function onupload() {\n" 
+        		+ "  document.getElementById(\"upmsg\").style = \"visibility: visible; color: orange;\";\n"
+        		+ "  document.getElementById(\"upmsg\").innerHTML = \"uploading...\";\n"        		
+        		+ "  return true;\n"
+        		+ "}\n");
+        sb.append("</script>\r\n");
         sb.append("</head>\r\n");
         sb.append("<body>");
         sb.append("<h1>");        
@@ -550,21 +557,24 @@ public class WDavUploadServlet extends WebdavServlet {
         }
         */
 
-        sb.append("<div class=\"upload\">\n");
+        sb.append("<div class=\"upload\">\n");        
         sb.append("<h2>Upload File</h2>\n");
         String prefix = request.getServletPath();                      
         
-        sb.append("<form class=\"upload-file\" action=\"" + prefix  + directoryWebappPath + "\"" +
-        		" enctype=\"multipart/form-data\" method=post>");        
+        sb.append("<form class=\"upload-file\" action=\"" + prefix  + directoryWebappPath + "\"" 
+        		+ " enctype=\"multipart/form-data\""
+        		+ " onsubmit=\"onupload()\""
+        		+ " method=post>\n");        
         sb.append("<label for=\"files\">Select file:</label>\n");
         sb.append("<input type=\"file\" id=\"files\" name=\"files\" multiple><br><br>\n");        
         sb.append("<input type=\"submit\" value=\"upload\">\n");
+        sb.append("<div id=\"upmsg\" style=\"visibility: hidden;\"></div>\n");
         sb.append("</form>\n");
         sb.append("<br><br>\n");
         
         
-        sb.append("<form class=\"upload-ovrw\" action=\"" + prefix  + directoryWebappPath + "\" + method=post>");
-        sb.append("<label>Overwrite</label><br>\n");
+        sb.append("<form class=\"upload-ovrw\" action=\"" + prefix  + directoryWebappPath + "\" + method=post>\n");
+        sb.append("<div>Overwrite</div>\n");
         boolean overwrite = false;
         if(request.getSession().getAttribute("overwrite") != null)
         	overwrite = (Boolean) request.getSession().getAttribute("overwrite");

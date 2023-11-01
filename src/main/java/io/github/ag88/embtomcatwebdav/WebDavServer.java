@@ -323,7 +323,12 @@ public class WebDavServer
 				secconstr.addAuthRole("user");
 				secconstr.setAuthConstraint(true);
 				SecurityCollection sc = new SecurityCollection();
-				sc.addPattern("/*");
+				//sc.addPattern("/*");
+				String pat = urlprefix;
+				if(! pat.endsWith("/"))
+					pat = pat.concat("/");
+				pat = pat.concat("*");
+				sc.addPattern(pat);
 				secconstr.addCollection(sc);
 				context.addConstraint(secconstr);				
 			}			
