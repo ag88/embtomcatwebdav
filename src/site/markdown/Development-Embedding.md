@@ -3,12 +3,12 @@
 ## Maven coordinates
 
 This is released to maven central.
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.6.0
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.6.1
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.6.0</version>
+    <version>0.6.1</version>
 </dependency>
 ```
 - v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread. By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
@@ -27,6 +27,13 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.6.0
   doPost() where it is needed and only if it is a new (invalid) session.
 - v0.5.2 added(fixed) sorting in Upload servlet
 - v0.6.0 added access log
+- v0.6.1 usability updates for upload servlet:
+  - limit authentication access to configured url prefix instead of /*,
+    this helps to reduce authentication challenges for resources icons,
+     e.g. favicon.ico etc for some browsers.
+  - added upload feedback on the page for large/long uploads,
+    add upload feedback for the upload servlet, so that
+    it shows 'uploading...' once upload is clicked.  
 
 ## Embedding
 

@@ -3,8 +3,6 @@ A WebDAV server based on Apache Tomcat's Webdav servlet and embedded Tomcat serv
 
 This is a WebDAV server based on Apache Tomcat's WebDAV servlet and embedded Tomcat server
 
-Current status: alpha/test
-
 ## Feature list
 - It runs on http://localhost:8080/webdav
 - It serves the current working directory in which the app is started
@@ -39,6 +37,13 @@ it is created.
   doPost() where it is needed and only if it is a new (invalid) session.
 - v0.5.2 added(fixed) sorting in Upload servlet
 - v0.6.0 added access log
+- v0.6.1 usability updates for upload servlet:
+  - limit authentication access to configured url prefix instead of /*,
+    this helps to reduce authentication challenges for resources icons,
+     e.g. favicon.ico etc for some browsers.
+  - added upload feedback on the page for large/long uploads,
+    add upload feedback for the upload servlet, so that
+    it shows 'uploading...' once upload is clicked.  
 
 ![screenshot in a browser](web/screenshot.jpg "Screen shot")
 

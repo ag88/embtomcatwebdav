@@ -3,8 +3,6 @@ A WebDAV server based on Apache Tomcat's Webdav servlet and embedded Tomcat serv
 
 This is a WebDAV server based on Apache Tomcat's WebDAV servlet and embedded Tomcat server
 
-Current status: alpha/test
-
 ## Feature list
 - It runs on http://localhost:8080/webdav
 - It serves the current working directory in which the app is started
@@ -39,6 +37,13 @@ it is created.
   doPost() where it is needed and only if it is a new (invalid) session.
 - v0.5.2 added(fixed) sorting in Upload servlet
 - v0.6.0 added access log
+- v0.6.1 usability updates for upload servlet:
+  - limit authentication access to configured url prefix instead of /*,
+    this helps to reduce authentication challenges for resources icons,
+     e.g. favicon.ico etc for some browsers.
+  - added upload feedback on the page for large/long uploads,
+    add upload feedback for the upload servlet, so that
+    it shows 'uploading...' once upload is clicked.  
 
 ![screenshot in a browser](web/screenshot.jpg "Screen shot")
 
@@ -49,16 +54,16 @@ mvn package
 ## Run
 
 ```
-java -jar embtomcatwebdav-0.6.0.jar
+java -jar embtomcatwebdav-0.6.1.jar
 ```
-Note that if you build from source the file name is embtomcatwebdav-0.6.0-jar-with-dependencies.jar, in target/ folder.
+Note that if you build from source the file name is embtomcatwebdav-0.6.1-jar-with-dependencies.jar, in target/ folder.
 
 ## usage 
 
 ```
-java -jar embtomcatwebdav-0.6.0.jar -h
+java -jar embtomcatwebdav-0.6.1.jar -h
 
-usage: embtomcatwebdav-0.6.0
+usage: embtomcatwebdav-0.6.1
     --accesslog                  enable access log
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
@@ -191,7 +196,7 @@ Note that keytool is normally bundled with JDK distributions, it is not part of 
 Next run the app with -S option and the keystore file. If the keystore password is not
 specified on the command line, it would prompt for it. e.g.
 ```
-java -jar embtomcatwebdav-0.6.0.jar -p 8443 -S keystorefile.jkf 
+java -jar embtomcatwebdav-0.6.1.jar -p 8443 -S keystorefile.jkf 
 ```
 Note that when you run the app with the -S keystorefile.jkf option, it copies the keystore file into the 'tomcat.port' work folder, this is needed for the app to access the keystore file.
 
@@ -209,12 +214,12 @@ There are rather tricky ways to be your own CA, make certs. But it may involve i
 ## Development/Embedding
 
 This release is released to maven central
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.6.0
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.6.1
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.6.0</version>
+    <version>0.6.1</version>
 </dependency>
 ```
 v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread.
