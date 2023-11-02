@@ -45,15 +45,61 @@ it is created.
     add upload feedback for the upload servlet, so that
     it shows 'uploading...' once upload is clicked.  
 
+status: beta
+
 ![screenshot in a browser](web/screenshot.jpg "Screen shot")
 
 ## Run
 
 It is recommended to use the recent/latest [release jars](https://github.com/ag88/embtomcatwebdav/releases).
+Java / JDK >= 1.8 is required
 
 ```
 java -jar embtomcatwebdav-0.6.1.jar
 ```
+In some operating systems, it may be possible to run it by simply double clicking on the jar file after Java/JDK is installed.
+
+To run with parameters e.g. using the Upload servlet
+```
+java -jar embtomcatwebdav-0.6.1.jar -U
+```
+
+If you have various configuration parameters, it is recommended to use a config file.
+A template can be generated as such
+```
+java -jar embtomcatwebdav-0.6.1.jar --genconf wdav.ini
+```
+
+The above would generate a config file (e.g. wdav.ini), and may look like such.
+Note that the generated configs may not be in this order and you may need to
+rearrange them.
+```
+#Embedded Tomcat Webdav server properties
+basedir=c:/tomcat.8080
+path=c:/
+urlprefix=/webdav
+host=localhost
+port=8080
+realm=Simple
+user=
+password=
+uploadservlet=true
+digest=false
+quiet=false
+keystorefile=
+keystorepasswd=
+accesslog=false
+accesslog.dir=
+accesslog.days=-1
+accesslog.rot=true
+```
+
+Thereafter, running with the config file e.g. wdav.ini is
+```
+java -jar embtomcatwebdav-0.6.1.jar -c wdav.ini
+```
+You may like to adapt the batch files e.g. run.bat, run.sh as examples to run it as such.
+In that way it is also possible to set up auto start by simply running the batch file.
 
 ## usage 
 
