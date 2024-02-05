@@ -1,7 +1,12 @@
 A WebDAV server based on Apache Tomcat's Webdav servlet and embedded Tomcat server
 ---
 
-This is a WebDAV server based on Apache Tomcat's WebDAV servlet and embedded Tomcat server
+This is a WebDAV / web server based on Apache Tomcat's WebDAV servlet and embedded Tomcat server.  
+It serves the current directory as a web site. 
+That makes it convenient to upload/download files from your PC/notebook PC from a
+remote device say a mobile phone (Android, iPhone etc) simply using the web browser.  
+Running it with the -U option makes it possible to upload files without a WebDAV client.
+
 
 ## Feature list
 - It runs on http://localhost:8080/webdav
