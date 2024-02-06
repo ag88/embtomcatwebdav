@@ -394,12 +394,13 @@ public class WDavUploadServlet extends WebdavServlet {
         		+ "}\n");
         sb.append("</script>\r\n");
         sb.append("</head>\r\n");
-        sb.append("<body>");
-        sb.append("<h1>");        
+        sb.append("<body>");        
 
         // breadcrumb at top
         
         //sb.append(sm.getString("directory.title", directoryWebappPath));
+        sb.append("<nav>");
+        sb.append("<h1>");
         sb.append("Directory Listing for : &nbsp; &nbsp;");
         
         // Render the link to our parent (if required)
@@ -436,6 +437,9 @@ public class WDavUploadServlet extends WebdavServlet {
         
 
         sb.append("</h1>\n");
+        sb.append("&nbsp;&nbsp;<a class=\"ha-shade\" href=\"#uploadfile\">Upload file</a><br><br>\n");
+        sb.append("</nav>\n");
+        
         sb.append("<hr class=\"line\">\n");
         sb.append("<p>\n");
         
@@ -558,7 +562,7 @@ public class WDavUploadServlet extends WebdavServlet {
         */
 
         sb.append("<div class=\"upload\">\n");        
-        sb.append("<h2>Upload File</h2>\n");
+        sb.append("<h2 id=\"uploadfile\">Upload File</h2>\n");
         String prefix = request.getServletPath();                      
         
         sb.append("<form class=\"upload-file\" action=\"" + prefix  + directoryWebappPath + "\"" 

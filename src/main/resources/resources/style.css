@@ -73,13 +73,18 @@
 	width: auto;
 }
 
-h1, h2, h3, b {
+h1, h2, h3, b, nav {
 	color:black;
 	background-color:#c0c0c0;
 }
 
 a {
 	color:dark-blue;
+}
+
+a.ha-shade {
+	color:dark-blue;
+	background-color:#c0c0c0;
 }
 
 .line {
