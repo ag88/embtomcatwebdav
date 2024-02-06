@@ -34,6 +34,9 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/${project.v
   - added upload feedback on the page for large/long uploads,
     add upload feedback for the upload servlet, so that
     it shows 'uploading...' once upload is clicked.  
+- v0.6.2 usability updates for upload servlet:
+  - added a link to upload section at the top, this help with long directory lists
+    relieves from long scrolls to the bottom just for uploads
 
 ## Embedding
 
