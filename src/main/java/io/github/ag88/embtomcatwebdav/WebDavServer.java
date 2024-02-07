@@ -370,20 +370,31 @@ public class WebDavServer
 			ws.addInitParameter("readonly", "false");
 			ws.addInitParameter("allowSpecialPaths", "true");
 			
+			String urlprefix1;
 			if (! urlprefix.endsWith("/"))
-				urlprefix = urlprefix.concat("/*");
+				urlprefix1 = urlprefix.concat("/*");
 			else
-				urlprefix = urlprefix.concat("*");
+				urlprefix1 = urlprefix.concat("*");
 						
-			context.addServletMappingDecoded(urlprefix, "webdav");
+			context.addServletMappingDecoded(urlprefix1, "webdav");
 			
 			if(uploadservlet) { 
 				//register the resource servlet
 				servlet = new CLResourceServlet();
 				ws = Tomcat.addServlet(context, "clres", servlet);
 				
-				context.addServletMappingDecoded("/res/*", "clres");	
+				context.addServletMappingDecoded("/res/*", "clres");
+				
+				/* if webdav is not at root '/' redirect to the webdav 
+				 * url prefix 
+				 */
+				if (!(urlprefix.equals("") || urlprefix.equals("/"))) {
+					servlet = new RedirServlet(urlprefix);
+					Tomcat.addServlet(context, "redir", servlet);
+					context.addServletMappingDecoded("/", "redir");					
+				}
 			}
+			
 			
 			context.setSessionTimeout(30);
 			
