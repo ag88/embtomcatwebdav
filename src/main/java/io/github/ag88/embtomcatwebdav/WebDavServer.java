@@ -357,7 +357,7 @@ public class WebDavServer
 			
 			Servlet servlet;
 			if(uploadservlet) {
-				servlet = (Servlet) new WDavUploadServlet();
+				servlet = (Servlet) new WDavUploadServlet2();
 				if(!quiet)
 					log.info("running Upload servlet");
 			} else
@@ -367,7 +367,7 @@ public class WebDavServer
 			ws.addInitParameter("debug", "0");
 			ws.addInitParameter("listings", "true");
 			ws.addInitParameter("sortListings", "true");
-			ws.addInitParameter("readonly", "false");
+		    ws.addInitParameter("readonly", "false");
 			ws.addInitParameter("allowSpecialPaths", "true");
 			
 			String urlprefix1;

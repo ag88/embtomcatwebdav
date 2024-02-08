@@ -84,10 +84,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-  			<groupId>org.apache.httpcomponents</groupId>
-  			<artifactId>httpmime</artifactId>
-  			<version>4.5.14</version>
-  			<scope>test</scope>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.5.14</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -226,7 +226,7 @@
 								<manifestEntries>
 									<artifactId>${project.artifactId}</artifactId>
 									<groupId>${project.groupId}</groupId>
-									<version>${project.version}</version>									
+									<version>${project.version}</version>
 									<helpfoot1>#nCopyright (C) #YEAR Andrew Goh#n</helpfoot1>
 									<helpfoot2>#nLicensed under the Apache License, Version	2.0#nhttp://www.apache.org/licenses/LICENSE-2.0#n</helpfoot2>
 									<helpfoot3>#nProject website:https://github.com/ag88/embtomcatwebdav#n</helpfoot3>
@@ -314,11 +314,11 @@
 											<directory>${basedir}/src/assembly</directory>
 											<filtering>true</filtering>
 											<includes>
-          										<include>footeru1.txt</include>
-          									</includes>
-          									<excludes>
-          										<exclude>distribution.xml</exclude>
-          									</excludes>
+												<include>footeru1.txt</include>
+											</includes>
+											<excludes>
+												<exclude>distribution.xml</exclude>
+											</excludes>
 										</resource>
 									</resources>
 								</configuration>
@@ -369,9 +369,9 @@
 						<version>3.12.1</version>
 					</plugin>
 					<plugin>
-  						<groupId>org.apache.maven.plugins</groupId>
-  						<artifactId>maven-project-info-reports-plugin</artifactId>
-  						<version>3.4.5</version>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-project-info-reports-plugin</artifactId>
+						<version>3.4.5</version>
 					</plugin>
 				</plugins>
 			</build>
@@ -426,13 +426,13 @@
 		</profile>
 	</profiles>
 
-    <reporting>
-        <plugins>           
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.4.5</version>
-            </plugin>           
-        </plugins>    
-    </reporting>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>3.4.5</version>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
