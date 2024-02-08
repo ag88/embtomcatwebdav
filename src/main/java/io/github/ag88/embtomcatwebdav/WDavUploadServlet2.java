@@ -564,18 +564,17 @@ public class WDavUploadServlet2 extends WebdavServlet {
 	
 	public Template loadvmtemplate(String filename) throws IOException {
 		Template template = null;
-		final String vmname = "velocity/dirlist.vm";
 		try	{
-		  template = Velocity.getTemplate(vmname);
+		  template = Velocity.getTemplate(filename);
 		  return template;
 		} catch( ResourceNotFoundException rnfe ) {
 			// couldn't find the template
-			log.error("cannot find template ".concat(vmname));
+			log.error("cannot find template ".concat(filename));
 			log.error(rnfe);
 			throw new IOException(rnfe);
 		} catch( ParseErrorException pee ) {
 			// syntax error: problem parsing the template
-			log.error("template parse error ".concat(vmname));
+			log.error("template parse error ".concat(filename));
 			log.error(pee);
 			throw new IOException(pee);
 		} catch( MethodInvocationException mie ) {
