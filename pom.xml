@@ -40,6 +40,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tomcat.version>8.5.87</tomcat.version>
 		<junit.version>5.9.2</junit.version>
+		<velocityengine.version>2.3</velocityengine.version>
+		<velocitytools.version>3.1</velocitytools.version>
 		<mainclass>${project.groupId}.${project.artifactId}.App</mainclass>
 		<skipTests>false</skipTests>
 	</properties>
@@ -65,6 +67,11 @@
 			<artifactId>tomcat-juli</artifactId>
 			<version>${tomcat.version}</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity-engine-core</artifactId>
+			<version>${velocityengine.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>

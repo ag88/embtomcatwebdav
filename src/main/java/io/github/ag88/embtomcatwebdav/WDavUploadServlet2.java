@@ -38,8 +38,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
@@ -62,6 +65,16 @@ import org.apache.tomcat.util.http.fileupload.FileItemStream;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.util.Streams;
 import org.apache.tomcat.util.security.Escape;
+
+import java.io.StringWriter;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.Template;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.context.Context;
+import org.apache.velocity.exception.ResourceNotFoundException;
+import org.apache.velocity.exception.ParseErrorException;
+import org.apache.velocity.exception.MethodInvocationException;
 
 import io.github.ag88.embtomcatwebdav.opt.Opt;
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
@@ -103,6 +116,12 @@ public class WDavUploadServlet2 extends WebdavServlet {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
+
+		Properties p = new Properties();
+		p.put("resource.loaders", "class");
+		p.put("resource.loader.class.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+		Velocity.init(p);
+				
 		Opt opt = OptFactory.getInstance().getOpt("quiet");
 		if(opt != null)
 			quiet = ((Boolean) opt.getValue()).booleanValue();
@@ -110,6 +129,9 @@ public class WDavUploadServlet2 extends WebdavServlet {
 			quiet = false;
 	}
 
+	/* this override is to keep path evaluation the same
+	 * be it inheriting from WebdavServlet or DefaultServlet
+	 */
     @Override
     protected String getRelativePath(HttpServletRequest request, boolean allowEmptyPath) {
         String pathInfo;
@@ -383,7 +405,8 @@ public class WDavUploadServlet2 extends WebdavServlet {
 	 */
 	@Override
 	protected InputStream renderHtml(HttpServletRequest request, String contextPath, WebResource resource,
-			String encoding) throws IOException {
+			String encoding) throws IOException {				
+		
         // Prepare a writer to a buffered area
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         OutputStreamWriter osWriter = new OutputStreamWriter(stream, StandardCharsets.UTF_8);
@@ -397,45 +420,29 @@ public class WDavUploadServlet2 extends WebdavServlet {
         // rewriteUrl(contextPath) is expensive. cache result for later reuse
         String rewrittenContextPath =  rewriteUrl(contextPath);
 
+		VelocityContext context = new VelocityContext();
+		
+		Template template = loadvmtemplate("velocity/dirlist.vm");
+				
         // Render the page header
-        sb.append("<!doctype html><html>\r\n");
-        /* TODO Activate this as soon as we use smClient with the request locales
-        sb.append("<!doctype html><html lang=\"");
-        sb.append(smClient.getLocale().getLanguage()).append("\">\r\n");
-        */
-        sb.append("<head>\r\n");
-        sb.append("<title>");
-        sb.append(sm.getString("directory.title", directoryWebappPath));
-        sb.append("</title>\r\n");
-        sb.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n");
-        sb.append("<link rel=\"stylesheet\" href=\"/res/style.css\">\n");
-        sb.append("<script type=\"text/javascript\">\n");
-        sb.append("function onupload() {\n" 
-        		+ "  document.getElementById(\"upmsg\").style = \"visibility: visible; color: orange;\";\n"
-        		+ "  document.getElementById(\"upmsg\").innerHTML = \"uploading...\";\n"        		
-        		+ "  return true;\n"
-        		+ "}\n");
-        sb.append("</script>\r\n");
-        sb.append("</head>\r\n");
-        sb.append("<body>");        
-
+		context.put("title", sm.getString("directory.title", directoryWebappPath));
+		
         // breadcrumb at top
         
         //sb.append(sm.getString("directory.title", directoryWebappPath));
-        sb.append("<nav>");
-        sb.append("<h1>");
-        sb.append("Directory Listing for : &nbsp; &nbsp;");
         
         // Render the link to our parent (if required)
         String parentDirectory = directoryWebappPath;
+        String parentpath = "/", parent = "/";
+        String currdir;
+        sb = new StringBuilder(100);
         if (parentDirectory.endsWith("/")) {
             parentDirectory =
                 parentDirectory.substring(0, parentDirectory.length() - 1);
         }
         int slash = parentDirectory.lastIndexOf('/');
         if (slash >= 0) {
-            String parent = directoryWebappPath.substring(0, slash);
-            sb.append(" <a href=\"");
+            parent = directoryWebappPath.substring(0, slash);
             sb.append(rewrittenContextPath);
             if (parent.equals("")) {
                 parent = "/";
@@ -444,27 +451,18 @@ public class WDavUploadServlet2 extends WebdavServlet {
             if (!parent.endsWith("/")) {
                 sb.append('/');
             }
-            sb.append("\">");
-            sb.append("<b>");
-            //sb.append(sm.getString("directory.parent", parent));
-            sb.append(parent);
-            sb.append("</b>");
-            sb.append("</a>");
-            sb.append("&nbsp; &nbsp; / &nbsp;");
+            parentpath = sb.toString();
         }
        
         if(slash < directoryWebappPath.length())
-        	sb.append(directoryWebappPath.substring(slash+1));
+        	currdir = directoryWebappPath.substring(slash+1);
         else
-        	sb.append(directoryWebappPath);
+        	currdir = directoryWebappPath;
         
 
-        sb.append("</h1>\n");
-        sb.append("&nbsp;&nbsp;<a class=\"ha-shade\" href=\"#uploadfile\">Upload file</a><br><br>\n");
-        sb.append("</nav>\n");
-        
-        sb.append("<hr class=\"line\">\n");
-        sb.append("<p>\n");
+        context.put("parentpath", parentpath);
+        context.put("parent", parent);
+        context.put("currdir", currdir);        
         
         // directory listing
         SortManager sortmgr = new SortManager(true);
@@ -476,53 +474,19 @@ public class WDavUploadServlet2 extends WebdavServlet {
             order = null;
         }
         
-        // Render the column headings
-        
-        sb.append("<div class=\"dirlist\">\n");
-        sb.append("<div class=\"column-heading\">\n");
-        sb.append("<div class=\"col-2\">");
-        if(sortListings && null != request) {        	
-            sb.append("<a href=\"?C=N;O=");
-            sb.append(getOrderChar(order, 'N'));
-        	//sb.append("<a href=\"?C=N;O=N");
-            sb.append("\">");
-            sb.append(sm.getString("directory.filename"));
-            sb.append("</a>");
-        } else {
-            sb.append(sm.getString("directory.filename"));
-        }
-        sb.append("</div>\n");
-        sb.append("<div class=\"col-3\">");
-        if(sortListings && null != request) {
-            sb.append("<a href=\"?C=S;O=");
-            sb.append(getOrderChar(order, 'S'));
-        	//sb.append("<a href=\"?C=S;O=S");
-            sb.append("\">");
-            sb.append(sm.getString("directory.size"));
-            sb.append("</a>");
-        } else {
-            sb.append(sm.getString("directory.size"));
-        }
-        sb.append("</div>\n");
-        sb.append("<div class=\"col-4\">");
-        if(sortListings && null != request) {
-            sb.append("<a href=\"?C=M;O=");
-            sb.append(getOrderChar(order, 'M'));
-        	//sb.append("<a href=\"?C=M;O=M");
-            sb.append("\">");
-            sb.append(sm.getString("directory.lastModified"));
-            sb.append("</a>");
-        } else {
-            sb.append(sm.getString("directory.lastModified"));
-        }
-        sb.append("</div>\n");
-        sb.append("</div>\n");  //col-heading
+        // Render the column headings        
+        context.put("fn_sortop", getOrderChar(order, 'N'));        
+        context.put("lb_fn", sm.getString("directory.filename"));
+        context.put("size_sortop", getOrderChar(order, 'S'));        
+        context.put("lb_size", sm.getString("directory.size"));
+        context.put("modif_sortop", getOrderChar(order, 'S')); 
+        context.put("lb_modif", sm.getString("directory.lastModified"));
 
         if(null != sortmgr && null != request) {
             sortmgr.sort(entries, request.getQueryString());
         }
 
-        boolean shade = false;
+        List<HtmDirEntry> direntries = new ArrayList<HtmDirEntry>(20);
         for (WebResource childResource : entries) {
             String filename = childResource.getName();
             if (filename.equalsIgnoreCase("WEB-INF") ||
@@ -533,144 +497,94 @@ public class WDavUploadServlet2 extends WebdavServlet {
             if (!childResource.exists()) {
                 continue;
             }
-
-            sb.append(String.format("<div class=\"%s\">\n", shade ? "row shade" : "row" ));
-
-            shade = !shade;
             
-            sb.append("<div class=\"col-2\">");
-            sb.append("<a href=\"");
-            sb.append(rewrittenContextPath);
-            sb.append(rewriteUrl(childResource.getWebappPath()));
+            String path = rewrittenContextPath.concat(childResource.getWebappPath());
             if (childResource.isDirectory()) {
-                sb.append('/');
+                path = path.concat("/");
             }
-            sb.append("\">");
-            sb.append(Escape.htmlElementContent(filename));
-            if (childResource.isDirectory()) {
-                sb.append('/');
-            }
-            sb.append("</a>");
-            sb.append("</div>\n"); //col-2
-
-            sb.append("<div class=\"col-3\">");
-            if (childResource.isDirectory()) {
-                sb.append("&nbsp;");
-            } else {
-                sb.append(renderSize(childResource.getContentLength()));
-            }
-            sb.append("</div>\n"); //col-3
-
-            sb.append("<div class=\"col-4\">");
-            sb.append(childResource.getLastModifiedHttp());
-            sb.append("</div>\n"); //col-4
-
-            sb.append("</div>\n"); //row
-            
+            HtmDirEntry entry = new HtmDirEntry(Escape.htmlElementContent(filename), path,
+            	childResource.isDirectory(), childResource.getContentLength(), childResource.getLastModified());
+            direntries.add(entry);          
         }
-
-        sb.append("</div>\n"); //dirlist
+                
+        context.put("direntries", direntries);        
         
         // Render the page footer
-        sb.append("<p><p>\n");        
-        sb.append("<hr class=\"line\">\n");
-        sb.append("<p>\n");
+        // upload form
         
-        /*
-        String readme = getReadme(resource, encoding);
-        if (readme!=null) {
-            sb.append(readme);
-            sb.append("<hr class=\"line\">");
-        }
-        */
-
-        sb.append("<div class=\"upload\">\n");        
-        sb.append("<h2 id=\"uploadfile\">Upload File</h2>\n");
-        String prefix = request.getServletPath();                      
-        
-        sb.append("<form class=\"upload-file\" action=\"" + prefix  + directoryWebappPath + "\"" 
-        		+ " enctype=\"multipart/form-data\""
-        		+ " onsubmit=\"onupload()\""
-        		+ " method=post>\n");        
-        sb.append("<label for=\"files\">Select file:</label>\n");
-        sb.append("<input type=\"file\" id=\"files\" name=\"files\" multiple><br><br>\n");        
-        sb.append("<input type=\"submit\" value=\"upload\">\n");
-        sb.append("<div id=\"upmsg\" style=\"visibility: hidden;\"></div>\n");
-        sb.append("</form>\n");
-        sb.append("<br><br>\n");
-        
-        
-        sb.append("<form class=\"upload-ovrw\" action=\"" + prefix  + directoryWebappPath + "\" + method=post>\n");
-        sb.append("<div>Overwrite</div>\n");
+        String prefix = request.getServletPath();
+        String uploadformpath = prefix  + directoryWebappPath;
         boolean overwrite = false;
         if(request.getSession().getAttribute("overwrite") != null)
         	overwrite = (Boolean) request.getSession().getAttribute("overwrite");
-        sb.append("<input type=\"radio\" id=\"false\" name=\"overwrite\" value=\"false\" ");
-        sb.append(overwrite ? "" : "checked");
-        sb.append(">\n");
-        sb.append("<label for=\"false\">false</label><br>\n");
-        sb.append("<input type=\"radio\" id=\"true\" name=\"overwrite\" value=\"true\" ");
-        sb.append(overwrite ? "checked" : "");
-        sb.append(">\n");        
-        sb.append("<label for=\"true\">true</label><br>");
-        sb.append("<input type=\"submit\" value=\"update\">\n");        
-        sb.append("</form><p>\n");
 
-        
-        String styinfo = "style=\"color: black;\"";
-        String styerr = "style=\"color: red;\"";
-        String stywarn = "style=\"color: orange;\"";
-        
-        HttpSession session = request.getSession();        
-        
+        context.put("uploadformpath", uploadformpath);
+        context.put("overwrite", overwrite);
+                	
+        HttpSession session = request.getSession();                
         ArrayList<LogRecord> msgupload = (ArrayList<LogRecord>)
         		session.getAttribute("msgupload");
         if (msgupload != null) {
-        	sb.append("<div class=\"upload-msg\">\n");
+        	List<HtmLogEntry> logrecs = new ArrayList<HtmLogEntry>(3);
         	for(LogRecord msg : msgupload) {
-        		sb.append("<div ");
-        		if (msg.getLevel().equals(Level.SEVERE)) {
-        			sb.append(styerr);
-        		} else if (msg.getLevel().equals(Level.WARNING)) {
-        			sb.append(stywarn);
-        		} else {
-        			sb.append(styinfo);
-        		}
-        		sb.append("> ");
-        		sb.append(msg.getMessage());
-        		sb.append("</div>\n");
+        		logrecs.add(new HtmLogEntry(msg));
         	}
-        	sb.append("</div><p>\n");
+        	context.put("logrecs", logrecs);
         	session.removeAttribute("msgupload");
         }
-        	
-
-        if (showServerInfo) {
-            sb.append("<h3>").append(ServerInfo.getServerInfo()).append("</h3>\n");        
-        }
         
+        if (showServerInfo) {
+        	context.put("serverinfo", ServerInfo.getServerInfo());
+        }
+                
         URL fturl = App.class.getResource("/resources/footeru1.txt");
 		if (fturl != null) {
 
-			sb.append("<p>\n");
-			sb.append("<div class=\"footer\">\n");
-
+			sb = new StringBuilder(100);
+			
 			BufferedReader reader = new BufferedReader(new InputStreamReader(fturl.openStream()));
 			String line = null;
 			while((line = reader.readLine()) != null) {
 				sb.append(line);
+				sb.append(System.lineSeparator());
 			}
 			reader.close();
 			
-			sb.append("</div>\n"); // footer
-		}
-        sb.append("</body>\r\n");
-        sb.append("</html>\r\n");
+			context.put("footer", sb.toString());
+		}		
+		
+   		template.merge( context, writer );
 
         // Return an input stream to the underlying bytes
-        writer.write(sb.toString());
+        //writer.write(sb.toString());
         writer.flush();
         return new ByteArrayInputStream(stream.toByteArray());
+	}
+	
+	
+	public Template loadvmtemplate(String filename) throws IOException {
+		Template template = null;
+		final String vmname = "velocity/dirlist.vm";
+		try	{
+		  template = Velocity.getTemplate(vmname);
+		  return template;
+		} catch( ResourceNotFoundException rnfe ) {
+			// couldn't find the template
+			log.error("cannot find template ".concat(vmname));
+			log.error(rnfe);
+			throw new IOException(rnfe);
+		} catch( ParseErrorException pee ) {
+			// syntax error: problem parsing the template
+			log.error("template parse error ".concat(vmname));
+			log.error(pee);
+			throw new IOException(pee);
+		} catch( MethodInvocationException mie ) {
+			// something invoked in the template
+			// threw an exception
+			throw new IOException(mie);
+		} catch( Exception e ) {
+			throw new IOException(e);
+		}
 	}
 	
     /**
