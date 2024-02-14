@@ -422,7 +422,8 @@ public class WDavUploadServlet2 extends WebdavServlet {
 
 		VelocityContext context = new VelocityContext();
 		
-		Template template = loadvmtemplate("velocity/dirlist.vm");
+		//Template template = loadvmtemplate("velocity/dirlist.vm");
+		Template template = loadvmtemplate("velocity/dirlistsel.vm");
 				
         // Render the page header
 		context.put("title", sm.getString("directory.title", directoryWebappPath));
@@ -487,6 +488,7 @@ public class WDavUploadServlet2 extends WebdavServlet {
         }
 
         List<HtmDirEntry> direntries = new ArrayList<HtmDirEntry>(20);
+        
         for (WebResource childResource : entries) {
             String filename = childResource.getName();
             if (filename.equalsIgnoreCase("WEB-INF") ||
@@ -503,11 +505,14 @@ public class WDavUploadServlet2 extends WebdavServlet {
                 path = path.concat("/");
             }
             HtmDirEntry entry = new HtmDirEntry(Escape.htmlElementContent(filename), path,
-            	childResource.isDirectory(), childResource.getContentLength(), childResource.getLastModified());
+            	childResource.isDirectory(), childResource.getContentLength(), childResource.getLastModified(), 
+            	"S".concat(Integer.toString(direntries.size())));
             direntries.add(entry);          
         }
                 
-        context.put("direntries", direntries);        
+        context.put("direntries", direntries);
+        context.put("dirselformpath", "/webdav/dlzip");
+        
         
         // Render the page footer
         // upload form

@@ -6,25 +6,27 @@ public class HtmDirEntry {
 	
 	String filename;
 	String path;
-	boolean isdir;
+	boolean dir;
 	long size;
 	long lastmodified;
+	String selname;
 
 	public HtmDirEntry() {
 	}
 
-	public HtmDirEntry(String filename, String path, boolean isdir, long size, long lastmodified) {
+	public HtmDirEntry(String filename, String path, boolean dir, long size, long lastmodified, String selname) {
 		super();
 		this.filename = filename;
 		this.path = path;
-		this.isdir = isdir;
+		this.dir = dir;
 		this.size = size;
 		this.lastmodified = lastmodified;
+		this.selname = selname;
 	}
 
 	public String renderSize() {
 
-		if (isdir) return "&nbsp;";
+		if (dir) return "&nbsp;";
 		
         long leftSide = size / 1024;
         long rightSide = (size % 1024) / 103;   // Makes 1 digit
@@ -52,12 +54,12 @@ public class HtmDirEntry {
 		this.path = path;
 	}
 
-	public boolean isIsdir() {
-		return isdir;
+	public boolean isDir() {
+		return dir;
 	}
 
-	public void setIsdir(boolean isdir) {
-		this.isdir = isdir;
+	public void setDir(boolean dir) {
+		this.dir = dir;
 	}
 
 	public long getSize() {
@@ -79,5 +81,14 @@ public class HtmDirEntry {
 	public void setLastmodified(long lastmodified) {
 		this.lastmodified = lastmodified;
 	}
+
+	public String getSelname() {
+		return selname;
+	}
+
+	public void setSelname(String selname) {
+		this.selname = selname;
+	}
+
 		
 }

@@ -393,6 +393,11 @@ public class WebDavServer
 					Tomcat.addServlet(context, "redir", servlet);
 					context.addServletMappingDecoded("/", "redir");					
 				}
+				
+				servlet = new DLZipServlet(basedir, urlprefix);
+				Tomcat.addServlet(context, "dlzip", servlet);
+				context.addServletMappingDecoded("/webdav/dlzip", "dlzip");
+				
 			}
 			
 			

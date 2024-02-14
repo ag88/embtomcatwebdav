@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+<title>${title}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/res/style.css">
+<script type="text/javascript">
+function onupload() {
+	document.getElementById("upmsg").style = "visibility: visible; color: orange;";
+	document.getElementById("upmsg").innerHTML = "uploading...";
+	return true;
+}
+</script>
+</head>
+<body>
+<nav>
+<h1>Directory Listing for : &nbsp; &nbsp; <a href="${parentpath}"><b>${parent}</b></a> 
+ &nbsp; &nbsp; / &nbsp; ${currdir} </h1>
+ &nbsp; &nbsp; <a class="ha-shade" href="#uploadfile">Upload file</a><br><br>
+</nav>
+<hr class="line">
+<p>
+<form class="dirsel" action="${dirselformpath}" method="post">
+<div class="dirlist">
+  <div class="column-heading">
+    <div class="col-1a">Sel</div>
+    <div class="col-2a"><a href="?C=N;O=${fn_sortop}">${lb_fn}</a></div>
+    <div class="col-3a"><a href="?C=S;O=${size_sortop}">${lb_size}</a></div>
+    <div class="col-4a"><a href="?C=M;O=${modif_sortop}">${lb_modif}</a></div>
+  </div>
+#set( $shade = false )
+#foreach( $entry in $direntries )
+  #if( $shade )
+  <div class="row shade">
+  #else
+  <div class="row">
+  #end
+  #set( $shade = ! $shade )
+  	#if( ! ${entry.dir} )
+    <div class="col-1a"><input type="checkbox" name="sel" value="${entry.path}"></div>
+    #else
+    <div class="col-1a">&nbsp;</div>
+    #end
+    <div class="col-2a"><a href="${entry.path}">${entry.filename}</a></div>
+    <div class="col-3a">${entry.renderSize()}</div>
+    <div class="col-4a">${entry.getLastModifStr()}</div>
+  </div>
+#end
+</div><br>
+<input type="submit" id="btndl" value="download">
+<label for="btndl">download selected as zip</label><br>
+</form>
+<p><p>
+<hr class="line">
+<p>
+<div class="upload">
+<h2 id="uploadfile">Upload File</h2>
+<form class="upload-file" action="${uploadformpath}" enctype="multipart/form-data"
+  onsubmit="onupload()" method=post>
+  <label for="files">Select file:</label>
+  <input type="file" id="files" name="files" multiple><br><br>
+  <input type="submit" value="upload">
+  <div id="upmsg" style="visibility: hidden;"></div>
+</form>
+<br><br>
+<form class="upload-ovrw" action="${uploadformpath}" + method=post>
+  <div>Overwrite</div>
+  #if( $overwrite )  
+  <input type="radio" id="false" name="overwrite" value="false">
+  <label for="false">false</label><br>
+  <input type="radio" id="true" name="overwrite" value="true" checked>
+  <label for="true">true</label><br>
+  #else
+  <input type="radio" id="false" name="overwrite" value="false" checked>
+  <label for="false">false</label><br>
+  <input type="radio" id="true" name="overwrite" value="true" >
+  <label for="true">true</label><br>
+  #end  
+  <input type="submit" value="update">
+</form>
+<p>
+#if( $logrecs )
+<div class="upload-msg">
+#foreach( $l in $logrecs )
+  <div style="${l.getStyle()}">${l.getMsg()}</div>
+#end
+</div><p>
+#end
+#if( $serverinfo )
+<h3>${serverinfo}</h3>
+#end
+#if( $footer )
+<p>
+<div class="footer">
+${footer}
+</div>
+#end
+</body>
+</html>
