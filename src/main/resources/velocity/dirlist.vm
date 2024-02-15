@@ -17,7 +17,7 @@ function onupload() {
 <h1>Directory Listing for : &nbsp; &nbsp; <a href="${parentpath}"><b>${parent}</b></a> 
  &nbsp; &nbsp; / &nbsp; ${currdir} </h1>
  #if( $querystr )
- &nbsp; &nbsp; <a class="ha-shade" href="?${querystr}&multidl=y">Download multiple files as zip</a><br><br>
+ &nbsp; &nbsp; <a class="ha-shade" href="${querystr}">Download multiple files as zip</a><br><br>
  #else
  &nbsp; &nbsp; <a class="ha-shade" href="?multidl=y">Download multiple files as zip</a><br><br>
  #end
@@ -27,9 +27,9 @@ function onupload() {
 <p>
 <div class="dirlist">
   <div class="column-heading">
-    <div class="col-2"><a href="?C=N;O=${fn_sortop}">${lb_fn}</a></div>
-    <div class="col-3"><a href="?C=S;O=${size_sortop}">${lb_size}</a></div>
-    <div class="col-4"><a href="?C=M;O=${modif_sortop}">${lb_modif}</a></div>
+    <div class="col-2"><a href="${fn_sortop}">${lb_fn}</a></div>
+    <div class="col-3"><a href="${size_sortop}">${lb_size}</a></div>
+    <div class="col-4"><a href="${modif_sortop}">${lb_modif}</a></div>
   </div>
 #set( $shade = false )
 #foreach( $entry in $direntries )

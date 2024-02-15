@@ -43,6 +43,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
@@ -83,6 +86,7 @@ import io.github.ag88.embtomcatwebdav.opt.Opt;
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 import io.github.ag88.embtomcatwebdav.util.DefFilePathNameValidator;
 import io.github.ag88.embtomcatwebdav.util.FilePathNameValidator;
+import io.github.ag88.embtomcatwebdav.util.QueryString;
 import io.github.ag88.embtomcatwebdav.util.SortManager;
 
 /**
@@ -434,14 +438,41 @@ public class WDavUploadServlet2 extends WebdavServlet {
 
 		VelocityContext context = new VelocityContext();
 		
-		context.put("querystr", request.getQueryString());
+		//context.put("querystr", request.getQueryString());
 		
+		Map<String,String[]> params = request.getParameterMap();
+		/*
+		for(String k: params.keySet()) {
+			sb = new StringBuilder(32);
+			sb.append("key:");
+			sb.append(k);
+			sb.append("\n");
+			boolean first = true;
+			for(String v : params.get(k)) {
+				if(first)
+					first = false;
+				else
+					sb.append(", ");
+				sb.append(v);
+			}
+			sb.append("\n");
+			log.info(sb.toString());
+		}
+		*/
+		
+						
 		Template template;
 		String multidl = request.getParameter("multidl");
-		if(null != multidl && multidl.equals("y"))
+		if(null != multidl && multidl.equals("y")) {
 			template = loadvmtemplate("velocity/dirlistsel.vm");
-		else
+			context.put("querystr", request.getQueryString());
+		} else {
+			QueryString qs = new QueryString();
 			template = loadvmtemplate("velocity/dirlist.vm");
+			qs.getParams().putAll(params);
+			qs.put("multidl", "y");
+			context.put("querystr", qs.getQueryString());
+		}
 		
 				
         // Render the page header
@@ -489,21 +520,45 @@ public class WDavUploadServlet2 extends WebdavServlet {
 
         SortManager.Order order;
         if(sortListings && null != request) {
-            order = sortmgr.getOrder(request.getQueryString());
+            //order = sortmgr.getOrder(request.getQueryString());
+        	order = sortmgr.getOrder(params);
         } else {
             order = null;
         }
         
-        // Render the column headings        
-        context.put("fn_sortop", getOrderChar(order, 'N'));        
+        // Render the column headings 
+		Map<String, String[]> param_rest = new TreeMap<String,String[]>();
+		param_rest.putAll(params);
+		param_rest.remove("SCOL");
+		param_rest.remove("SORD");		
+
+		QueryString qs_col = new QueryString();
+		qs_col.put("SCOL", "N");
+		qs_col.put("SORD", String.valueOf(getOrderChar(order, 'N')));
+		qs_col.getParams().putAll(param_rest);
+		
+        context.put("fn_sortop", qs_col.getQueryString());        
         context.put("lb_fn", sm.getString("directory.filename"));
-        context.put("size_sortop", getOrderChar(order, 'S'));        
+        
+        qs_col.clear();
+		qs_col.put("SCOL", "S");
+		qs_col.put("SORD", String.valueOf(getOrderChar(order, 'S')));
+		qs_col.getParams().putAll(param_rest);
+		
+        context.put("size_sortop", qs_col.getQueryString());        
         context.put("lb_size", sm.getString("directory.size"));
-        context.put("modif_sortop", getOrderChar(order, 'S')); 
+
+        qs_col.clear();
+		qs_col.put("SCOL", "M");
+		qs_col.put("SORD", String.valueOf(getOrderChar(order, 'M')));
+		qs_col.getParams().putAll(param_rest);
+
+        context.put("modif_sortop", qs_col.getQueryString()); 
         context.put("lb_modif", sm.getString("directory.lastModified"));
 
         if(null != sortmgr && null != request) {
-            sortmgr.sort(entries, request.getQueryString());
+            //sortmgr.sort(entries, request.getQueryString());
+        	sortmgr.sort(entries, request.getParameterMap());
         }
 
         List<HtmDirEntry> direntries = new ArrayList<HtmDirEntry>(20);

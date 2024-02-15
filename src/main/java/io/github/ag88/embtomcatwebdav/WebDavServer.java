@@ -16,14 +16,10 @@
 
 package io.github.ag88.embtomcatwebdav;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.Console;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -51,14 +47,17 @@ import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Server;
 import org.apache.catalina.Service;
+import org.apache.catalina.WebResourceRoot.ResourceSetType;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.authenticator.BasicAuthenticator;
 import org.apache.catalina.authenticator.DigestAuthenticator;
 import org.apache.catalina.connector.Connector;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.realm.MessageDigestCredentialHandler;
 import org.apache.catalina.servlets.WebdavServlet;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.AccessLogValve;
+import org.apache.catalina.webresources.StandardRoot;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -262,7 +261,7 @@ public class WebDavServer
 				tomcat.setPort(port);
 			}			
 			tomcat.setHostname(shost);
-			
+						
 			Thread hook = new Thread() {
 				@Override
 				public void run() {
@@ -274,6 +273,29 @@ public class WebDavServer
 			Context context = tomcat.addContext("", path);
 			tomcat.setAddDefaultWebXmlToWebapp(false);
 			Tomcat.addDefaultMimeTypeMappings(context);
+
+			/*
+	        if (context.getResources() == null) { 
+	            if (log.isDebugEnabled()) {
+	                log.debug("Configuring default Resources");
+	            }
+
+	            try {
+	                context.setResources(new StandardRoot(context));
+	                ((StandardContext) context).resourcesStart();
+	            } catch (IllegalArgumentException e) {
+	                log.error("standardContext.resourcesInit", e);
+	            }
+	        }
+	        	        
+			try {
+				URL jarurl = Paths.get(App.getInstance().ownjarfile()).toUri().toURL();
+				context.getResources().createWebResourceSet(ResourceSetType.RESOURCE_JAR, "/WEB-INF/ownjar",
+					jarurl , "/");
+			} catch (MalformedURLException e) {
+				log.warn(e);
+			}
+			*/			
 			
 			if(!quiet) 
 				log.info(String.format("serving path: %s", path));

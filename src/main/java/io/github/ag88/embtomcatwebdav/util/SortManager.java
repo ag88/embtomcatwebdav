@@ -25,6 +25,7 @@ package io.github.ag88.embtomcatwebdav.util;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map;
 
 import org.apache.catalina.WebResource;
 
@@ -104,8 +105,20 @@ public class SortManager {
 			Arrays.sort(resources, comparator);
 		}
 	}
+	
+	public void sort(WebResource[] resources, Map<String, String[]> order) {
+		Comparator<WebResource> comparator = getComparator(order);
+
+		if (null != comparator) {
+			Arrays.sort(resources, comparator);
+		}
+	}
 
 	public Comparator<WebResource> getComparator(String order) {
+		return getComparator(getOrder(order));
+	}
+	
+	public Comparator<WebResource> getComparator(Map<String, String[]> order) {
 		return getComparator(getOrder(order));
 	}
 
@@ -141,6 +154,48 @@ public class SortManager {
 		return defaultResourceComparator;
 	}
 
+	
+	
+	public Order getOrder(Map<String, String[]> order) {
+		String colv = "";
+		String ordv = "";
+		if (order.containsKey("SCOL"))
+			colv = order.get("SCOL")[0];
+		else
+			return Order.DEFAULT;
+		
+		if (order.containsKey("SORD"))
+			ordv = order.get("SORD")[0];
+		else
+			return Order.DEFAULT;
+		
+		boolean ascending = false;
+		if (ordv.equals("A"))
+			ascending = true;		
+
+		if (colv.equals("N")) {
+			if (ascending) {
+				return Order.NAME_ASC;
+			} else {
+				return Order.NAME;
+			}
+		} else if (colv.equals("S")) {
+			if (ascending) {
+				return Order.SIZE_ASC;
+			} else {
+				return Order.SIZE;
+			}
+		} else if (colv.equals("M")) {
+			if (ascending) {
+				return Order.LAST_MODIFIED_ASC;
+			} else {
+				return Order.LAST_MODIFIED;
+			}
+		}
+
+		return Order.DEFAULT;
+	}
+	
 	/**
 	 * Gets the Order to apply given an ordering-string. This ordering-string
 	 * matches a subset of the ordering-strings supported by <a href=

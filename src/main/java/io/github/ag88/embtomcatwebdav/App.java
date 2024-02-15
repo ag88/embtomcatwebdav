@@ -71,12 +71,20 @@ public class App {
 	
 	WebDavServer wdav;
 
+	private static App m_instance;
+	
 	public App() {
+		if(m_instance == null)
+			m_instance = this;
+
 		wdav = new WebDavServer();
 		OptFactory.getInstance().registeropts();
 		OptFactory.getInstance().setWebDAVserv(wdav);
-		OptFactory.getInstance().setApp(this);
-		
+		OptFactory.getInstance().setApp(this);		
+	}
+	
+	public static App getInstance() {
+		return m_instance;			
 	}
 	
 	

@@ -24,9 +24,9 @@ function onupload() {
 <div class="dirlist">
   <div class="column-heading">
     <div class="col-1a">Sel</div>
-    <div class="col-2a"><a href="?C=N;O=${fn_sortop}">${lb_fn}</a></div>
-    <div class="col-3a"><a href="?C=S;O=${size_sortop}">${lb_size}</a></div>
-    <div class="col-4a"><a href="?C=M;O=${modif_sortop}">${lb_modif}</a></div>
+    <div class="col-2a"><a href="${fn_sortop}">${lb_fn}</a></div>
+    <div class="col-3a"><a href="${size_sortop}">${lb_size}</a></div>
+    <div class="col-4a"><a href="${modif_sortop}">${lb_modif}</a></div>
   </div>
 #set( $shade = false )
 #foreach( $entry in $direntries )

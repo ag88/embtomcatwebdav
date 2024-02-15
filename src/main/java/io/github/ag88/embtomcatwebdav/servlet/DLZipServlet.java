@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.Globals;
 import org.apache.catalina.WebResource;
 import org.apache.catalina.WebResourceRoot;
+import org.apache.catalina.WebResourceSet;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
@@ -142,7 +144,7 @@ public class DLZipServlet extends HttpServlet {
 		
 		PrintWriter writer = resp.getWriter();		
 		
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder();		
 		sb.append("pathinfo:");
 		sb.append(req.getPathInfo());
 		sb.append(System.lineSeparator());
@@ -153,6 +155,18 @@ public class DLZipServlet extends HttpServlet {
 		sb.append(System.lineSeparator());
 		writer.write(sb.toString());
 		sb = new StringBuilder();
+		sb.append("catalina base:");
+		sb.append(System.getProperty("catalina.base"));
+		sb.append(System.lineSeparator());
+		writer.write(sb.toString());
+		sb = new StringBuilder();
+		writer.write(sb.toString());
+		sb.append("catalina home:");
+		sb.append(System.getProperty("catalina.home"));
+		sb.append(System.lineSeparator());
+		writer.write(sb.toString());
+		sb = new StringBuilder();
+		writer.write(sb.toString());
 		sb.append("servletpath:");
 		sb.append(req.getServletPath());
 		sb.append(System.lineSeparator());
@@ -200,7 +214,37 @@ public class DLZipServlet extends HttpServlet {
 				log.warn(e);
 			}
 		}
+
+		writer.write("resource urls\n");		
+		for(URL url : resources.getBaseUrls()) {
+			writer.write(url.toString());
+			writer.write(System.lineSeparator());			
+		}
+		
+		writer.write("pre resources\n");
+		prresources(resources.getPreResources(), writer);
+
+		writer.write("jar resources\n");
+		prresources(resources.getJarResources(), writer);
+
+		writer.write("post resources\n");
+		prresources(resources.getPostResources(), writer);
+		
 		writer.flush();		
 	}
 
+	private void prresources(WebResourceSet[] resources, PrintWriter writer) {
+		for(WebResourceSet wrs : resources) {
+			writer.write("baseurl:");
+			writer.write(wrs.getBaseUrl().toString());
+			writer.write(System.lineSeparator());
+			writer.write("state:");
+			writer.write(wrs.getStateName());
+			writer.write(System.lineSeparator());
+			writer.write("static only:");
+			writer.write(Boolean.toString(wrs.getStaticOnly()));
+			writer.write(System.lineSeparator());
+		}
+	}
+	
 }
