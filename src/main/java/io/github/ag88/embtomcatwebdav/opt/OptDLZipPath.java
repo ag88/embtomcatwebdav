@@ -23,23 +23,23 @@ import java.nio.file.Paths;
 /**
  * Conf for BaseDir option.
  */
-public class OptAccesslogDir extends Opt {
+public class OptDLZipPath extends Opt {
 
-	public OptAccesslogDir() {
+	public OptDLZipPath() {
 
 		/* defaulting base dir done in code */
 		this.type = PropType.Prop;
 		
-		this.name = "accesslog.dir";
-		this.description = "set dir for access log, default to base_dir";
-		this.defaultval = null;
+		this.name = "dlzip_path";
+		this.description = "set the url path for download multi files as zip";
+		this.defaultval = "/dlzip";
 		this.value = null;
 		this.opt = null;
 		this.hasarg = true;
 		this.longopt = null;
 		this.argname = null;
 		this.valclazz = String.class;
-		this.priority = 42;
+		this.priority = 31;
 		this.validate = true;
 		this.replace = false;
 	}

@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package io.github.ag88.embtomcatwebdav;
+package io.github.ag88.embtomcatwebdav.servlet;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -76,6 +76,9 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.MethodInvocationException;
 
+import io.github.ag88.embtomcatwebdav.App;
+import io.github.ag88.embtomcatwebdav.model.HtmDirEntry;
+import io.github.ag88.embtomcatwebdav.model.HtmLogEntry;
 import io.github.ag88.embtomcatwebdav.opt.Opt;
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 import io.github.ag88.embtomcatwebdav.util.DefFilePathNameValidator;
@@ -99,6 +102,9 @@ public class WDavUploadServlet2 extends WebdavServlet {
 		
 	/** The quiet. */
 	boolean quiet;
+	
+	/** DL Zip path */
+	String dlzip_path;
 	
 	/**
 	 * Instantiates a new w dav upload servlet.
@@ -127,6 +133,12 @@ public class WDavUploadServlet2 extends WebdavServlet {
 			quiet = ((Boolean) opt.getValue()).booleanValue();
 		else
 			quiet = false;
+		
+		String dlzippath = (String) OptFactory.getInstance().getOpt("dlzip_path").getValue();
+		if(null == dlzippath || dlzippath.equals(""))
+			this.dlzip_path = (String) OptFactory.getInstance().getOpt("dlzip_path").getDefaultval();
+		else
+			this.dlzip_path = dlzippath;
 	}
 
 	/* this override is to keep path evaluation the same
@@ -422,8 +434,15 @@ public class WDavUploadServlet2 extends WebdavServlet {
 
 		VelocityContext context = new VelocityContext();
 		
-		//Template template = loadvmtemplate("velocity/dirlist.vm");
-		Template template = loadvmtemplate("velocity/dirlistsel.vm");
+		context.put("querystr", request.getQueryString());
+		
+		Template template;
+		String multidl = request.getParameter("multidl");
+		if(null != multidl && multidl.equals("y"))
+			template = loadvmtemplate("velocity/dirlistsel.vm");
+		else
+			template = loadvmtemplate("velocity/dirlist.vm");
+		
 				
         // Render the page header
 		context.put("title", sm.getString("directory.title", directoryWebappPath));
@@ -511,8 +530,7 @@ public class WDavUploadServlet2 extends WebdavServlet {
         }
                 
         context.put("direntries", direntries);
-        context.put("dirselformpath", "/webdav/dlzip");
-        
+		context.put("dirselformpath", dlzip_path);        
         
         // Render the page footer
         // upload form

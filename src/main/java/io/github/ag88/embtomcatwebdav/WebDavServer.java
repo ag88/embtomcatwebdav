@@ -94,6 +94,10 @@ import io.github.ag88.embtomcatwebdav.opt.OptRealm;
 import io.github.ag88.embtomcatwebdav.opt.OptSecure;
 import io.github.ag88.embtomcatwebdav.opt.OptUrlPrefix;
 import io.github.ag88.embtomcatwebdav.opt.OptUser;
+import io.github.ag88.embtomcatwebdav.servlet.CLResourceServlet;
+import io.github.ag88.embtomcatwebdav.servlet.DLZipServlet;
+import io.github.ag88.embtomcatwebdav.servlet.RedirServlet;
+import io.github.ag88.embtomcatwebdav.servlet.WDavUploadServlet2;
 
 /**
  * This is a WebDAV server based on Apache Tomcat's WebDAV servlet and embedded Tomcat server.<p>
@@ -183,6 +187,13 @@ public class WebDavServer
 	 * use upload servlet
 	 */
 	boolean uploadservlet = false;
+	
+
+	/** 
+	 * DL zip path
+	 */
+	String dlzip_path = "/dlzip";
+
 	
 	/*
 	 * enable access log 
@@ -329,6 +340,8 @@ public class WebDavServer
 					pat = pat.concat("/");
 				pat = pat.concat("*");
 				sc.addPattern(pat);
+				if(!(null == dlzip_path || dlzip_path.equals("")))
+					sc.addPattern(dlzip_path);				
 				secconstr.addCollection(sc);
 				context.addConstraint(secconstr);				
 			}			
@@ -394,9 +407,10 @@ public class WebDavServer
 					context.addServletMappingDecoded("/", "redir");					
 				}
 				
-				servlet = new DLZipServlet(basedir, urlprefix);
+				servlet = new DLZipServlet();
+				log.info("dlzip_path:".concat(dlzip_path));
 				Tomcat.addServlet(context, "dlzip", servlet);
-				context.addServletMappingDecoded("/webdav/dlzip", "dlzip");
+				context.addServletMappingDecoded(dlzip_path, "dlzip");
 				
 			}
 			
@@ -406,7 +420,7 @@ public class WebDavServer
 			if(!quiet)
 				log.info(String.format("Webdav servlet running at %s://%s:%s%s", 
 					(keystorefile!=null && keystorepasswd != null) ? "https" : "http", 
-					shost, Integer.toString(port), urlprefix.substring(0,urlprefix.length()-1)));
+					shost, Integer.toString(port), urlprefix.substring(0,urlprefix.length())));
 			
 			tomcat.start();
 			tomcat.getServer().await();
@@ -570,6 +584,8 @@ public class WebDavServer
 		this.path =  (String) opts.get("path").getValue();
 		this.basedir =  (String) opts.get("basedir").getValue();
 		this.urlprefix = (String) opts.get("urlprefix").getValue();
+		if(this.urlprefix == null)
+			this.urlprefix = (String) opts.get("urlprefix").getDefaultval();
 		this.realm = (String) opts.get("realm").getValue();
 		this.user = (String) opts.get("user").getValue();
 		this.passwd = (String) opts.get("password").getValue();
@@ -579,6 +595,11 @@ public class WebDavServer
 		this.keystorepasswd = (String) opts.get("keystorepasswd").getValue();
 		this.quiet = ((Boolean) opts.get("quiet").getValue()).booleanValue();
 		this.uploadservlet = ((Boolean) opts.get("uploadservlet").getValue()).booleanValue();
+		String dlzippath = (String) opts.get("dlzip_path").getValue();
+		if (null == dlzippath || dlzippath.equals(""))
+			this.dlzip_path = (String) opts.get("dlzip_path").getDefaultval();
+		else
+			this.dlzip_path = dlzippath;
 		this.accesslog = ((Boolean) opts.get("accesslog").getValue()).booleanValue();
 		
 		m_opts = opts;

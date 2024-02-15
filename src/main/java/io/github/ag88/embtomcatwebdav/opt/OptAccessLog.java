@@ -30,7 +30,7 @@ public class OptAccessLog extends Opt {
 		this.argname = null;
 		this.hasarg = false;
 		this.valclazz = Boolean.class;
-		this.priority = 31;
+		this.priority = 41;
 	}
 
 

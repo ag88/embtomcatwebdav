@@ -1,4 +1,4 @@
-package io.github.ag88.embtomcatwebdav;
+package io.github.ag88.embtomcatwebdav.model;
 
 import org.apache.tomcat.util.http.FastHttpDateFormat;
 

@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package io.github.ag88.embtomcatwebdav;
+package io.github.ag88.embtomcatwebdav.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +44,8 @@ import org.apache.catalina.WebResourceRoot;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+import io.github.ag88.embtomcatwebdav.App;
+import io.github.ag88.embtomcatwebdav.WebDavServer;
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 
 /**
@@ -109,8 +111,8 @@ public class CLResourceServlet extends HttpServlet {
 		
 		URL resurl = App.class.getResource("/resources".concat(filename));
 		
-		if ( resurl == null ) { // not found
-			resp.setStatus(HttpServletResponse.SC_OK);
+		if ( resurl == null ) { // not found			
+			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			log.warn(String.format("resource %s not found in classpath", filename));
 			return;			
 		}

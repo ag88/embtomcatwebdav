@@ -16,6 +16,11 @@ function onupload() {
 <nav>
 <h1>Directory Listing for : &nbsp; &nbsp; <a href="${parentpath}"><b>${parent}</b></a> 
  &nbsp; &nbsp; / &nbsp; ${currdir} </h1>
+ #if( $querystr )
+ &nbsp; &nbsp; <a class="ha-shade" href="?${querystr}&multidl=y">Download multiple files as zip</a><br><br>
+ #else
+ &nbsp; &nbsp; <a class="ha-shade" href="?multidl=y">Download multiple files as zip</a><br><br>
+ #end
  &nbsp; &nbsp; <a class="ha-shade" href="#uploadfile">Upload file</a><br><br>
 </nav>
 <hr class="line">

@@ -121,6 +121,7 @@ public class OptFactory {
 		addOpt(new OptSecure());
 		addOpt(new OptQuiet());
 		addOpt(new OptUploadServ());
+		addOpt(new OptDLZipPath());
 		addOpt(new OptGenpasswd());
 		addOpt(new OptAccessLog());
 		addOpt(new OptAccesslogDir());

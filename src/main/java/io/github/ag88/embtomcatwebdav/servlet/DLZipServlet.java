@@ -1,4 +1,4 @@
-package io.github.ag88.embtomcatwebdav;
+package io.github.ag88.embtomcatwebdav.servlet;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,6 +18,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,33 +30,37 @@ import org.apache.catalina.WebResourceRoot;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+import io.github.ag88.embtomcatwebdav.opt.OptFactory;
+
 public class DLZipServlet extends HttpServlet {
 	
 	Log log = LogFactory.getLog(WDavUploadServlet2.class);
 	
 	protected transient WebResourceRoot resources = null;
-	protected String urlprefix;
 	protected Path wpath;
+	protected String urlprefix;
 	
-	public DLZipServlet(String basedir, String urlprefix) {
-		
-		Path wpath = Paths.get(basedir); 
-		if(! (Files.exists(wpath) && Files.isDirectory(wpath)))
-			throw new IOError(new Throwable("invalid workdir (not found):".concat(basedir)));
-		
-		this.wpath = wpath;		
-		
-		if (urlprefix.endsWith("/"))
-			urlprefix = urlprefix.substring(0,urlprefix.length()-1);
-		this.urlprefix = urlprefix;
+	public DLZipServlet() {				
 	}
 	
 	
 	@Override
-	public void init() throws ServletException {
-		super.init();
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		
 		resources = (WebResourceRoot) getServletContext().getAttribute(Globals.RESOURCES_ATTR);
-		getServletContext().getContextPath();
+
+		String basedir =  (String) OptFactory.getInstance().getOpt("basedir").getValue();
+		
+		Path wpath = Paths.get(basedir); 
+		if(! (Files.exists(wpath) && Files.isDirectory(wpath)))
+			throw new ServletException("invalid workdir (not found):".concat(basedir));
+		
+		this.wpath = wpath;
+		
+		this.urlprefix =  (String) OptFactory.getInstance().getOpt("urlprefix").getValue();
+		if(null == this.urlprefix)
+			this.urlprefix = (String) OptFactory.getInstance().getOpt("urlprefix").getDefaultval();
 	}
 	
 	@Override
@@ -65,7 +70,7 @@ public class DLZipServlet extends HttpServlet {
 	}
 	
 	protected void doDLZip(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		
+				
 		ArrayList<WebResource> files = new ArrayList<WebResource>(5);
 		String[] values = req.getParameterValues("sel");
 		for (String v : values) {
@@ -134,7 +139,8 @@ public class DLZipServlet extends HttpServlet {
 	}
 	
 	protected void prparams(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		PrintWriter writer = resp.getWriter();
+		
+		PrintWriter writer = resp.getWriter();		
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("pathinfo:");
@@ -147,10 +153,20 @@ public class DLZipServlet extends HttpServlet {
 		sb.append(System.lineSeparator());
 		writer.write(sb.toString());
 		sb = new StringBuilder();
+		sb.append("servletpath:");
+		sb.append(req.getServletPath());
+		sb.append(System.lineSeparator());
+		writer.write(sb.toString());
+		sb = new StringBuilder();
 		sb.append("URI:");
 		sb.append(req.getRequestURI());
 		sb.append(System.lineSeparator());
 		writer.write(sb.toString());					
+		sb = new StringBuilder();
+		sb.append("urlprefix:");
+		sb.append(urlprefix);
+		sb.append(System.lineSeparator());
+		writer.write(sb.toString());
 		
 		writer.write("headers:\n");
 		Enumeration<String> en = req.getHeaderNames();

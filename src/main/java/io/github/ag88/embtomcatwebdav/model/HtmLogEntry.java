@@ -1,4 +1,4 @@
-package io.github.ag88.embtomcatwebdav;
+package io.github.ag88.embtomcatwebdav.model;
 
 import java.util.logging.Level;
 import java.util.logging.LogRecord;

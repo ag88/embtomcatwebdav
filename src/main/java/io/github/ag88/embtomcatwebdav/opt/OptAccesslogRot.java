@@ -34,7 +34,7 @@ public class OptAccesslogRot extends Opt {
 		this.argname = null;
 		this.hasarg = true;
 		this.valclazz = Boolean.class;
-		this.priority = 33;
+		this.priority = 43;
 	}
 
 

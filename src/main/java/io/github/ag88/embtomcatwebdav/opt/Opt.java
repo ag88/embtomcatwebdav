@@ -75,7 +75,7 @@ public class Opt implements Comparable<Opt> {
 	protected boolean replace = false;	
 	
 	/** The priority. lower is higher prority*/
-	protected int priority = 50;
+	protected int priority = 100;
 	
 	
 	/**

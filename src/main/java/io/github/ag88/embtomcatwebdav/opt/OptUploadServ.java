@@ -31,7 +31,7 @@ public class OptUploadServ extends Opt {
 		this.argname = "";
 		this.hasarg = false;
 		this.valclazz = Boolean.class;
-		this.priority = 23;
+		this.priority = 30;
 	}
 
 

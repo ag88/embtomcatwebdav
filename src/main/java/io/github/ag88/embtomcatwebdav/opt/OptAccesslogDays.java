@@ -34,7 +34,7 @@ public class OptAccesslogDays extends Opt {
 		this.longopt = null;
 		this.argname = null;
 		this.valclazz = Integer.class;
-		this.priority = 34;
+		this.priority = 44;
 	}
 
 
