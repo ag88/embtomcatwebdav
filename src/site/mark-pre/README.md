@@ -51,10 +51,19 @@ it is created.
 - v0.6.2 usability updates for upload servlet:
   - added a link to upload section at the top, this help with long directory lists
     relieves from long scrolls to the bottom just for uploads
+- v0.8.0 major feature release: **new**
+  - new upload servlet:
+  - migrated to Apache Velocity templates. This paves the way to user customizable templates for directory
+    lists. This provides a means to change/tweak the look and feel by editing the templates.
+    Currently, it isn't quite editable yet as it is bundled in the jar file. The features may become available
+    in subsequent versions which requires some codes refactoring.
+  - added download of multiple files as zip **new**
+  - added filename filters **new**
 
 status: beta
 
-![screenshot in a browser](web/screenshot.jpg "Screen shot")
+![screenshot in a browser showing the upload servlet](web/screenshot.png "Screen shot showing the upload servlet")
+Upload servlet on a desktop web browser showing the new upload servlet
 
 ## Run
 
@@ -66,7 +75,7 @@ java -jar ${project.artifactId}-${project.version}.jar
 ```
 In some operating systems, it may be possible to run it by simply double clicking on the jar file after Java/JDK is installed.
 
-To run with parameters e.g. using the Upload servlet
+To run with parameters e.g. using the Upload servlet. This is recommended, it is the feature of this app.
 ```
 java -jar ${project.artifactId}-${project.version}.jar -U
 ```
@@ -167,6 +176,15 @@ replace the "target/webdav-0.x.x-jar-with-dependencies.jar" with the appropriate
 
 ## Upload servlet
 
+v0.8.0 is a major feature release:
+  - new upload servlet:
+  - migrated to Apache Velocity templates. This paves the way to user customizable templates for directory
+    lists. This provides a means to change/tweak the look and feel by editing the templates.
+    Currently, it isn't quite editable yet as it is bundled in the jar file. The features may become available
+    in subsequent versions which requires some codes refactoring.
+  - added download of multiple files as zip **new**
+  - added filename filters **new**
+
 v0.5.0 is a rather major feature release. v0.5.0 added an Upload servlet that includes a form based file upload 
 in the directory list.  This makes it possible to upload files without a WebDAV client. In addition, it is 
 styled with responsive html and css so that it is more readable on small (mobile) devices.
@@ -200,7 +218,7 @@ if the url don't match the virtual hostname. To get your ip address on Windows, 
  `ipconfig` and on Linux `ip -4 add`.
 
 ![screenshot in a browser](web/UploadServlet.png "Upload servlet")  
-Upload servlet on a desktop web browser
+Upload servlet on a desktop web browser showing the new upload servlet in download multiple files as zip view 
 
 ![screenshot in a browser](web/UploadServPhone.jpg "Upload on a phone")  
 Upload servlet on a phone web browser

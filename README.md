@@ -51,10 +51,19 @@ it is created.
 - v0.6.2 usability updates for upload servlet:
   - added a link to upload section at the top, this help with long directory lists
     relieves from long scrolls to the bottom just for uploads
+- v0.8.0 major feature release: **new**
+  - new upload servlet:
+  - migrated to Apache Velocity templates. This paves the way to user customizable templates for directory
+    lists. This provides a means to change/tweak the look and feel by editing the templates.
+    Currently, it isn't quite editable yet as it is bundled in the jar file. The features may become available
+    in subsequent versions which requires some codes refactoring.
+  - added download of multiple files as zip **new**
+  - added filename filters **new**
 
 status: beta
 
-![screenshot in a browser](web/screenshot.jpg "Screen shot")
+![screenshot in a browser showing the upload servlet](web/screenshot.png "Screen shot showing the upload servlet")
+Upload servlet on a desktop web browser showing the new upload servlet
 
 ## Run
 
@@ -62,19 +71,19 @@ It is recommended to use the recent/latest [release jars](https://github.com/ag8
 Java / JDK >= 1.8 is required
 
 ```
-java -jar embtomcatwebdav-0.6.2.jar
+java -jar embtomcatwebdav-0.8.0.jar
 ```
 In some operating systems, it may be possible to run it by simply double clicking on the jar file after Java/JDK is installed.
 
-To run with parameters e.g. using the Upload servlet
+To run with parameters e.g. using the Upload servlet. This is recommended, it is the feature of this app.
 ```
-java -jar embtomcatwebdav-0.6.2.jar -U
+java -jar embtomcatwebdav-0.8.0.jar -U
 ```
 
 If you have various configuration parameters, it is recommended to use a config file.
 A template can be generated as such
 ```
-java -jar embtomcatwebdav-0.6.2.jar --genconf wdav.ini
+java -jar embtomcatwebdav-0.8.0.jar --genconf wdav.ini
 ```
 
 The above would generate a config file (e.g. wdav.ini), and may look like such.
@@ -103,7 +112,7 @@ accesslog.rot=true
 
 Thereafter, running with the config file e.g. wdav.ini is
 ```
-java -jar embtomcatwebdav-0.6.2.jar -c wdav.ini
+java -jar embtomcatwebdav-0.8.0.jar -c wdav.ini
 ```
 You may like to adapt the batch files e.g. run.bat, run.sh as examples to run it as such.
 In that way it is also possible to set up auto start by simply running the batch file.
@@ -111,9 +120,9 @@ In that way it is also possible to set up auto start by simply running the batch
 ## usage 
 
 ```
-java -jar embtomcatwebdav-0.6.2.jar -h
+java -jar embtomcatwebdav-0.8.0.jar -h
 
-usage: embtomcatwebdav-0.6.2
+usage: embtomcatwebdav-0.8.0
     --accesslog                  enable access log
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
@@ -167,6 +176,15 @@ replace the "target/webdav-0.x.x-jar-with-dependencies.jar" with the appropriate
 
 ## Upload servlet
 
+v0.8.0 is a major feature release:
+  - new upload servlet:
+  - migrated to Apache Velocity templates. This paves the way to user customizable templates for directory
+    lists. This provides a means to change/tweak the look and feel by editing the templates.
+    Currently, it isn't quite editable yet as it is bundled in the jar file. The features may become available
+    in subsequent versions which requires some codes refactoring.
+  - added download of multiple files as zip **new**
+  - added filename filters **new**
+
 v0.5.0 is a rather major feature release. v0.5.0 added an Upload servlet that includes a form based file upload 
 in the directory list.  This makes it possible to upload files without a WebDAV client. In addition, it is 
 styled with responsive html and css so that it is more readable on small (mobile) devices.
@@ -200,7 +218,7 @@ if the url don't match the virtual hostname. To get your ip address on Windows, 
  `ipconfig` and on Linux `ip -4 add`.
 
 ![screenshot in a browser](web/UploadServlet.png "Upload servlet")  
-Upload servlet on a desktop web browser
+Upload servlet on a desktop web browser showing the new upload servlet in download multiple files as zip view 
 
 ![screenshot in a browser](web/UploadServPhone.jpg "Upload on a phone")  
 Upload servlet on a phone web browser
@@ -246,7 +264,7 @@ Note that keytool is normally bundled with JDK distributions, it is not part of 
 Next run the app with -S option and the keystore file. If the keystore password is not
 specified on the command line, it would prompt for it. e.g.
 ```
-java -jar embtomcatwebdav-0.6.2.jar -p 8443 -S keystorefile.jkf 
+java -jar embtomcatwebdav-0.8.0.jar -p 8443 -S keystorefile.jkf 
 ```
 Note that when you run the app with the -S keystorefile.jkf option, it copies the keystore file into the 'tomcat.port' work folder, this is needed for the app to access the keystore file.
 
@@ -266,17 +284,17 @@ There are rather tricky ways to be your own CA, make certs. But it may involve i
 mvn package
 ```
 
-Note that if you build from source the jar file is embtomcatwebdav-0.6.2-jar-with-dependencies.jar, in target/ folder.
+Note that if you build from source the jar file is embtomcatwebdav-0.8.0-jar-with-dependencies.jar, in target/ folder.
 
 ## Development/Embedding
 
 This release is released to maven central
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.6.2
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.8.0
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.6.2</version>
+    <version>0.8.0</version>
 </dependency>
 ```
 v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread.
