@@ -16,9 +16,19 @@ function onupload() {
 <nav>
 <h1>Directory Listing for : &nbsp; &nbsp; <a href="${parentpath}"><b>${parent}</b></a> 
  &nbsp; &nbsp; / &nbsp; ${currdir} </h1>
+ #if( $qsnomulti )
+ &nbsp; &nbsp; <a class="ha-shade" href="${qsnomulti}">Back to normal mode</a><br><br>
+ #end
  &nbsp; &nbsp; <a class="ha-shade" href="#uploadfile">Upload file</a><br><br>
 </nav>
 <hr class="line">
+<p>
+<form class="dirsel" action="${uploadformpath}" method="post">
+  <label for="filtxt">Filter:</label>
+  <input type="text" id="filtxt" name="filtxt">
+  <button type="submit" name="filbtn" value="filter">Filter</button>
+  <button type="submit" name="filbtn" value="reset">Reset</button>
+</form>
 <p>
 <form class="dirsel" action="${dirselformpath}" method="post">
 <div class="dirlist">

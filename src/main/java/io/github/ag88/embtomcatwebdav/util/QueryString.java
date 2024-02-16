@@ -3,6 +3,7 @@ package io.github.ag88.embtomcatwebdav.util;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -26,7 +27,8 @@ public class QueryString {
 	public void put(String key, String value) {
 		if(params.containsKey(key)) {
 			String[] ovalues = params.get(key);
-			String[] values = new String[ovalues.length + 1];
+			String[] values;
+			values = Arrays.copyOf(ovalues, ovalues.length+1);
 			values[values.length-1] = value;
 			params.put(key, values);
 		} else {
@@ -44,9 +46,23 @@ public class QueryString {
 		return params.get(key);
 	}
 	
+	public boolean containsKey(String key) {
+		return params.containsKey(key);
+	}
+	
+	public boolean isEmpty() {
+		return params.isEmpty();
+	}
+	
+	public String[] remove(String key) {
+		return params.remove(key);
+	}
+	
 	public String getQueryString() {
 		StringBuilder sb = new StringBuilder(128);
-		boolean first = true;
+		if(params.isEmpty())
+			return "";				
+		boolean first = true;		
 		sb.append("?");
 		for(String k : params.keySet()) {
 			for(String v : params.get(k)) {

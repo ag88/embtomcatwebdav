@@ -25,6 +25,13 @@ function onupload() {
 </nav>
 <hr class="line">
 <p>
+<form class="dirsel" action="${uploadformpath}" method="post">
+  <label for="filtxt">Filter:</label>
+  <input type="text" id="filtxt" name="filtxt">
+  <button type="submit" name="filbtn" value="filter">Filter</button>
+  <button type="submit" name="filbtn" value="reset">Reset</button>
+</form>
+<p>
 <div class="dirlist">
   <div class="column-heading">
     <div class="col-2"><a href="${fn_sortop}">${lb_fn}</a></div>

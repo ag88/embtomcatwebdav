@@ -86,6 +86,7 @@ import io.github.ag88.embtomcatwebdav.opt.Opt;
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 import io.github.ag88.embtomcatwebdav.util.DefFilePathNameValidator;
 import io.github.ag88.embtomcatwebdav.util.FilePathNameValidator;
+import io.github.ag88.embtomcatwebdav.util.FilenameGlob;
 import io.github.ag88.embtomcatwebdav.util.QueryString;
 import io.github.ag88.embtomcatwebdav.util.SortManager;
 
@@ -320,7 +321,9 @@ public class WDavUploadServlet2 extends WebdavServlet {
 				}
 				session.setAttribute("msgupload", messages);
 
-				response.sendRedirect(request.getRequestURL().toString());
+				response.sendRedirect(request.getRequestURL()
+						.append(null==request.getQueryString()?"":"?".concat(request.getQueryString()))
+						.toString());
 				// doGet(request, response);
 	        } else {
 	        	log.error(String.format("directory %s do not exist", resource.getCanonicalPath()));
@@ -328,12 +331,47 @@ public class WDavUploadServlet2 extends WebdavServlet {
 	        }	        		        
 
 		} else {
-        	String overwrites = request.getParameter("overwrite");
-        	if(overwrites != null) {
-        		overwrite = Boolean.parseBoolean(overwrites);
-        		session.setAttribute("overwrite", Boolean.valueOf(overwrite));
-        	}  	        	
-        	response.sendRedirect(request.getRequestURL().toString());
+			Map<String, String[]> params = request.getParameterMap();
+			if(log.isDebugEnabled()) {
+				for(String name : params.keySet()) {						
+					StringBuilder sb = new StringBuilder(32);
+					sb.append(name);
+					sb.append(" : ");
+					sb.append(params.get(name)[0]);
+					log.debug(sb.toString());
+				}
+			}
+			
+			QueryString qs = new QueryString();
+			qs.putAll(params);
+			
+			if(null != qs.get("filbtn")) {
+				String btn = qs.get("filbtn")[0];
+				if(btn.equals("filter")) {
+					String filqry = qs.get("filtxt")[0];
+					if(!(null == filqry || filqry.equals(""))) {
+						qs.remove("filter");
+						qs.put("filter", filqry);
+					}					
+				} else if(btn.equals("reset")) {
+					qs.remove("filter");					
+				}				
+				
+			} else {
+				String overwrites = qs.get("overwrite")[0];
+				if(overwrites != null) {
+					overwrite = Boolean.parseBoolean(overwrites);
+					session.setAttribute("overwrite", Boolean.valueOf(overwrite));
+				}
+			}
+			
+			//remove parameters submitted in the form
+			qs.remove("filbtn");
+			qs.remove("filtxt");
+			qs.remove("overwrite");			
+			
+			String redirurl = request.getRequestURL().append(qs.getQueryString()).toString();
+        	response.sendRedirect(redirurl);
 			//doGet(request, response);
 		}
 			
@@ -464,13 +502,18 @@ public class WDavUploadServlet2 extends WebdavServlet {
 		Template template;
 		String multidl = request.getParameter("multidl");
 		if(null != multidl && multidl.equals("y")) {
+			QueryString qs = new QueryString();
 			template = loadvmtemplate("velocity/dirlistsel.vm");
+			qs.putAll(params);
+			qs.remove("multidl");
+			context.put("qsnomulti", qs.isEmpty()?"?":qs.getQueryString());			
 			context.put("querystr", request.getQueryString());
 		} else {
 			QueryString qs = new QueryString();
 			template = loadvmtemplate("velocity/dirlist.vm");
-			qs.getParams().putAll(params);
-			qs.put("multidl", "y");
+			qs.putAll(params);
+			if(!qs.containsKey("multidl"))					
+				qs.put("multidl", "y");
 			context.put("querystr", qs.getQueryString());
 		}
 		
@@ -535,7 +578,7 @@ public class WDavUploadServlet2 extends WebdavServlet {
 		QueryString qs_col = new QueryString();
 		qs_col.put("SCOL", "N");
 		qs_col.put("SORD", String.valueOf(getOrderChar(order, 'N')));
-		qs_col.getParams().putAll(param_rest);
+		qs_col.putAll(param_rest);
 		
         context.put("fn_sortop", qs_col.getQueryString());        
         context.put("lb_fn", sm.getString("directory.filename"));
@@ -543,7 +586,7 @@ public class WDavUploadServlet2 extends WebdavServlet {
         qs_col.clear();
 		qs_col.put("SCOL", "S");
 		qs_col.put("SORD", String.valueOf(getOrderChar(order, 'S')));
-		qs_col.getParams().putAll(param_rest);
+		qs_col.putAll(param_rest);
 		
         context.put("size_sortop", qs_col.getQueryString());        
         context.put("lb_size", sm.getString("directory.size"));
@@ -551,7 +594,7 @@ public class WDavUploadServlet2 extends WebdavServlet {
         qs_col.clear();
 		qs_col.put("SCOL", "M");
 		qs_col.put("SORD", String.valueOf(getOrderChar(order, 'M')));
-		qs_col.getParams().putAll(param_rest);
+		qs_col.putAll(param_rest);
 
         context.put("modif_sortop", qs_col.getQueryString()); 
         context.put("lb_modif", sm.getString("directory.lastModified"));
@@ -561,6 +604,13 @@ public class WDavUploadServlet2 extends WebdavServlet {
         	sortmgr.sort(entries, request.getParameterMap());
         }
 
+        FilenameGlob glob = null;
+        if (params.containsKey("filter")) {
+        	String p = params.get("filter")[0];
+        	if (null != p)
+        		glob = new FilenameGlob(p);
+        }
+        
         List<HtmDirEntry> direntries = new ArrayList<HtmDirEntry>(20);
         
         for (WebResource childResource : entries) {
@@ -574,6 +624,9 @@ public class WDavUploadServlet2 extends WebdavServlet {
                 continue;
             }
             
+            if(null != glob && ! glob.matches(filename))
+            	continue;
+            
             String path = rewrittenContextPath.concat(childResource.getWebappPath());
             if (childResource.isDirectory()) {
                 path = path.concat("/");
@@ -585,7 +638,8 @@ public class WDavUploadServlet2 extends WebdavServlet {
         }
                 
         context.put("direntries", direntries);
-		context.put("dirselformpath", dlzip_path);        
+		context.put("dirselformpath", dlzip_path
+				.concat(null==request.getQueryString()?"":"?".concat(request.getQueryString())));        
         
         // Render the page footer
         // upload form
@@ -596,7 +650,8 @@ public class WDavUploadServlet2 extends WebdavServlet {
         if(request.getSession().getAttribute("overwrite") != null)
         	overwrite = (Boolean) request.getSession().getAttribute("overwrite");
 
-        context.put("uploadformpath", uploadformpath);
+        context.put("uploadformpath", uploadformpath
+        		.concat(null==request.getQueryString()?"":"?".concat(request.getQueryString())));
         context.put("overwrite", overwrite);
                 	
         HttpSession session = request.getSession();                
