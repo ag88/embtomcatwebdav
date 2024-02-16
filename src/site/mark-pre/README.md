@@ -65,9 +65,13 @@ status: beta
 ![screenshot in a browser showing the upload servlet](web/screenshot.png "Screen shot showing the upload servlet")
 Upload servlet on a desktop web browser showing the new upload servlet
 
+## Download
+
+It is recommended to use the recent/latest **[release jars](https://github.com/ag88/embtomcatwebdav/releases/latest)** .
+In the releases section of this repository.
+
 ## Run
 
-It is recommended to use the recent/latest [release jars](https://github.com/ag88/embtomcatwebdav/releases).
 Java / JDK >= 1.8 is required
 
 ```
