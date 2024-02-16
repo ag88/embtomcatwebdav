@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package io.github.ag88.embtomcatwebdav.util;
 
 import java.io.UnsupportedEncodingException;
@@ -10,6 +13,13 @@ import java.util.TreeMap;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+/**
+ * Class QueryString.
+ * 
+ * This class maintains the parameters in a {@code Map<String, String[]>}.
+ * The query string for URL can then be generted via {@link getQueryString}.
+ * 
+ */
 public class QueryString {
 
 	private Log log = LogFactory.getLog(QueryString.class);
@@ -58,6 +68,11 @@ public class QueryString {
 		return params.remove(key);
 	}
 	
+	/**
+	 * Gets the query string.
+	 *
+	 * @return the query string
+	 */
 	public String getQueryString() {
 		StringBuilder sb = new StringBuilder(128);
 		if(params.isEmpty())

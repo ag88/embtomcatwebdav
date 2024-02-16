@@ -7,10 +7,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Class RedirServlet.
+ * <p>
+ * This servlet simply redirects to the path given when creating the object.
+ */
 public class RedirServlet extends HttpServlet {
 	
 	String redirpath;
 
+	/**
+	 * Instantiates a new redir servlet. 
+	 *
+	 * @param path the path to redirect to
+	 */
 	public RedirServlet(String path) {
 		redirpath = path;
 	}

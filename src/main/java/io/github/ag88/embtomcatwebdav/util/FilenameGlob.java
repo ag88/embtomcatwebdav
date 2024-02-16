@@ -6,21 +6,56 @@ import java.util.regex.Pattern;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+/**
+ * Class FilenameGlob.
+ * 
+ * Create an object passing the pattern in the glob string.
+ * The glob pattern match can then be checked using {@link matches}
+ * this does substring search, e.g. matches anywhere in the input (e.g. filename)
+ * The glob pattern string can have wildcards like 'first*last'.
+ * 
+ */
 public class FilenameGlob {
 
 	private Log log = LogFactory.getLog(FilenameGlob.class);
 	
 	Pattern p;
 
+	/**
+	 * Instantiates a new filename glob.
+	 * 
+	 * The glob pattern string and can have wildcards like '*'.
+	 *
+	 * @param glob the pattern string
+	 */
 	public FilenameGlob(String glob) {
 		this.p = Pattern.compile(convertGlobToRegEx(glob));
 	}
 
+	/**
+	 * Matches.
+	 *
+	 * return true glob pattern matches.
+	 * this does substring search, e.g. matches anywhere in the input (e.g. filename)
+	 * 
+	 * @param input the input
+	 * @return true, if successful
+	 */
 	public boolean matches(String input) {
 		Matcher m = p.matcher(input);
 		return m.find();
 	}
 	
+	/**
+	 * Convert glob to reg ex.
+	 *
+	 * credits to 
+	 * <a href="https://stackoverflow.com/questions/1247772/is-there-an-equivalent-of-java-util-regex-for-glob-type-patterns">
+	 * https://stackoverflow.com/questions/1247772/is-there-an-equivalent-of-java-util-regex-for-glob-type-patterns</a>
+	 * 
+	 * @param line the line
+	 * @return the string
+	 */
 	protected String convertGlobToRegEx(String line) {
 		log.debug("line:".concat(line));
 		line = line.trim();		

@@ -34,6 +34,12 @@ import org.apache.juli.logging.LogFactory;
 
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 
+/**
+ * Class DLZipServlet.
+ * <p>
+ * This servlet provides download selected files as zip service.
+ * 
+ */
 public class DLZipServlet extends HttpServlet {
 	
 	Log log = LogFactory.getLog(WDavUploadServlet2.class);
