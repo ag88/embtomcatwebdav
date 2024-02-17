@@ -53,12 +53,11 @@ it is created.
     relieves from long scrolls to the bottom just for uploads
 - v0.8.0 major feature release: **new**
   - new upload servlet:
-  - migrated to Apache Velocity templates. This paves the way to user customizable templates for directory
-    lists. This provides a means to change/tweak the look and feel by editing the templates.
-    Currently, it isn't quite editable yet as it is bundled in the jar file. The features may become available
-    in subsequent versions which requires some codes refactoring.
+  - migrated to Apache Velocity templates.
   - added download of multiple files as zip **new**
   - added filename filters **new**
+
+  Download multiple files as zip and filename filters significantly improves usability of the upload servlet
 
 status: beta
 
@@ -182,12 +181,11 @@ replace the "target/webdav-0.x.x-jar-with-dependencies.jar" with the appropriate
 
 v0.8.0 is a major feature release:
   - new upload servlet:
-  - migrated to Apache Velocity templates. This paves the way to user customizable templates for directory
-    lists. This provides a means to change/tweak the look and feel by editing the templates.
-    Currently, it isn't quite editable yet as it is bundled in the jar file. The features may become available
-    in subsequent versions which requires some codes refactoring.
+  - migrated to Apache Velocity templates.
   - added download of multiple files as zip **new**
   - added filename filters **new**
+
+  Download multiple files as zip and filename filters significantly improves usability of the upload servlet
 
 v0.5.0 is a rather major feature release. v0.5.0 added an Upload servlet that includes a form based file upload 
 in the directory list.  This makes it possible to upload files without a WebDAV client. In addition, it is 

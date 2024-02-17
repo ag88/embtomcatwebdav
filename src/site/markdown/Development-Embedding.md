@@ -39,12 +39,11 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.8.0
     relieves from long scrolls to the bottom just for uploads
 - v0.8.0 major feature release:
   - new upload servlet:
-  - migrated to Apache Velocity templates. This paves the way to user customizable templates for directory
-    lists. This provides a means to change/tweak the look and feel by editing the templates.
-    Currently, it isn't quite editable yet as it is bundled in the jar file. The features may become available
-    in subsequent versions which requires some codes refactoring.
+  - migrated to Apache Velocity templates.
   - added download of multiple files as zip
   - added filename filters
+
+  Download multiple files as zip and filename filters significantly improves usability of the upload servlet
 
 
 ## Embedding
