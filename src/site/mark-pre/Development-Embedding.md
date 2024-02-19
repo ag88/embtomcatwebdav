@@ -42,8 +42,9 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/${project.v
   - migrated to Apache Velocity templates.
   - added download of multiple files as zip
   - added filename filters
-
-  Download multiple files as zip and filename filters significantly improves usability of the upload servlet
+  Download multiple files as zip and filename filters significantly improves usability of the upload servlet  
+- v0.8.1  add support for ip 0.0.0.0 listen on all interfaces ***new** 
+  - host aliases will be added for all interfaces if 0.0.0.0 is specified as the host name
 
 
 ## Embedding

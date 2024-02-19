@@ -51,13 +51,17 @@ it is created.
 - v0.6.2 usability updates for upload servlet:
   - added a link to upload section at the top, this help with long directory lists
     relieves from long scrolls to the bottom just for uploads
-- v0.8.0 major feature release: **new**
+- v0.8.0 major feature release: ***new**
   - new upload servlet:
   - migrated to Apache Velocity templates.
-  - added download of multiple files as zip **new**
-  - added filename filters **new**
-
+  - added download of multiple files as zip ***new**
+  - added filename filters ***new**
+  
   Download multiple files as zip and filename filters significantly improves usability of the upload servlet
+
+  
+- v0.8.1  add support for ip 0.0.0.0 listen on all interfaces ***new** 
+  - host aliases will be added for all interfaces if 0.0.0.0 is specified as the host name
 
 status: beta
 
@@ -74,19 +78,19 @@ In the releases section of this repository.
 Java / JDK >= 1.8 is required
 
 ```
-java -jar embtomcatwebdav-0.8.0.jar
+java -jar embtomcatwebdav-0.8.1.jar
 ```
 In some operating systems, it may be possible to run it by simply double clicking on the jar file after Java/JDK is installed.
 
 To run with parameters e.g. using the Upload servlet. This is recommended, it is the feature of this app.
 ```
-java -jar embtomcatwebdav-0.8.0.jar -U
+java -jar embtomcatwebdav-0.8.1.jar -U
 ```
 
 If you have various configuration parameters, it is recommended to use a config file.
 A template can be generated as such
 ```
-java -jar embtomcatwebdav-0.8.0.jar --genconf wdav.ini
+java -jar embtomcatwebdav-0.8.1.jar --genconf wdav.ini
 ```
 
 The above would generate a config file (e.g. wdav.ini), and may look like such.
@@ -115,7 +119,7 @@ accesslog.rot=true
 
 Thereafter, running with the config file e.g. wdav.ini is
 ```
-java -jar embtomcatwebdav-0.8.0.jar -c wdav.ini
+java -jar embtomcatwebdav-0.8.1.jar -c wdav.ini
 ```
 You may like to adapt the batch files e.g. run.bat, run.sh as examples to run it as such.
 In that way it is also possible to set up auto start by simply running the batch file.
@@ -123,9 +127,9 @@ In that way it is also possible to set up auto start by simply running the batch
 ## usage 
 
 ```
-java -jar embtomcatwebdav-0.8.0.jar -h
+java -jar embtomcatwebdav-0.8.1.jar -h
 
-usage: embtomcatwebdav-0.8.0
+usage: embtomcatwebdav-0.8.1
     --accesslog                  enable access log
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
@@ -214,16 +218,60 @@ and is possibly insufficiently secure to be placed on the open internet.
 A convenient use case could be to run the app as and when you need it say to upload some files from a mobile phone
 and shutdown the app/server after that.
 
-To access the servlet on your PC / desktop / laptop etc, use the -H or --host option and specify the local IP address 
-of your host (PC/desktop/laptop). Otherwise, Apache Tomcat inteprets that as a virtual host and there could be issues
-if the url don't match the virtual hostname. To get your ip address on Windows, a command is commonly
- `ipconfig` and on Linux `ip -4 add`.
-
 ![screenshot in a browser](web/UploadServlet.png "Upload servlet")  
 Upload servlet on a desktop web browser showing the new upload servlet in download multiple files as zip view 
 
 ![screenshot in a browser](web/UploadServPhone.jpg "Upload on a phone")  
 Upload servlet on a phone web browser
+
+## Running embtomcatwebdav on an actual network interface
+
+By default, embtomcatwebdav runs on ``http://localhost:8080/webdav``, this is normally only accessible on the local computer.
+
+v0.8.1 added a rather important new feature. (only v0.8.1 and above)
+To access the servlet on your PC / desktop / laptop etc on an actual network interface, use the -H or --host
+option and specify the ip address **0.0.0.0** (*zero.zero.zero.zero*) as the hostname.
+The IP address **0.0.0.0** causes tomcat to listen on *all interfaces* on the host/PC.
+When you start *embtomcatwebdav* with ``-H 0.0.0.0`` (or configure that in the config file as host=0.0.0.0)
+*embtomcatwebdav* would enumerate the IP address of the interfaces on your host/PC with in the console log like:
+```
+...
+INFO: note host 0.0.0.0 specified, listening on all interfaces
+Feb 20, 2024 12:49:46 AM io.github.ag88.embtomcatwebdav.WebDavServer runserver
+INFO: added host alias for: localhost
+Feb 20, 2024 12:49:46 AM io.github.ag88.embtomcatwebdav.WebDavServer runserver
+INFO: added host alias for: 2400:d803:e64:46bc:81b8:a5c7:c34:5e01
+Feb 20, 2024 12:49:46 AM io.github.ag88.embtomcatwebdav.WebDavServer runserver
+INFO: added host alias for: fe80:0:0:0:33a5:e5da:f6e4:c1a2%eth0
+Feb 20, 2024 12:49:46 AM io.github.ag88.embtomcatwebdav.WebDavServer runserver
+INFO: added host alias for: 192.168.1.171 <--- this would be your IP (v4) address
+Feb 20, 2024 12:49:46 AM io.github.ag88.embtomcatwebdav.WebDavServer runserver
+INFO: added host alias for: 0:0:0:0:0:0:0:1%lo
+Feb 20, 2024 12:49:46 AM io.github.ag88.embtomcatwebdav.WebDavServer runserver
+INFO: added host alias for: 127.0.0.1
+...
+```
+you should see the *IP address* of your host/PC being listed.
+You can verify that  ip address in Windows, by running `ipconfig` and in Linux (and perhaps other 
+Unix like OS) `ip -4 add`. e.g. if you start *embtomcatwebdav* with  
+
+```java -jar embtomcatwebdav-0.8.0.jar -U -H 0.0.0.0```
+
+and e.g. 192.168.1.171 is your PC's IP address, you can then point your web browser on your remote device (e.g. phone, e.g. Android, iPhone, etc) to http://ip_address:8080/webdav (e.g. http://192.168.1.171:8080/webdav in the example above), which should present a web page of the Upload servlet.
+
+Alternatively specify the local IP address of the of your host (PC/desktop/laptop) in the 
+``-H hostname`` parameter (or as host parameter in config file). For example, if the *IP address*
+ is e.g. 192.168.1.171, specifiy that as the hostname e.g. ``-H 192.168.1.171`` 
+
+The special IP address **0.0.0.0** is intended to solve problems as most PCs/workstations/notebook PCs uses dynamic IP addresses. Using **0.0.0.0** means that you can place ``host=0.0.0.0`` in the config file and 
+*embtomcatwebdav* would listen on all network interfaces. However, the IP address you access from your remote device, has to be the actual IP address for your host/PC. For a more secure setup, you may want to use the
+specific IP address for your host/PC as the hostname.
+
+For those who may be wondering if it is possible to use a hostname, the trouble is that the hostname
+has to be a valid DNS domain name, so that when the web browser access embtomcatwebdav, it would pass 
+the hostname literally. And that it need to match config e.g. using -H hostname, otherwise you'd get a
+404 not found error instead. This complication is simply because Apache Tomcat does virtual hosting, 
+so that a single IP address can host a multitude of domain (host) names.
 
 ## Accesslog
 
@@ -266,7 +314,7 @@ Note that keytool is normally bundled with JDK distributions, it is not part of 
 Next run the app with -S option and the keystore file. If the keystore password is not
 specified on the command line, it would prompt for it. e.g.
 ```
-java -jar embtomcatwebdav-0.8.0.jar -p 8443 -S keystorefile.jkf 
+java -jar embtomcatwebdav-0.8.1.jar -p 8443 -S keystorefile.jkf 
 ```
 Note that when you run the app with the -S keystorefile.jkf option, it copies the keystore file into the 'tomcat.port' work folder, this is needed for the app to access the keystore file.
 
@@ -286,17 +334,17 @@ There are rather tricky ways to be your own CA, make certs. But it may involve i
 mvn package
 ```
 
-Note that if you build from source the jar file is embtomcatwebdav-0.8.0-jar-with-dependencies.jar, in target/ folder.
+Note that if you build from source the jar file is embtomcatwebdav-0.8.1-jar-with-dependencies.jar, in target/ folder.
 
 ## Development/Embedding
 
 This release is released to maven central
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.8.0
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.8.1
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.8.0</version>
+    <version>0.8.1</version>
 </dependency>
 ```
 v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread.
