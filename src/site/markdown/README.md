@@ -58,10 +58,11 @@ it is created.
   - added filename filters ***new**
   
   Download multiple files as zip and filename filters significantly improves usability of the upload servlet
-
   
 - v0.8.1  add support for ip 0.0.0.0 listen on all interfaces ***new** 
   - host aliases will be added for all interfaces if 0.0.0.0 is specified as the host name
+  
+  This solves problems related to dynamic IP addresses
 
 status: beta
 
