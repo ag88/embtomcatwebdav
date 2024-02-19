@@ -6,4 +6,4 @@ set "JDK_JAVA_OPTIONS=%JDK_JAVA_OPTIONS% --add-opens=java.base/java.util=ALL-UNN
 set "JDK_JAVA_OPTIONS=%JDK_JAVA_OPTIONS% --add-opens=java.base/java.util.concurrent=ALL-UNNAMED"
 set "JDK_JAVA_OPTIONS=%JDK_JAVA_OPTIONS% --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED"
 
-java %JDK_JAVA_OPTIONS%  -jar target/embtomcatwebdav-0.8.0-jar-with-dependencies.jar %*
+java %JDK_JAVA_OPTIONS%  -jar target/embtomcatwebdav-0.8.1.jar %*

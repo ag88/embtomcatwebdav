@@ -256,13 +256,27 @@
 						<version>1.6.0</version>
 						<executions>
 							<execution>
-								<id>post-package</id>
+								<id>post-package-rename</id>
+								<phase>pre-integration-test</phase>
+								<configuration>
+									<executable>/usr/bin/mv</executable>
+									<arguments>
+										<argument>target/${project.artifactId}-${project.version}-jar-with-dependencies.jar</argument>
+										<argument>target/${project.artifactId}-${project.version}.jar</argument>
+									</arguments>
+								</configuration>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>						
+							<execution>
+								<id>post-package-chmod</id>
 								<phase>pre-integration-test</phase>
 								<configuration>
 									<executable>/usr/bin/chmod</executable>
 									<arguments>
 										<argument>755</argument>
-										<argument>target/${project.artifactId}-${project.version}-jar-with-dependencies.jar</argument>
+										<argument>target/${project.artifactId}-${project.version}.jar</argument>
 									</arguments>
 								</configuration>
 								<goals>
