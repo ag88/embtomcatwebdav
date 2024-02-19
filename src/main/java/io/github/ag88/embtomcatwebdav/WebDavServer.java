@@ -17,7 +17,10 @@
 package io.github.ag88.embtomcatwebdav;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -259,8 +262,35 @@ public class WebDavServer
 			    tomcat.getService().addConnector(c);			    
 			} else {
 				tomcat.setPort(port);
-			}			
+			}
+			
 			tomcat.setHostname(shost);
+			
+
+			if (shost.equals("0.0.0.0")) {
+				log.info("note host ".concat(shost).concat(" specified, listening on all interfaces"));
+				
+				tomcat.getHost().addAlias("localhost");
+				log.info("added host alias for: localhost");
+				// add all the interface IP addresses
+				
+				try {
+					Enumeration<NetworkInterface> interfaces; interfaces = NetworkInterface.getNetworkInterfaces();
+					while(interfaces.hasMoreElements()) {
+					    NetworkInterface networkInterface = interfaces.nextElement();
+					    Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+					    while(inetAddresses.hasMoreElements()) {
+					    	InetAddress inetaddr = inetAddresses.nextElement();
+					    	log.info("added host alias for: ".concat(inetaddr.getHostAddress()));
+					    	tomcat.getHost().addAlias(inetaddr.getHostAddress());
+					    }
+					}
+				} catch (SocketException e) {
+					log.warn(e);
+				}
+				
+			}
+			
 						
 			Thread hook = new Thread() {
 				@Override
