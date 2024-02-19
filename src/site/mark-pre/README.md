@@ -234,7 +234,7 @@ To access the servlet on your PC / desktop / laptop etc on an actual network int
 option and specify the ip address **0.0.0.0** (*zero.zero.zero.zero*) as the hostname.
 The IP address **0.0.0.0** causes tomcat to listen on *all interfaces* on the host/PC.
 When you start *embtomcatwebdav* with ``-H 0.0.0.0`` (or configure that in the config file as host=0.0.0.0)
-*embtomcatwebdav* would enumerate the IP address of the interfaces on your host/PC with in the console log like:
+*embtomcatwebdav* would enumerate the IP address of the interfaces on your host/PC in the console log like:
 ```
 ...
 INFO: note host 0.0.0.0 specified, listening on all interfaces
@@ -254,13 +254,15 @@ INFO: added host alias for: 127.0.0.1
 ```
 you should see the *IP address* of your host/PC being listed.
 You can verify that  ip address in Windows, by running `ipconfig` and in Linux (and perhaps other 
-Unix like OS) `ip -4 add`. e.g. if you start *embtomcatwebdav* with  
+Unix like OS) `ip -4 add`. 
+
+For example, if you start *embtomcatwebdav* with  
 
 ```java -jar embtomcatwebdav-0.8.0.jar -U -H 0.0.0.0```
 
-and e.g. 192.168.1.171 is your PC's IP address, you can then point your web browser on your remote device (e.g. phone, e.g. Android, iPhone, etc) to http://ip_address:8080/webdav (e.g. http://192.168.1.171:8080/webdav in the example above), which should present a web page of the Upload servlet.
+and if 192.168.1.171 is your PC's IP address, you can then point your web browser on your remote device (e.g. phone, e.g. Android, iPhone, etc) to http://ip_address:8080/webdav (e.g. http://192.168.1.171:8080/webdav in the example above), which should present a web page of the Upload servlet.
 
-Alternatively specify the local IP address of the of your host (PC/desktop/laptop) in the 
+Alternatively specify the local IP address of your host (PC/desktop/laptop) in the 
 ``-H hostname`` parameter (or as host parameter in config file). For example, if the *IP address*
  is e.g. 192.168.1.171, specifiy that as the hostname e.g. ``-H 192.168.1.171`` 
 
