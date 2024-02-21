@@ -25,7 +25,13 @@ public class OptPasswd extends Opt {
 
 	public OptPasswd() {
 		this.name = "password";
-		this.description = "set password, you may omit this, it would prompt for it if -u is specified";
+		StringBuilder sb = new StringBuilder(100);
+		sb.append("set password, on the command line you may omit this, it would prompt for it if -u is specified");
+		sb.append(System.lineSeparator());
+		sb.append("In the config file, if you leave it empty as \"password=\" it is actually a blank password.");
+		sb.append(System.lineSeparator());
+		sb.append("To make it prompt for password from the config file, comment it with a # in front.");
+		this.description = sb.toString();
 		this.defaultval = null;
 		this.opt = "w";
 		this.longopt = "passwd";

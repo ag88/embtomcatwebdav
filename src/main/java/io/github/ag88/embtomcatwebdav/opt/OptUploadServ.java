@@ -23,9 +23,15 @@ public class OptUploadServ extends Opt {
 
 	public OptUploadServ() {
 		this.name = "uploadservlet";
-		this.description = "use upload servlet";
-		this.defaultval = Boolean.FALSE;
-		this.value = Boolean.FALSE;
+		StringBuilder sb = new StringBuilder(100);
+		sb.append("use upload servlet. Default: true.");
+		sb.append(System.lineSeparator());
+		sb.append("specifying on command line, toggles it off");
+		sb.append(System.lineSeparator());
+		sb.append("in config file, specify it directly false or true to use the upload servlet");
+		this.description = sb.toString();
+		this.defaultval = Boolean.TRUE;
+		this.value = Boolean.TRUE;
 		this.opt = "U";
 		this.longopt = "uploadservlet";
 		this.argname = "";

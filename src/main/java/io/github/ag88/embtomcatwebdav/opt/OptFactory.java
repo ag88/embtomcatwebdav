@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -269,7 +270,34 @@ public class OptFactory {
 
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(configfile));
-			p.store(writer, "Embedded Tomcat Webdav server properties");
+			//p.store(writer, "Embedded Tomcat Webdav server properties");
+			writer.write("# Embedded Tomcat Webdav server properties");
+			writer.write(System.lineSeparator());
+			writer.write("# generated:".concat(LocalDateTime.now().toString()));
+			writer.write(System.lineSeparator());
+			Iterator<Opt> iter = iterator();
+			while(iter.hasNext()) {
+				Opt o = iter.next();
+				if(o.getType() == Opt.PropType.Norm || o.getType() == Opt.PropType.Prop) {
+					if(o.getDescription().contains(System.lineSeparator())) {
+						String[] desc = o.getDescription().split(System.lineSeparator(), 0);
+						for(String l : desc) {
+							writer.write("# ");
+							writer.write(l);
+							writer.write(System.lineSeparator());
+						}
+					} else {
+						writer.write("# ");
+						writer.write(o.getDescription());
+						writer.write(System.lineSeparator());
+					}					
+					writer.write(o.getName());
+					writer.write("=");
+					writer.write(p.getProperty(o.getName()));
+					writer.write(System.lineSeparator());					
+				}				
+			}
+			
 			writer.flush();
 			writer.close();
 			

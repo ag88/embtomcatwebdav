@@ -22,7 +22,9 @@ public class OptPort extends Opt {
 
 	public OptPort() {
 		this.name = "port";
-		this.description = "set port";
+		StringBuilder sb = new StringBuilder(100);
+		sb.append("set port. Default 8080");
+		this.description = sb.toString();
 		this.defaultval = Integer.valueOf(8080);
 		this.value = Integer.valueOf(8080);
 		this.opt = "p";

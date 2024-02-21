@@ -31,7 +31,7 @@ public class OptDLZipPath extends Opt {
 		this.type = PropType.Prop;
 		
 		this.name = "dlzip_path";
-		this.description = "set the url path for download multi files as zip";
+		this.description = "set the url for download multi files as zip";
 		this.defaultval = "/dlzip";
 		this.value = null;
 		this.opt = null;
@@ -40,31 +40,8 @@ public class OptDLZipPath extends Opt {
 		this.argname = null;
 		this.valclazz = String.class;
 		this.priority = 31;
-		this.validate = true;
+		this.validate = false;
 		this.replace = false;
 	}
-
-	@Override
-	public boolean isvalid(Object object) {
-		if(! (object instanceof String)) return false;
-		
-		String paths = (String) object;
-		if(paths.equals(""))
-			return false;
-		
-		Path p = Paths.get(paths);
-		
-		if(Files.exists(p) && Files.isDirectory(p))
-			return true;
-		else
-			return false;
-	}
 	
-	@Override
-	public Object replace(Object object) {
-		Object value = OptFactory.getInstance().getOpt("basedir").getValue();
-
-		return value;
-	}
-
 }

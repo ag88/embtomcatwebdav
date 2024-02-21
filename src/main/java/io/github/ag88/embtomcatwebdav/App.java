@@ -175,7 +175,11 @@ public class App {
 								opt.setValue(value);
 							} else { // no arg, a flag
 								if(opt.getValclass().equals(Boolean.class))
-									opt.setValue(Boolean.valueOf(true));
+									if(opt.getValue() == null)
+										opt.setValue(Boolean.valueOf(true));
+									else {
+										opt.setValue(!((Boolean) opt.getValue()));
+									}
 							}
 						}
 					}

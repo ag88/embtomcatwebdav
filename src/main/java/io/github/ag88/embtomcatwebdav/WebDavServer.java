@@ -268,10 +268,12 @@ public class WebDavServer
 			
 
 			if (shost.equals("0.0.0.0")) {
-				log.info("note host ".concat(shost).concat(" specified, listening on all interfaces"));
+				if(!quiet)
+					log.info("note host ".concat(shost).concat(" specified, listening on all interfaces"));
 				
 				tomcat.getHost().addAlias("localhost");
-				log.info("added host alias for: localhost");
+				if(!quiet)
+					log.info("added host alias for: localhost");
 				// add all the interface IP addresses
 				
 				try {
@@ -281,7 +283,8 @@ public class WebDavServer
 					    Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
 					    while(inetAddresses.hasMoreElements()) {
 					    	InetAddress inetaddr = inetAddresses.nextElement();
-					    	log.info("added host alias for: ".concat(inetaddr.getHostAddress()));
+					    	if(!quiet)
+					    		log.info("added host alias for: ".concat(inetaddr.getHostAddress()));
 					    	tomcat.getHost().addAlias(inetaddr.getHostAddress());
 					    }
 					}

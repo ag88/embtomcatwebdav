@@ -22,7 +22,13 @@ public class OptHost extends Opt {
 
 	public OptHost() {
 		this.name = "host";
-		this.description = "set host";
+		StringBuilder sb = new StringBuilder(100);
+		sb.append("set host. Default localhost. If you set the host to 0.0.0.0 it will listen on all interfaces");
+		sb.append(System.lineSeparator());
+		sb.append("however, you still need to specify the IP address of this host PC from your web browser");
+		sb.append(System.lineSeparator());
+		sb.append("to access the webdav or upload servlet web page");
+		this.description = sb.toString();
 		this.defaultval = "localhost";
 		this.value = defaultval;
 		this.opt = "H";

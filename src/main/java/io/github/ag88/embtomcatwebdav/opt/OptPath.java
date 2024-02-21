@@ -26,7 +26,11 @@ public class OptPath extends Opt {
 
 	public OptPath() {
 		this.name = "path";
-		this.description = "set path, default current working dir";
+		StringBuilder sb = new StringBuilder(100);
+		sb.append("set path, default: current working dir.");
+		sb.append(System.lineSeparator());
+		sb.append("This is the root directory which is accessible in the webdav or upload servlet");
+		this.description = sb.toString();
 		this.defaultval = System.getProperty("user.dir");
 		this.value = defaultval;
 		this.opt = "P";

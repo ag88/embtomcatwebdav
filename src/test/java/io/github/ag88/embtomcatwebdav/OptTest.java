@@ -212,7 +212,7 @@ public class OptTest {
     	assertThat(factory.getOpt("password").getValue(), equalTo("pass1"));
     	assertThat(factory.getOpt("digest").getValue(), is(true));
     	assertThat(factory.getOpt("quiet").getValue(), is(true));
-    	assertThat(factory.getOpt("uploadservlet").getValue(), is(true));
+    	assertThat(factory.getOpt("uploadservlet").getValue(), is(false));
     }
 
     @Test
@@ -284,7 +284,7 @@ public class OptTest {
     	
     	
     	String[] args = { "-c", configfile, "-p", "3333", "-H", "host3", "-x", "/prefix3", 
-    			"--user", "user3", "--passwd", "pass3", "-R", "realm3", "--digest", "-q"};
+    			"--user", "user3", "--passwd", "pass3", "-R", "realm3", "-q"};
     	app.parseargs(args);
     	
     	OptFactory factory = OptFactory.getInstance();

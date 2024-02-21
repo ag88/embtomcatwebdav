@@ -22,7 +22,7 @@ public class OptUser extends Opt {
 
 	public OptUser() {
 		this.name = "user";
-		this.description = "set user";
+		this.description = "set user. If the user is specified, the app will prompt for authentication";
 		this.defaultval = null;
 		this.opt = "u";
 		this.longopt = "user";
