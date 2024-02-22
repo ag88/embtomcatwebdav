@@ -265,20 +265,21 @@ public class OptFactory {
 			System.exit(1);
 		}
 				
-		Properties p = new Properties();
-		OptFactory.getInstance().genproperties(p);
+		//Properties p = new Properties();
+		//OptFactory.getInstance().genproperties(p);
 
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(configfile));
 			//p.store(writer, "Embedded Tomcat Webdav server properties");
 			writer.write("# Embedded Tomcat Webdav server properties");
 			writer.write(System.lineSeparator());
-			writer.write("# generated:".concat(LocalDateTime.now().toString()));
+			writer.write("# generated: ".concat(LocalDateTime.now().toString()));
 			writer.write(System.lineSeparator());
 			Iterator<Opt> iter = iterator();
 			while(iter.hasNext()) {
 				Opt o = iter.next();
-				if(o.getType() == Opt.PropType.Norm || o.getType() == Opt.PropType.Prop) {
+				if(o.getType() == Opt.PropType.Norm || o.getType() == Opt.PropType.Prop) {					
+					
 					if(o.getDescription().contains(System.lineSeparator())) {
 						String[] desc = o.getDescription().split(System.lineSeparator(), 0);
 						for(String l : desc) {
@@ -293,7 +294,23 @@ public class OptFactory {
 					}					
 					writer.write(o.getName());
 					writer.write("=");
-					writer.write(p.getProperty(o.getName()));
+					
+					Object value = null;
+					String vtext = "";
+					value = o.getValue();
+					if (value == null) {
+						value = o.getDefaultval();
+						if (value == null)
+							vtext = "";
+						else
+							vtext = value.toString();
+					} else
+						vtext = value.toString();
+
+					// escape '\'
+					vtext = vtext.replace("\\", "\\\\");
+					
+					writer.write(vtext);
 					writer.write(System.lineSeparator());					
 				}				
 			}

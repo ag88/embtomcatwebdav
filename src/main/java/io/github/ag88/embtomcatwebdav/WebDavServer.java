@@ -463,7 +463,8 @@ public class WebDavServer
 				}
 				
 				servlet = new DLZipServlet();
-				log.info("dlzip_path:".concat(dlzip_path));
+				if(!quiet)
+					log.info("dlzip_path:".concat(dlzip_path));
 				Tomcat.addServlet(context, "dlzip", servlet);
 				context.addServletMappingDecoded(dlzip_path, "dlzip");
 				

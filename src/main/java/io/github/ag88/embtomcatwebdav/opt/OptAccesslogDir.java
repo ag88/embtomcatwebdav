@@ -26,7 +26,7 @@ import java.nio.file.Paths;
 public class OptAccesslogDir extends Opt {
 
 	public OptAccesslogDir() {
-
+				
 		/* defaulting base dir done in code */
 		this.type = PropType.Prop;
 		
@@ -41,7 +41,13 @@ public class OptAccesslogDir extends Opt {
 		this.valclazz = String.class;
 		this.priority = 42;
 		this.validate = true;
-		this.replace = false;
+		this.replace = true;
+		
+		/* 
+		 * due to dependency on basedir, basedir needs to be registered before this.
+		 */
+
+		this.defaultval = OptFactory.getInstance().getOpt("basedir").getDefaultval();
 	}
 
 	@Override
