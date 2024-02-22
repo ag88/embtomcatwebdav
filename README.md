@@ -69,7 +69,9 @@ it is created.
     config file generation now adds description entries and is sorted
   - improved help documentation / description
   - upload servlet is now default from this release
-  
+
+Note that the above are cumulative updates, the latest version e.g. v0.8.2 contains all
+the updates/features in the lower/prior versions.
 
 status: beta
 
@@ -81,7 +83,7 @@ Upload servlet on a desktop web browser showing the new upload servlet
 It is recommended to use the recent/latest **[release jars](https://github.com/ag88/embtomcatwebdav/releases/latest)** .
 In the releases section of this repository.
 
-## Run
+## <a id="run">Run</a>
 
 Java / JDK >= 1.8 is required
 
@@ -90,9 +92,9 @@ java -jar embtomcatwebdav-0.8.2.jar
 ```
 In some operating systems, it may be possible to run it by simply double clicking on the jar file after Java/JDK is installed.
 
-To run with parameters e.g. using the Upload servlet. This is recommended, it is the feature of this app.
+To run with parameters e.g. changing the port to 8081
 ```
-java -jar embtomcatwebdav-0.8.2.jar -U
+java -jar embtomcatwebdav-0.8.2.jar -p 8081
 ```
 
 If you have various configuration parameters, it is recommended to use a config file.
@@ -102,27 +104,31 @@ java -jar embtomcatwebdav-0.8.2.jar --genconf wdav.ini
 ```
 
 The above would generate a config file (e.g. wdav.ini), and may look like such.
-Note that the generated configs may not be in this order and you may need to
-rearrange them.
 ```
-#Embedded Tomcat Webdav server properties
-basedir=c:/tomcat.8080
-path=c:/
-urlprefix=/webdav
+# Embedded Tomcat Webdav server properties
+# generated: 2024-02-22T21:09:33.723599956
+# set host. Default localhost. If you set the host to 0.0.0.0 it will listen on all interfaces
+# however, you still need to specify the IP address of this host PC from your web browser
+# to access the webdav or upload servlet web page
 host=localhost
+# set port. Default 8080
 port=8080
+# set path, default: current working dir.
+# This is the root directory which is accessible in the webdav or upload servlet
+path=/home/user
+# set basedir, a work folder for tomcat, default [current working dir]/tomcat.port
+basedir=/home/user/tomcat.8080
+# set urlprefix, default /webdav
+urlprefix=/webdav
+# set realm name, default 'Simple'
 realm=Simple
+# set user. If the user is specified, the app will prompt for authentication
 user=
+# set password, on the command line you may omit this, it would prompt for it if -u is specified
+# In the config file, if you leave it empty as "password=" it is actually a blank password.
+# To make it prompt for password from the config file, comment it with a # in front.
 password=
-uploadservlet=true
-digest=false
-quiet=false
-keystorefile=
-keystorepasswd=
-accesslog=false
-accesslog.dir=
-accesslog.days=-1
-accesslog.rot=true
+...
 ```
 
 Thereafter, running with the config file e.g. wdav.ini is
@@ -132,34 +138,56 @@ java -jar embtomcatwebdav-0.8.2.jar -c wdav.ini
 You may like to adapt the batch files e.g. run.bat, run.sh as examples to run it as such.
 In that way it is also possible to set up auto start by simply running the batch file.
 
-## usage 
+## usage
 
 ```
 java -jar embtomcatwebdav-0.8.2.jar -h
 
 usage: embtomcatwebdav-0.8.2
     --accesslog                  enable access log
- -b,--basedir <path>             set basedir, a work folder for tomcat,
+ -b,--basedir <basedir>          set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
  -c,--conf <configfile>          load properties config file
  -D,--digest                     use digest authentication
     --genconf <configfile>       generate properties config file
     --genpass                    dialog to generate digest password
  -h,--help                       help
- -H,--host <hostname>            set host
- -p,--port <port>                set port
- -P,--path <path>                set path, default current working dir
+ -H,--host <hostname>            set host. Default localhost. If you set
+                                 the host to 0.0.0.0 it will listen on all
+                                 interfaces
+                                 however, you still need to specify the IP
+                                 address of this host PC from your web
+                                 browser
+                                 to access the webdav or upload servlet
+                                 web page
+ -p,--port <port>                set port. Default 8080
+ -P,--path <path>                set path, default: current working dir.
+                                 This is the root directory which is
+                                 accessible in the webdav or upload
+                                 servlet
  -q,--quiet                      mute (most) logs
  -R,--realm <realmname>          set realm name, default 'Simple'
  -S,--secure <keystore,passwd>   enable SSL, you need to supply a keystore
                                  file and keystore passwd, if passwd is
                                  omitted it'd be prompted.
- -u,--user <username>            set user
- -U,--uploadservlet              use upload servlet 
- -w,--passwd <password>          set password, you may omit this, it would
-                                 prompt for it if -u is specified
+ -u,--user <username>            set user. If the user is specified, the
+                                 app will prompt for authentication
+ -U,--uploadservlet              use upload servlet. Default: true.
+                                 specifying on command line, toggles it
+                                 off
+                                 in config file, specify it directly false
+                                 or true to use the upload servlet
+ -w,--passwd <password>          set password, on the command line you may
+                                 omit this, it would prompt for it if -u
+                                 is specified
+                                 In the config file, if you leave it empty
+                                 as "password=" it is actually a blank
+                                 password.
+                                 To make it prompt for password from the
+                                 config file, comment it with a # in
+                                 front.
  -x,--urlprefix <urlprefix>      set urlprefix, default /webdav
-```
+ ```
 
 note that the app can be run without specifying arguments.
 
@@ -170,26 +198,48 @@ And it serves the current directory on webdav at http://localhost:8080/webdav
 
 On running, point the web browser to http://localhost:8080/webdav, you should see the directory listing of your current work directory. For more functionality, it requires a WebDAV client to interact with the WebDAV server
 
+Since v0.3.2, you can maintain the options/settings in a text (config) file. To use a config file, first generate
+a template/config file using the ``--genconf configfile`` option, e.g.:
+
+```
+java -jar embtomcatwebdav-0.8.2.jar --genconf wdav.ini
+```
+
+You would get a config file as like that in the [run section](#run) above.
+
+Thereafter, running the app with the config file e.g. wdav.ini is
+```
+java -jar embtomcatwebdav-0.8.2.jar -c wdav.ini
+```
+
 To enable authentication, specify a userid using -u option and password would be prompted if the -w option is not specified.
+Authentication can be enabled in the config file by specifying the ``user=`` and ``password=`` option, note that if you 
+leave the value blank, it is actually an empty user and/or password. To omit them, comment them with a `#` in the front.
 
-Version 0.2.1 added DIGEST authentication, to use DIGEST authentication, pass the -D option in addition to specifying the user with -u option. Without SSL, DIGEST authentication is slightly more secure than BASIC authentication in that passwords is not transmited in plain text. However, it requires that the client supports DIGEST authentication.
+Since v0.2.1 DIGEST authentication is supported, to use DIGEST authentication, pass the -D option in addition to specifying the user with -u option. Without SSL, DIGEST authentication is slightly more secure than BASIC authentication in that passwords is not transmited in plain text. However, it requires that the client supports DIGEST authentication. 
 
-Version 0.3.2, you can maintain the options/settings in a properties text file. First generate a template using
-the ``--genconf configfile``  option, this would generate a config text file template with default entries. You can then edit the entries as desired. Then while running it use the ``-c configfile`` option to load the configs from the properties file.
-
-Version 0.3.2 also added a ``--genpass`` dialog feature, this lets you generate a DIGEST password to be used with DIGEST authentication.  This generated hashed password, including the 'digest(xxx)' wrapper text, can be maintained
-in the password field in the properties config file. Set digest to true as it otherwise defaults to BASIC 
-authentication. Note that this DIGEST hashed password won't work with BASIC authentication as that requires a clear
-text password. The benefit here is that it is possible to store the hashed password rather than clear text password
-in the config file if you use DIGEST authentication. This is more secure than storing plaintext passwords in
-config files.
+Since v0.3.2 also added a ``--genpass`` dialog feature, this lets you generate a DIGEST password to be used with DIGEST authentication. 
 
 ![Generate digest password](web/digestpwdlg.png "Generate digest password")
 
+To use DIGEST authentication in the config file, generate a hashed password using the ``--genpass`` option, this generated hashed password, including the 'digest(xxx)' wrapper text, needs to be maintained in the config file as
+``password=digest(xxxxxx)``. 
+
+And in addition, set digest to true as it otherwise defaults to BASIC authentication. 
+
+Note that this DIGEST hashed password won't work with BASIC authentication as BASIC auth requires a clear text password.
+The benefit here is that it is possible to store the hashed password rather than clear text password
+in the config file if you use DIGEST authentication. This is more secure than storing plaintext passwords in
+config files and that passwords are not transmitted as plaintext across the network.
+
 If you are bothered with illegal reflective access operation warnings, you can use the batch file run.bat or run.sh
-replace the "target/webdav-0.x.x-jar-with-dependencies.jar" with the appropriate release jar, that should mute most of those illegal reflective access warnings. Tomcat needs those reflective access which accounts for its versetile flexibility features. 
+replace the "target/embtomcatwebdav-0.8.2.jar" with the appropriate release jar path, that should mute most of those illegal reflective access warnings. Tomcat needs those reflective access which accounts for its versetile flexibility features. 
 
 ## Upload servlet
+
+v0.8.2 The upload servlet is now the default in the app when you use it.
+There is an option on the command line ``-U`` for upload servlet. If you specify ``-U`` on the command line, it would
+toggle it off instead.
 
 v0.8.0 is a major feature release:
   - new upload servlet:
@@ -199,11 +249,13 @@ v0.8.0 is a major feature release:
 
   Download multiple files as zip and filename filters significantly improves usability of the upload servlet
 
+In older releases:
+
 v0.5.0 is a rather major feature release. v0.5.0 added an Upload servlet that includes a form based file upload 
 in the directory list.  This makes it possible to upload files without a WebDAV client. In addition, it is 
 styled with responsive html and css so that it is more readable on small (mobile) devices.
 
-v0.5.1 is a bugfix release for v0.5.0, Upload servlet, some refactoring: 
+Since v0.5.1 is a bugfix release for v0.5.0, Upload servlet, some refactoring: 
 enabled alwaysUseSession for authentication, some mobile devices do not cache authentication and keeps prompting 
 authentication every refresh and page. This is still as secure (managed by a session) and avoided the annoying 
 auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
@@ -211,8 +263,9 @@ doPost() whre it is needed and only if it is a new (invalid) session.
 
 v0.5.2 added(fixed) sorting in Upload servlet
 
-To use the Upload servlet, add the -U (case sensitive) or --uploadservlet option on the command line.
-It can also be maintained in the config (properties text) file using the ``uploadservlet=true`` parameter.
+The older release features are all there in the latest release (e.g. v.0.8.2)
+
+In the config (properties text) file, the option ``uploadservlet=true`` parameter should be set to ``true``.
 
 The Upload servlet is derived from Apache Tomcat's WebDAV servlet and DefaultServlet. It is customised to handle
 a file upload form at the bottom of the directory list. Note that this is not intend to handle large files say more 
@@ -236,7 +289,7 @@ Upload servlet on a phone web browser
 
 By default, embtomcatwebdav runs on ``http://localhost:8080/webdav``, this is normally only accessible on the local computer.
 
-v0.8.1 added a rather important new feature. (only v0.8.1 and above)
+v0.8.1 added a rather important feature. (only v0.8.1 and above)
 To access the servlet on your PC / desktop / laptop etc on an actual network interface, use the -H or --host
 option and specify the ip address **0.0.0.0** (*zero.zero.zero.zero*) as the hostname.
 The IP address **0.0.0.0** causes tomcat to listen on *all interfaces* on the host/PC.
