@@ -3,12 +3,12 @@
 ## Maven coordinates
 
 This is released to maven central.
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.8.1
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.8.2
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.8.1</version>
+    <version>0.8.2</version>
 </dependency>
 ```
 - v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread. By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
@@ -45,6 +45,11 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.8.1
   Download multiple files as zip and filename filters significantly improves usability of the upload servlet  
 - v0.8.1  add support for ip 0.0.0.0 listen on all interfaces ***new** 
   - host aliases will be added for all interfaces if 0.0.0.0 is specified as the host name
+- v0.8.2 improvements, fixes for config file generation. 
+  - improvements, fixes for config file generation
+    config file generation now adds description entries and is sorted
+  - improved help documentation / description
+  - upload servlet is now default from this release
 
 
 ## Embedding

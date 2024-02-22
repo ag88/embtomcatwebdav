@@ -51,7 +51,7 @@ it is created.
 - v0.6.2 usability updates for upload servlet:
   - added a link to upload section at the top, this help with long directory lists
     relieves from long scrolls to the bottom just for uploads
-- v0.8.0 major feature release: ***new**
+- ***new** v0.8.0 major feature release: 
   - new upload servlet:
   - migrated to Apache Velocity templates.
   - added download of multiple files as zip ***new**
@@ -59,10 +59,17 @@ it is created.
   
   Download multiple files as zip and filename filters significantly improves usability of the upload servlet
   
-- v0.8.1  add support for ip 0.0.0.0 listen on all interfaces ***new** 
+- ***new** v0.8.1  add support for ip 0.0.0.0 listen on all interfaces 
   - host aliases will be added for all interfaces if 0.0.0.0 is specified as the host name
   
   This solves problems related to dynamic IP addresses
+  
+- ***new** v0.8.2 improvements, fixes for config file generation. 
+  - improvements, fixes for config file generation
+    config file generation now adds description entries and is sorted
+  - improved help documentation / description
+  - upload servlet is now default from this release
+  
 
 status: beta
 

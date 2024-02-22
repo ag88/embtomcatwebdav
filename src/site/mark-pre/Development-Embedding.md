@@ -45,6 +45,11 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/${project.v
   Download multiple files as zip and filename filters significantly improves usability of the upload servlet  
 - v0.8.1  add support for ip 0.0.0.0 listen on all interfaces ***new** 
   - host aliases will be added for all interfaces if 0.0.0.0 is specified as the host name
+- v0.8.2 improvements, fixes for config file generation. 
+  - improvements, fixes for config file generation
+    config file generation now adds description entries and is sorted
+  - improved help documentation / description
+  - upload servlet is now default from this release
 
 
 ## Embedding

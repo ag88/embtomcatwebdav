@@ -51,7 +51,7 @@ it is created.
 - v0.6.2 usability updates for upload servlet:
   - added a link to upload section at the top, this help with long directory lists
     relieves from long scrolls to the bottom just for uploads
-- v0.8.0 major feature release: ***new**
+- ***new** v0.8.0 major feature release: 
   - new upload servlet:
   - migrated to Apache Velocity templates.
   - added download of multiple files as zip ***new**
@@ -59,10 +59,17 @@ it is created.
   
   Download multiple files as zip and filename filters significantly improves usability of the upload servlet
   
-- v0.8.1  add support for ip 0.0.0.0 listen on all interfaces ***new** 
+- ***new** v0.8.1  add support for ip 0.0.0.0 listen on all interfaces 
   - host aliases will be added for all interfaces if 0.0.0.0 is specified as the host name
   
   This solves problems related to dynamic IP addresses
+  
+- ***new** v0.8.2 improvements, fixes for config file generation. 
+  - improvements, fixes for config file generation
+    config file generation now adds description entries and is sorted
+  - improved help documentation / description
+  - upload servlet is now default from this release
+  
 
 status: beta
 
@@ -79,19 +86,19 @@ In the releases section of this repository.
 Java / JDK >= 1.8 is required
 
 ```
-java -jar embtomcatwebdav-0.8.1.jar
+java -jar embtomcatwebdav-0.8.2.jar
 ```
 In some operating systems, it may be possible to run it by simply double clicking on the jar file after Java/JDK is installed.
 
 To run with parameters e.g. using the Upload servlet. This is recommended, it is the feature of this app.
 ```
-java -jar embtomcatwebdav-0.8.1.jar -U
+java -jar embtomcatwebdav-0.8.2.jar -U
 ```
 
 If you have various configuration parameters, it is recommended to use a config file.
 A template can be generated as such
 ```
-java -jar embtomcatwebdav-0.8.1.jar --genconf wdav.ini
+java -jar embtomcatwebdav-0.8.2.jar --genconf wdav.ini
 ```
 
 The above would generate a config file (e.g. wdav.ini), and may look like such.
@@ -120,7 +127,7 @@ accesslog.rot=true
 
 Thereafter, running with the config file e.g. wdav.ini is
 ```
-java -jar embtomcatwebdav-0.8.1.jar -c wdav.ini
+java -jar embtomcatwebdav-0.8.2.jar -c wdav.ini
 ```
 You may like to adapt the batch files e.g. run.bat, run.sh as examples to run it as such.
 In that way it is also possible to set up auto start by simply running the batch file.
@@ -128,9 +135,9 @@ In that way it is also possible to set up auto start by simply running the batch
 ## usage 
 
 ```
-java -jar embtomcatwebdav-0.8.1.jar -h
+java -jar embtomcatwebdav-0.8.2.jar -h
 
-usage: embtomcatwebdav-0.8.1
+usage: embtomcatwebdav-0.8.2
     --accesslog                  enable access log
  -b,--basedir <path>             set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
@@ -317,7 +324,7 @@ Note that keytool is normally bundled with JDK distributions, it is not part of 
 Next run the app with -S option and the keystore file. If the keystore password is not
 specified on the command line, it would prompt for it. e.g.
 ```
-java -jar embtomcatwebdav-0.8.1.jar -p 8443 -S keystorefile.jkf 
+java -jar embtomcatwebdav-0.8.2.jar -p 8443 -S keystorefile.jkf 
 ```
 Note that when you run the app with the -S keystorefile.jkf option, it copies the keystore file into the 'tomcat.port' work folder, this is needed for the app to access the keystore file.
 
@@ -337,17 +344,17 @@ There are rather tricky ways to be your own CA, make certs. But it may involve i
 mvn package
 ```
 
-Note that if you build from source the jar file is embtomcatwebdav-0.8.1-jar-with-dependencies.jar, in target/ folder.
+Note that if you build from source the jar file is embtomcatwebdav-0.8.2-jar-with-dependencies.jar, in target/ folder.
 
 ## Development/Embedding
 
 This release is released to maven central
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.8.1
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.8.2
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.8.1</version>
+    <version>0.8.2</version>
 </dependency>
 ```
 v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread.
