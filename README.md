@@ -214,7 +214,8 @@ java -jar embtomcatwebdav-0.8.2.jar -c wdav.ini
 
 To enable authentication, specify a userid using -u option and password would be prompted if the -w option is not specified.
 Authentication can be enabled in the config file by specifying the ``user=`` and ``password=`` option, note that if you 
-leave the value blank, it is actually an empty user and/or password. To omit them, comment them with a `#` in the front.
+leave the value blank, it is actually an empty user and/or password. Do specify a valid user and password if you intended
+authentication for your webdav or upload web site. To do away with authentication, you can comment them with a `#` in the front.
 
 Since v0.2.1 DIGEST authentication is supported, to use DIGEST authentication, pass the -D option in addition to specifying the user with -u option. Without SSL, DIGEST authentication is slightly more secure than BASIC authentication in that passwords is not transmited in plain text. However, it requires that the client supports DIGEST authentication. 
 
@@ -318,21 +319,21 @@ Unix like OS) `ip -4 add`.
 
 For example, if you start *embtomcatwebdav* with  
 
-```java -jar embtomcatwebdav-0.8.0.jar -U -H 0.0.0.0```
+```java -jar embtomcatwebdav-0.8.2.jar -H 0.0.0.0```
 
 and if 192.168.1.171 is your PC's IP address, you can then point your web browser on your remote device (e.g. phone, e.g. Android, iPhone, etc) to http://ip_address:8080/webdav (e.g. http://192.168.1.171:8080/webdav in the example above), which should present a web page of the Upload servlet.
 
+The special IP address **0.0.0.0** is intended to solve problems as most PCs/workstations/notebook PCs uses dynamic IP addresses. Using **0.0.0.0** means that you can place ``host=0.0.0.0`` in the config file and 
+*embtomcatwebdav* would listen on all network interfaces. However, the IP address you access from your remote device, has to be the actual IP address for your host/PC. 
+
 Alternatively specify the local IP address of your host (PC/desktop/laptop) in the 
 ``-H hostname`` parameter (or as host parameter in config file). For example, if the *IP address*
- is e.g. 192.168.1.171, specifiy that as the hostname e.g. ``-H 192.168.1.171`` 
-
-The special IP address **0.0.0.0** is intended to solve problems as most PCs/workstations/notebook PCs uses dynamic IP addresses. Using **0.0.0.0** means that you can place ``host=0.0.0.0`` in the config file and 
-*embtomcatwebdav* would listen on all network interfaces. However, the IP address you access from your remote device, has to be the actual IP address for your host/PC. For a more secure setup, you may want to use the
-specific IP address for your host/PC as the hostname.
+ is e.g. 192.168.1.171, specifiy that as the hostname e.g. ``-H 192.168.1.171``. This is actually more secure than using *0.0.0.0*,
+ but that it could be troublesome if you are using dynamic IP address (e.g. DHCP) those that are assigned from the network/router etc.
 
 For those who may be wondering if it is possible to use a hostname, the trouble is that the hostname
 has to be a valid DNS domain name, so that when the web browser access embtomcatwebdav, it would pass 
-the hostname literally. And that it need to match config e.g. using -H hostname, otherwise you'd get a
+the hostname literally. And that it need to match config e.g. that using -H hostname, otherwise you'd get a
 404 not found error instead. This complication is simply because Apache Tomcat does virtual hosting, 
 so that a single IP address can host a multitude of domain (host) names.
 
