@@ -91,6 +91,13 @@ Java / JDK >= 1.8 is required
 java -jar ${project.artifactId}-${project.version}.jar
 ```
 In some operating systems, it may be possible to run it by simply double clicking on the jar file after Java/JDK is installed.
+e.g. In Windows, you can normally run it by simply double clicking the icon. The trouble is that it seemed there is 'nothing', 
+but that actually it is running. Point your web browser to http://localhost:8080/webdav, and you would see the upload servlet.
+
+To stop it after you simply 'double click' that, launch the task manager, right click on the task bar to find it.
+In Task manager look for a process java binary or some such app matching it that is running and kill it.
+For more info take a look in the 
+[wiki: using embtomcatwebdav in MS Windows](https://github.com/ag88/embtomcatwebdav/wiki/2-Windows-%3A-using-embtomcatwebdav-in-MS-Windows).
 
 To run with parameters e.g. changing the port to 8081
 ```
