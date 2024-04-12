@@ -3,12 +3,12 @@
 ## Maven coordinates
 
 This is released to maven central.
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.8.2
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.9.0
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.8.2</version>
+    <version>0.9.0</version>
 </dependency>
 ```
 - v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread. By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
@@ -50,6 +50,10 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.8.2
     config file generation now adds description entries and is sorted
   - improved help documentation / description
   - upload servlet is now default from this release
+- v0.9.0 checks for updates from this repository
+  - checks for updates from this repository
+  - added option to enable/disable check for updates
+  - display server info: Embtomcatwebdav and version in page for upload servlet
 
 
 ## Embedding

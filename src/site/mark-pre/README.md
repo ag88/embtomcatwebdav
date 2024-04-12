@@ -69,6 +69,11 @@ it is created.
     config file generation now adds description entries and is sorted
   - improved help documentation / description
   - upload servlet is now default from this release
+  
+- ***new** v0.9.0 checks for updates from this repository
+  - checks for updates from this repository
+  - added option to enable/disable check for updates
+  - display server info: Embtomcatwebdav and version in page for upload servlet
 
 Note that the above are cumulative updates, the latest version e.g. v${project.version} contains all
 the updates/features in the lower/prior versions.
