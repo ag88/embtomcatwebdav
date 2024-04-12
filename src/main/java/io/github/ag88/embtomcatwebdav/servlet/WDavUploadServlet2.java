@@ -684,7 +684,9 @@ public class WDavUploadServlet2 extends WebdavServlet {
 			}
 			reader.close();
 
-			if(GitCheckUpdates.getInstance().hasUpdates()) {
+			boolean checkupdates = ((Boolean) OptFactory.getInstance().getOpt("checkupdates").getValue()).booleanValue();
+			
+			if( checkupdates && GitCheckUpdates.getInstance().hasUpdates()) {
 		        fturl = App.class.getResource("/resources/newversion.txt");
 				if (fturl != null) {					
 					reader = new BufferedReader(new InputStreamReader(fturl.openStream()));

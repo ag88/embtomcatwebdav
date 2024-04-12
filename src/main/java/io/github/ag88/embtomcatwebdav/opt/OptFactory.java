@@ -128,6 +128,7 @@ public class OptFactory {
 		addOpt(new OptAccesslogDir());
 		addOpt(new OptAccesslogRot());
 		addOpt(new OptAccesslogDays());
+		addOpt(new OptCheckUpdates());
 	}
 
 	/**
@@ -202,7 +203,7 @@ public class OptFactory {
 		Iterator<Opt> iter = iterator();
 		while (iter.hasNext()) {
 			Opt o = iter.next();
-			if (o.getType().equals(Opt.PropType.Norm) || o.getType().equals(Opt.PropType.Prop) && o.isHasarg()) {
+			if (o.getType().equals(Opt.PropType.Norm) || o.getType().equals(Opt.PropType.Prop)) {
 				Object val = o.getDefaultval();
 				String defval = null;
 				if (val != null)

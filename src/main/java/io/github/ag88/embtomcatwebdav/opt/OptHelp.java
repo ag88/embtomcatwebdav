@@ -80,7 +80,9 @@ public class OptHelp extends Opt {
 			sb.append(helpfoot3);
 		}
 		
-		if (GitCheckUpdates.getInstance().hasUpdates()) {
+		boolean checkupdates = ((Boolean) OptFactory.getInstance().getOpt("checkupdates").getValue()).booleanValue();
+		
+		if (checkupdates && GitCheckUpdates.getInstance().hasUpdates()) {
 			String helpnewv = mkv.get("helpnewv");
 			if (helpnewv != null) {
 				helpnewv = helpnewv.replaceAll("#n", System.lineSeparator());
