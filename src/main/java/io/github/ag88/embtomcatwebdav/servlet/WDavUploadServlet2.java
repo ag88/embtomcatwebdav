@@ -80,6 +80,7 @@ import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.MethodInvocationException;
 
 import io.github.ag88.embtomcatwebdav.App;
+import io.github.ag88.embtomcatwebdav.GitCheckUpdates;
 import io.github.ag88.embtomcatwebdav.model.HtmDirEntry;
 import io.github.ag88.embtomcatwebdav.model.HtmLogEntry;
 import io.github.ag88.embtomcatwebdav.opt.Opt;
@@ -682,9 +683,23 @@ public class WDavUploadServlet2 extends WebdavServlet {
 				sb.append(System.lineSeparator());
 			}
 			reader.close();
+
+			if(GitCheckUpdates.getInstance().hasUpdates()) {
+		        fturl = App.class.getResource("/resources/newversion.txt");
+				if (fturl != null) {					
+					reader = new BufferedReader(new InputStreamReader(fturl.openStream()));
+					line = null;
+					while((line = reader.readLine()) != null) {
+						sb.append(line);
+						sb.append(System.lineSeparator());
+					}
+					reader.close();										
+				}				
+			}
 			
 			context.put("footer", sb.toString());
 		}		
+		
 		
    		template.merge( context, writer );
 

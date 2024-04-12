@@ -99,10 +99,13 @@ public class App {
 	 * @param args the args
 	 */
 	public void run(String[] args) {
-		
+
+		GitCheckUpdates.getInstance().hasUpdates();
+
 		parseargs(args);
+		
 		//OptFactory.getInstance().printOpts();
-		wdav.loadparams(OptFactory.getInstance().getOpts());
+		wdav.loadparams(OptFactory.getInstance().getOpts());						
 		wdav.runserver();
 	}
 

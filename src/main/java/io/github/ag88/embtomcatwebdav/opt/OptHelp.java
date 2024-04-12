@@ -27,6 +27,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import io.github.ag88.embtomcatwebdav.App;
+import io.github.ag88.embtomcatwebdav.GitCheckUpdates;
 
 /**
  * Conf for Help option.
@@ -78,6 +79,15 @@ public class OptHelp extends Opt {
 			helpfoot3 = helpfoot3.replaceAll("#n", System.lineSeparator());
 			sb.append(helpfoot3);
 		}
+		
+		if (GitCheckUpdates.getInstance().hasUpdates()) {
+			String helpnewv = mkv.get("helpnewv");
+			if (helpnewv != null) {
+				helpnewv = helpnewv.replaceAll("#n", System.lineSeparator());
+				sb.append(helpnewv);
+			}
+		}
+		
 		String name;
 		if(mkv.get("artifactId") != null) {
 			name = mkv.get("artifactId").concat("-").concat(mkv.get("version"));			

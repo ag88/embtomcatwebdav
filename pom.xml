@@ -224,7 +224,7 @@
 						<version>3.1.1</version>
 						<configuration>
 							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
+								<descriptorRef>jar-with-dependencies</descriptorRef> 
 							</descriptorRefs>
 							<archive>
 								<manifest>
@@ -235,8 +235,9 @@
 									<groupId>${project.groupId}</groupId>
 									<version>${project.version}</version>
 									<helpfoot1>#nCopyright (C) #YEAR Andrew Goh#n</helpfoot1>
-									<helpfoot2>#nLicensed under the Apache License, Version	2.0#nhttp://www.apache.org/licenses/LICENSE-2.0#n</helpfoot2>
-									<helpfoot3>#nProject website:https://github.com/ag88/embtomcatwebdav#n</helpfoot3>
+									<helpfoot2>#nLicensed under the Apache License, Version 2.0#nhttp://www.apache.org/licenses/LICENSE-2.0#n</helpfoot2>
+									<helpfoot3>#nProject website: https://github.com/ag88/embtomcatwebdav#n</helpfoot3>
+									<helpnewv>#nA new version is available check it out https://github.com/ag88/embtomcatwebdav/releases/latest</helpnewv>
 								</manifestEntries>
 							</archive>
 						</configuration>
@@ -268,7 +269,7 @@
 								<goals>
 									<goal>exec</goal>
 								</goals>
-							</execution>						
+							</execution>
 							<execution>
 								<id>post-package-chmod</id>
 								<phase>pre-integration-test</phase>
@@ -336,9 +337,11 @@
 											<filtering>true</filtering>
 											<includes>
 												<include>footeru1.txt</include>
+												<include>newversion.txt</include>
 											</includes>
 											<excludes>
 												<exclude>distribution.xml</exclude>
+												<exclude>jar-with-deps-with-exclude.xml</exclude>
 											</excludes>
 										</resource>
 									</resources>
