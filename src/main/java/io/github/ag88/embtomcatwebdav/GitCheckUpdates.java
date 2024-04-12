@@ -19,22 +19,48 @@ import org.apache.juli.logging.LogFactory;
 
 import io.github.ag88.embtomcatwebdav.GitCheckUpdates.Version;
 
+/**
+ * Check new versions in repository.
+ * 
+ * 
+ */
 public class GitCheckUpdates {
 
 	private Log log = LogFactory.getLog(GitCheckUpdates.class);
 
 	private static final String REMOTE_URL = "https://github.com/ag88/embtomcatwebdav.git/info/refs?service=git-upload-pack";
 
+	/**
+	 * nested Class Version.
+	 */
 	class Version implements Comparable<Version> {
 				
+		/** The major. */
 		public int major;
+		
+		/** The minor. */
 		public int minor;
+		
+		/** The patch. */
 		public int patch;
+		
+		/** The subpatch. */
 		public String subpatch;
 		
+		/**
+		 * Instantiates a new version.
+		 */
 		public Version() {
 		}
 		
+		/**
+		 * Instantiates a new version.
+		 *
+		 * @param major the major
+		 * @param minor the minor
+		 * @param patch the patch
+		 * @param subpatch the subpatch
+		 */
 		public Version(int major, int minor, int patch, String subpatch) {
 			this.major = major;
 			this.minor = minor;
@@ -42,6 +68,12 @@ public class GitCheckUpdates {
 			this.subpatch = subpatch;
 		}
 		
+		/**
+		 * Compare to.
+		 *
+		 * @param o the o
+		 * @return the int
+		 */
 		@Override
 		public int compareTo(Version o) {
 			if (this.major > o.major)
@@ -66,12 +98,22 @@ public class GitCheckUpdates {
 			return 0;
 		}
 		
+		/**
+		 * To string.
+		 *
+		 * @return the string
+		 */
 		@Override
 		public String toString() {
 			return Integer.toString(major) + "." + Integer.toString(minor) + "." + Integer.toString(patch) + subpatch;
 		}
 		
 		
+		/**
+		 * From string.
+		 *
+		 * @param string the string
+		 */
 		public void fromString(String string) {
 			Pattern p = Pattern.compile("[a-zA-Z]*(\\d*)\\.(\\d*)\\.(\\d*)([a-zA-Z]*)");
 			Matcher m = p.matcher(string);
@@ -89,15 +131,25 @@ public class GitCheckUpdates {
 		}
 	}
 	
+	/** The versions. */
 	ArrayList<Version> versions;
 	
+	/** The instance. */
 	private static GitCheckUpdates m_instance;
 
+	/**
+	 * constructor (private)
+	 */
 	private GitCheckUpdates() {
 		versions = new ArrayList<GitCheckUpdates.Version>(10);
 		getversions();
 	}
 
+	/**
+	 * Gets the single instance of GitCheckUpdates.
+	 *
+	 * @return single instance of GitCheckUpdates
+	 */
 	public static GitCheckUpdates getInstance() {
 		// Double lock for thread safety.
 		if (m_instance == null) {
@@ -111,6 +163,11 @@ public class GitCheckUpdates {
 	}
 	
 	
+	/**
+	 * Checks for updates.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean hasUpdates() {
 		App app = App.getInstance();
 		Map<String, String> mkv = app.readManifest();
@@ -139,6 +196,10 @@ public class GitCheckUpdates {
 		return false;
 	}
 	
+	/**
+	 * Gets the versions, update instance arraylist of versions
+	 *
+	 */
 	public void getversions() {		
 		
 		List<String> lines = dohttpget();
@@ -161,6 +222,11 @@ public class GitCheckUpdates {
 		}
 	}
 	
+	/**
+	 * Latestversion.
+	 *
+	 * @return the version
+	 */
 	public Version latestversion() {
 		if (versions == null) {
 			versions = new ArrayList<GitCheckUpdates.Version>(10);
@@ -173,6 +239,12 @@ public class GitCheckUpdates {
 			return null;
 	}
 	
+	/**
+	 * Parseline.
+	 *
+	 * @param line the line
+	 * @return the version
+	 */
 	public Version parseline(String line) {
 		
 		String[] tok = line.split(" ");
@@ -189,6 +261,11 @@ public class GitCheckUpdates {
 		return null;
 	}
 	
+	/**
+	 * Dohttpget.
+	 *
+	 * @return the list
+	 */
 	public List<String> dohttpget() {
 
 		try {
@@ -224,10 +301,20 @@ public class GitCheckUpdates {
 
 	}
 
+	/**
+	 * Gets the versions.
+	 *
+	 * @return the versions
+	 */
 	public ArrayList<Version> getVersions() {
 		return versions;
 	}
 
+	/**
+	 * Sets the versions.
+	 *
+	 * @param versions the new versions
+	 */
 	public void setVersions(ArrayList<Version> versions) {
 		this.versions = versions;
 	}

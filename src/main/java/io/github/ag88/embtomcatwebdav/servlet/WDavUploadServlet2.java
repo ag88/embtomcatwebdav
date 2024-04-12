@@ -668,7 +668,21 @@ public class WDavUploadServlet2 extends WebdavServlet {
         }
         
         if (showServerInfo) {
-        	context.put("serverinfo", ServerInfo.getServerInfo());
+        	sb = new StringBuilder(100);
+        	sb.append(ServerInfo.getServerInfo());        	
+    		Map<String, String> mkv = App.getInstance().readManifest();
+    		
+    		if(mkv.get("artifactId") != null && mkv.get("version") != null) {
+            	sb.append("<br>");        	
+            	sb.append(System.lineSeparator());
+            	String name = mkv.get("artifactId"); 
+    			sb.append(name.substring(0, 1).toUpperCase());
+    			sb.append(name.substring(1));
+    			sb.append("-");
+    			sb.append(mkv.get("version"));
+    		} 	
+
+        	context.put("serverinfo", sb.toString());
         }
                 
         URL fturl = App.class.getResource("/resources/footeru1.txt");

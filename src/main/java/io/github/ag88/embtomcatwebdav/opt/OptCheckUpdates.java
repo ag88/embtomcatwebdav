@@ -18,7 +18,7 @@ package io.github.ag88.embtomcatwebdav.opt;
 import io.github.ag88.embtomcatwebdav.opt.Opt.PropType;
 
 /**
- * Conf for Port option.
+ * Conf for checkupdates option.
  */
 public class OptCheckUpdates extends Opt {
 
