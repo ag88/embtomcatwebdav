@@ -116,8 +116,7 @@ public class GitCheckUpdates {
 		Map<String, String> mkv = app.readManifest();
 		String vs = mkv.get("version");
 
-		//if(vs == null) return false;
-		vs = "0.8.0";
+		if(vs == null) return false;
 		
 		Version thisv = new Version();
 		thisv.fromString(vs);
