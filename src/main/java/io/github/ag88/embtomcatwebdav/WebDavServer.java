@@ -305,7 +305,7 @@ public class WebDavServer
 			
 			Context context = tomcat.addContext("", path);
 			tomcat.setAddDefaultWebXmlToWebapp(false);
-			Tomcat.addDefaultMimeTypeMappings(context);
+			Tomcat.addDefaultMimeTypeMappings(context);		
 
 			/*
 	        if (context.getResources() == null) { 
@@ -469,8 +469,7 @@ public class WebDavServer
 				context.addServletMappingDecoded(dlzip_path, "dlzip");
 				
 			}
-			
-			
+						
 			context.setSessionTimeout(30);
 			
 			if(!quiet)

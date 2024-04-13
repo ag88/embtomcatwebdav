@@ -145,6 +145,9 @@ public class WDavUploadServlet2 extends WebdavServlet {
 			this.dlzip_path = (String) OptFactory.getInstance().getOpt("dlzip_path").getDefaultval();
 		else
 			this.dlzip_path = dlzippath;
+		
+		if (((Boolean) OptFactory.getInstance().getOpt("allowlinking").getValue()).booleanValue())
+			resources.setAllowLinking(true);
 	}
 
 	/* this override is to keep path evaluation the same

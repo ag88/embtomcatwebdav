@@ -129,6 +129,7 @@ public class OptFactory {
 		addOpt(new OptAccesslogRot());
 		addOpt(new OptAccesslogDays());
 		addOpt(new OptCheckUpdates());
+		addOpt(new OptAllowLinking());
 	}
 
 	/**
