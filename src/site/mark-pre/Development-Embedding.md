@@ -54,6 +54,9 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/${project.v
   - checks for updates from this repository
   - added option to enable/disable check for updates
   - display server info: Embtomcatwebdav and version in page for upload servlet
+- v0.9.1 adds allowlinking option
+  - allow linking (e.g. follow symbolic links, warn: links can go outside working
+    dir/path, only works in upload servlet)
 
 
 ## Embedding

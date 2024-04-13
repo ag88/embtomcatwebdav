@@ -75,6 +75,10 @@ it is created.
   - added option to enable/disable check for updates
   - display server info: Embtomcatwebdav and version in page for upload servlet
 
+- ***new** v0.9.1 adds allowlinking option
+  - allow linking (e.g. follow symbolic links, warn: links can go outside working
+    dir/path, only works in upload servlet)
+
 Note that the above are cumulative updates, the latest version e.g. v${project.version} contains all
 the updates/features in the lower/prior versions.
 
@@ -157,6 +161,9 @@ java -jar ${project.artifactId}-${project.version}.jar -h
 
 usage: ${project.artifactId}-${project.version}
     --accesslog                  enable access log
+    --allowlinking               allow linking (e.g. follow symbolic
+                                 links, warn: links can go outside working
+                                 dir/path, only works in upload servlet)
  -b,--basedir <basedir>          set basedir, a work folder for tomcat,
                                  default [current working dir]/tomcat.port
  -c,--conf <configfile>          load properties config file
