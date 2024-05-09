@@ -43,6 +43,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.Servlet;
+import javax.swing.SwingUtilities;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
@@ -74,6 +75,8 @@ import org.apache.tomcat.util.descriptor.web.LoginConfig;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 
+import io.github.ag88.embtomcatwebdav.gui.Gui;
+import io.github.ag88.embtomcatwebdav.gui.Util;
 import io.github.ag88.embtomcatwebdav.opt.Opt;
 import io.github.ag88.embtomcatwebdav.opt.OptAccesslogDays;
 import io.github.ag88.embtomcatwebdav.opt.OptAccesslogDir;
@@ -478,6 +481,16 @@ public class WebDavServer
 					shost, Integer.toString(port), urlprefix.substring(0,urlprefix.length())));
 			
 			tomcat.start();
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+			
+			App.getInstance().createGui();
+			
+			Util u = new Util();
+			u.makesystray();
+			
 			tomcat.getServer().await();
 		} catch (LifecycleException e) {
 			log.error(e.getMessage(), e);

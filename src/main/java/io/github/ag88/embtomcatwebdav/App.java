@@ -33,6 +33,9 @@ import java.util.TreeMap;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -41,8 +44,11 @@ import org.apache.commons.cli.ParseException;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+import io.github.ag88.embtomcatwebdav.gui.Gui;
 import io.github.ag88.embtomcatwebdav.opt.Opt;
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
+import net.harawata.appdirs.AppDirs;
+import net.harawata.appdirs.AppDirsFactory;
 
 /**
  * This is a WebDAV server based on Apache Tomcat's WebDAV servlet and embedded Tomcat server.<p>
@@ -70,6 +76,8 @@ public class App {
 	private Log log = LogFactory.getLog(App.class);
 	
 	WebDavServer wdav;
+	
+	Gui gui = null;
 
 	private static App m_instance;
 	
@@ -101,12 +109,49 @@ public class App {
 	public void run(String[] args) {
 
 		GitCheckUpdates.getInstance().hasUpdates();
+		
+		loadconfigs(args);
 
 		parseargs(args);
 		
 		//OptFactory.getInstance().printOpts();
 		wdav.loadparams(OptFactory.getInstance().getOpts());						
 		wdav.runserver();
+	}
+	
+	public void loadconfigs(String[] args) {
+		Options options = new Options();
+		OptFactory.getInstance().genoptions(options);		
+		
+		// if -c (--conf) is specified use that specified from command line
+		try {
+			CommandLineParser parser = new DefaultParser();
+			CommandLine cmd = parser.parse(options, args);
+			if(cmd.hasOption("conf")) 
+				return;
+		} catch (ParseException e) {
+			log.error(e.getMessage(),e);
+			return;
+		}
+		
+		Map<String, String> mdict = readManifest();
+		String appName = mdict.get("artifactId");
+		String appVersion = mdict.get("version");
+		String appAuthor = mdict.get("groupId");
+		AppDirs appdirs = AppDirsFactory.getInstance();
+		
+		String datadir = appdirs.getUserDataDir(appName, "", appAuthor);
+		String configdir = appdirs.getUserConfigDir(appName, "", appAuthor); 
+		
+		log.info(datadir);
+		log.info(configdir);
+		
+		Path pconfig = Paths.get(configdir, "config.ini");
+		if (Files.exists(pconfig)) {
+			log.info("loading configs from ".concat(pconfig.toString()));
+			OptFactory.getInstance().loadconfigprop(pconfig.toString());
+		} 
+			
 	}
 
 	/**
@@ -245,7 +290,29 @@ public class App {
 			log.error(e.getMessage(),e);
 		}
 		
-	}	
+	}
+	
+	public void createGui() {
+		
+		if (gui == null || ! gui.isDisplayable()) { 
+			this.gui = new Gui();;
+			SwingUtilities.invokeLater(
+				new Runnable() {
+				    public void run() {
+				    	gui = new Gui();
+				    	gui.pack();
+				    	gui.setLocationRelativeTo(null);
+				    	gui.setVisible(true);
+				    }				    
+			});
+		} else { 
+			gui.setExtendedState (JFrame.ICONIFIED);
+			gui.setExtendedState (JFrame.NORMAL);
+			gui.toFront ();
+			gui.requestFocus ();
+		}
+
+	}
 
 	/**
 	 * Read manifest.
@@ -296,7 +363,15 @@ public class App {
 		return log;
 	}
 
-	
+
+	public WebDavServer getWdav() {
+		return wdav;
+	}
+
+	public void setWdav(WebDavServer wdav) {
+		this.wdav = wdav;
+	}
+
 	/**
      * The main method, starting point of this app.
      * 
@@ -308,6 +383,7 @@ public class App {
         App app = new App();
         app.run(args);
     }
+
 
 
 }
