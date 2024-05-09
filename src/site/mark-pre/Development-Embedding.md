@@ -57,7 +57,10 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/${project.v
 - v0.9.1 adds allowlinking option
   - allow linking (e.g. follow symbolic links, warn: links can go outside working
     dir/path, only works in upload servlet)
-
+- v0.9.2 make filter case insensitive
+  - in prior release the filter in upload servlet is case sensitive, this is troublesome
+    searching for files/patterns. This minor update makes it case insensitive, word
+    searches matches regardless of case
 
 ## Embedding
 

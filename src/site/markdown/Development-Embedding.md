@@ -3,12 +3,12 @@
 ## Maven coordinates
 
 This is released to maven central.
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.9.1
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.9.2
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>0.9.1</version>
+    <version>0.9.2</version>
 </dependency>
 ```
 - v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread. By default, runserver() method blocks, apps embedding this can call runserverfork() instead.
@@ -57,7 +57,10 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/0.9.1
 - v0.9.1 adds allowlinking option
   - allow linking (e.g. follow symbolic links, warn: links can go outside working
     dir/path, only works in upload servlet)
-
+- v0.9.2 make filter case insensitive
+  - in prior release the filter in upload servlet is case sensitive, this is troublesome
+    searching for files/patterns. This minor update makes it case insensitive, word
+    searches matches regardless of case
 
 ## Embedding
 
