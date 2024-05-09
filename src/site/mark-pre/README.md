@@ -79,6 +79,11 @@ it is created.
   - allow linking (e.g. follow symbolic links, warn: links can go outside working
     dir/path, only works in upload servlet)
 
+- ***new** v0.9.2 make filter case insensitive
+  - in prior release the filter in upload servlet is case sensitive, this is troublesome
+    searching for files/patterns. This minor update makes it case insensitive, word
+    searches matches regardless of case
+
 Note that the above are cumulative updates, the latest version e.g. v${project.version} contains all
 the updates/features in the lower/prior versions.
 
