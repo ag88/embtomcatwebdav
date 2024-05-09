@@ -20,6 +20,7 @@ public class FilenameGlob {
 	private Log log = LogFactory.getLog(FilenameGlob.class);
 	
 	Pattern p;
+	boolean casesensitive = false;
 
 	/**
 	 * Instantiates a new filename glob.
@@ -28,7 +29,10 @@ public class FilenameGlob {
 	 *
 	 * @param glob the pattern string
 	 */
-	public FilenameGlob(String glob) {
+	public FilenameGlob(String glob, boolean casesens) {
+		this.casesensitive = casesens;
+		if (!casesens)
+			glob = glob.toLowerCase();
 		this.p = Pattern.compile(convertGlobToRegEx(glob));
 	}
 
@@ -42,6 +46,8 @@ public class FilenameGlob {
 	 * @return true, if successful
 	 */
 	public boolean matches(String input) {
+		if (!casesensitive)
+			input = input.toLowerCase();
 		Matcher m = p.matcher(input);
 		return m.find();
 	}

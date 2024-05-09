@@ -356,9 +356,18 @@ public class WDavUploadServlet2 extends WebdavServlet {
 					if(!(null == filqry || filqry.equals(""))) {
 						qs.remove("filter");
 						qs.put("filter", filqry);
-					}					
+					} else
+						qs.remove("filter");
+					
+					if(qs.containsKey("case")) {
+						qs.remove("casesens");
+						qs.put("casesens", "y");						
+					} else
+						qs.remove("casesens");
+
 				} else if(btn.equals("reset")) {
 					qs.remove("filter");					
+					qs.remove("casesens");
 				}				
 				
 			} else {
@@ -373,6 +382,7 @@ public class WDavUploadServlet2 extends WebdavServlet {
 			qs.remove("filbtn");
 			qs.remove("filtxt");
 			qs.remove("overwrite");			
+			qs.remove("case");
 			
 			String redirurl = request.getRequestURL().append(qs.getQueryString()).toString();
         	response.sendRedirect(redirurl);
@@ -610,9 +620,13 @@ public class WDavUploadServlet2 extends WebdavServlet {
 
         FilenameGlob glob = null;
         if (params.containsKey("filter")) {
-        	String p = params.get("filter")[0];
-        	if (null != p)
-        		glob = new FilenameGlob(p);
+        	String p = params.get("filter")[0];        	
+        	if (null != p) {
+        		if ( params.containsKey("casesens"))
+        			glob = new FilenameGlob(p, true);
+        		else
+        			glob = new FilenameGlob(p, false);
+        	}
         }
         
         List<HtmDirEntry> direntries = new ArrayList<HtmDirEntry>(20);
