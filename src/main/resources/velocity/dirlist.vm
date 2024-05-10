@@ -99,5 +99,6 @@ function onupload() {
 ${footer}
 </div>
 #end
+<div><A href="res/attrib/attribution.html">Attributions</a></div>
 </body>
 </html>

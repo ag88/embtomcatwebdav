@@ -109,7 +109,8 @@ public class CLResourceServlet extends HttpServlet {
 		
 		String filename = "/".concat(pathinfo.substring(psl+1));
 		
-		URL resurl = App.class.getResource("/resources".concat(filename));
+		//URL resurl = App.class.getResource("/resources".concat(filename));
+		URL resurl = App.class.getResource("/resources".concat(pathinfo));
 		
 		if ( resurl == null ) { // not found			
 			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
