@@ -103,6 +103,7 @@ import io.github.ag88.embtomcatwebdav.servlet.CLResourceServlet;
 import io.github.ag88.embtomcatwebdav.servlet.DLZipServlet;
 import io.github.ag88.embtomcatwebdav.servlet.RedirServlet;
 import io.github.ag88.embtomcatwebdav.servlet.WDavUploadServlet2;
+import io.github.ag88.embtomcatwebdav.util.DigestPWUtil;
 
 /**
  * This is a WebDAV server based on Apache Tomcat's WebDAV servlet and embedded Tomcat server.<p>
@@ -355,7 +356,8 @@ public class WebDavServer
 				context.setRealm(realmo);
 				if (digest) {
 					try {
-						passwd = digestPw(realm, user, passwd);
+						DigestPWUtil pwutil = new DigestPWUtil();						
+						passwd = pwutil.digestPw(realm, user, passwd);
 						tomcat.addUser(user, passwd);
 					} catch (NoSuchAlgorithmException e) {
 						log.error("unable to encode digest passwd", e);
@@ -481,15 +483,6 @@ public class WebDavServer
 					shost, Integer.toString(port), urlprefix.substring(0,urlprefix.length())));
 			
 			tomcat.start();
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-			}
-			
-			App.getInstance().createGui();
-			
-			Util u = new Util();
-			u.makesystray();
 			
 			tomcat.getServer().await();
 		} catch (LifecycleException e) {
@@ -575,70 +568,6 @@ public class WebDavServer
 		}
 	}
 
-
-	/**
-	 * Generates encoded password for DIGEST authentication.
-	 *
-	 * @param realm the realm
-	 * @param username the username
-	 * @param password plaintext password
-	 * @return encoded password for DIGEST authentication
-	 * @throws NoSuchAlgorithmException the no such algorithm exception
-	 */
-	public String digestEncodePasswd(String realm, String username, String password) 
-			throws NoSuchAlgorithmException {
-		
-			String credentials = username.concat(":").concat(realm).concat(":").concat(password);
-			MessageDigestCredentialHandler credhand = new MessageDigestCredentialHandler();
-			credhand.setEncoding(StandardCharsets.UTF_8.name());
-			credhand.setAlgorithm("MD5");
-			credhand.setIterations(1);
-			credhand.setSaltLength(0);
-			return credhand.mutate(credentials);		
-	}
-	
-	/**
-	 *  
-	 * returns an encoded (hashed) password for digest auth for storage<p>
-	 * 
-	 * not safe, but hashed so as to obfuscate the original password.
-	 *
-	 * @param realm Authentication Realm (for BASIC/DIGEST Authentication)
-	 * @param username username
-	 * @param password password
-	 * @return encoded password for text storage
-	 * @throws NoSuchAlgorithmException the no such algorithm exception
-	 */
-	public String digestEncodeStoredPw(String realm, String username, String password)
-			throws NoSuchAlgorithmException {
-		String epw = digestEncodePasswd(realm, username, password);
-		return "digest(".concat(epw).concat(")");
-	}
-	
-	
-	/**
-	 * returns password encoded for digest authentication as a hex string<br>
-	 * i.e. MD5(username:realm:password)<p>
-	 * 
-	 * if password is in format "digest(hexstring)", it is deemed pre-encoded and returned
-	 *
-	 * @param realm Authentication Realm (for BASIC/DIGEST Authentication)
-	 * @param username username
-	 * @param password password
-	 * @return encoded password i.e. MD5(username:realm:password) as a HexString
-	 * @throws NoSuchAlgorithmException the no such algorithm exception
-	 */
-	public String digestPw(String realm, String username, String password) throws NoSuchAlgorithmException {
-		String dpw = null;
-		Pattern p = Pattern.compile("digest\\((.*)\\)");
-		Matcher m = p.matcher(password); 
-		if(m.matches()) {
-			dpw = m.group(1);
-		} else 
-			dpw = digestEncodePasswd(realm, username, password);
-		return dpw;
-	}
-	
 	
 	/**
 	 * Load params from a Map of options parsed from command line and config files

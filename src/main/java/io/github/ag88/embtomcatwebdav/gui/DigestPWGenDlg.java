@@ -14,8 +14,9 @@
    limitations under the License.
  */
 
-package io.github.ag88.embtomcatwebdav;
+package io.github.ag88.embtomcatwebdav.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.TextArea;
@@ -37,6 +38,10 @@ import javax.swing.border.LineBorder;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+import io.github.ag88.embtomcatwebdav.WebDavServer;
+import io.github.ag88.embtomcatwebdav.gui.WizDlg.Ret;
+import io.github.ag88.embtomcatwebdav.util.DigestPWUtil;
+
 // TODO: Auto-generated Javadoc
 /**
  * This is a dialog that provide a utility to generate hashed DIGEST authentication passwords
@@ -45,9 +50,13 @@ public class DigestPWGenDlg extends JDialog implements ActionListener {
 	
 	/** The log. */
 	Log log = LogFactory.getLog(DigestPWGenDlg.class);
+
+	public static enum Ret {
+		LEFT,
+		RIGHT
+	};
 	
-	/** The server. */
-	WebDavServer server;
+	Ret ret;
 	
 	/** The tfrealm. */
 	JTextField tfrealm;
@@ -60,19 +69,29 @@ public class DigestPWGenDlg extends JDialog implements ActionListener {
 	
 	/** The tfout. */
 	JTextField tfout;
+	
+	String realm;
+	String user;
+	String passwd;
 
 	/**
 	 * Instantiates a new digest PW gen dlg.
 	 *
 	 * @param wdav the wdav
 	 */
-	public DigestPWGenDlg(WebDavServer wdav) {
+	public DigestPWGenDlg() {
 		super((JFrame) null, "Generate DIGEST password");
-		setModal(true);
-		server = wdav;
 		creategui();
 	}
 
+	public DigestPWGenDlg(String realm, String user, String passwd) {
+		super((JFrame) null, "Generate DIGEST password");
+		this.realm = realm;
+		this.user = user;
+		this.passwd = passwd;
+		creategui();
+	}
+	
 	/**
 	 * Creategui.
 	 */
@@ -81,35 +100,46 @@ public class DigestPWGenDlg extends JDialog implements ActionListener {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setPreferredSize(new Dimension(480, 320));
 		
-		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
+		getContentPane().setLayout(new BorderLayout());
 		
-		addleft(new JLabel("Realm"));
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
+		
+		addleft(p, new JLabel("Realm"));
 		tfrealm = new JTextField(15);
-		tfrealm.setText(server.getRealm());
-		addleft(tfrealm);
-		addleft(new JLabel("Username"));
+		if(realm != null)
+			tfrealm.setText(realm);
+		addleft(p, tfrealm);
+		addleft(p, new JLabel("Username"));
 		tfuser = new JTextField(20);
-		addleft(tfuser);
-		addleft(new JLabel("Password"));
+		addleft(p, tfuser);
+		if(user != null)
+			tfrealm.setText(user);
+		
+		addleft(p, new JLabel("Password"));
 		pwfpass = new JPasswordField(15);
-		addleft(pwfpass);
-		addleft(new JLabel("Hashed password"));
+		addleft(p, pwfpass);
+		if (passwd != null)
+			pwfpass.setText(passwd);
+		
+		addleft(p, new JLabel("Hashed password"));
 		tfout = new JTextField(20);
-		addleft(tfout);
+		addleft(p, tfout);
 		StringBuilder sb = new StringBuilder(100);
 		sb.append("<html>For DIGEST authentication, this generated hashed password ");
 		sb.append(",including the 'digest(xxx)' wrapper text, can be maintained ");
 		sb.append("in the password field in the properties config file. ");
 		sb.append("Set digest to true as it otherwise defaults to BASIC authentication</html>");				
 		JLabel l = new JLabel(sb.toString());
-		addleft(l);
+		addleft(p, l);
 		
-		JPanel p = new JPanel();
+		JPanel p1 = new JPanel();
 		JButton b1 = new JButton("Generate");
 		b1.setActionCommand("GEN");
 		b1.addActionListener(this);
-		p.add(b1);
-		addleft(p);
+		p1.add(b1);
+		addleft(p, p1);
+		getContentPane().add(p, BorderLayout.CENTER);
 	}
 	
 	/**
@@ -117,11 +147,35 @@ public class DigestPWGenDlg extends JDialog implements ActionListener {
 	 *
 	 * @param o the o
 	 */
-	private void addleft(JComponent o) {
+	private void addleft(JPanel p, JComponent o) {
 		o.setAlignmentX(LEFT_ALIGNMENT);
-		getContentPane().add(o);
+		p.add(o);
+	}
+	
+	public void addButtons(String left, String right) {
+		JPanel p = new JPanel();
+		JButton bl = new JButton(left);
+		bl.setActionCommand("BLEFT");
+		bl.addActionListener(this);
+		p.add(bl);
+		JButton br = new JButton(right);
+		br.setActionCommand("BRIGHT");
+		br.addActionListener(this);
+		p.add(br);
+		getContentPane().add(p, BorderLayout.SOUTH);
 	}
 
+	public Ret doModal() {
+		
+		pack();
+		setLocationRelativeTo(getParent());
+		setModal(true);
+		setVisible(true);
+		
+		return ret;
+	}
+
+	
 	/**
 	 * Action performed.
 	 *
@@ -131,13 +185,60 @@ public class DigestPWGenDlg extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("GEN")) {
 			try {
-				String epass = server.digestEncodeStoredPw(tfrealm.getText(), tfuser.getText(), new String(pwfpass.getPassword()));
+				DigestPWUtil pwutil = new DigestPWUtil();
+				String epass = pwutil.digestEncodeStoredPw(tfrealm.getText(), tfuser.getText(), 
+						new String(pwfpass.getPassword()));
 				tfout.setText(epass);
 			} catch (NoSuchAlgorithmException e1) {
 				log.error(e1);
 			}
+		} else if (e.getActionCommand().equals("BLEFT")) {
+			ret = Ret.LEFT;
+			setVisible(false);
+			dispose();
+		} else if (e.getActionCommand().equals("BRIGHT")) {
+			ret = Ret.RIGHT;
+			setVisible(false);
+			dispose();
 		}	
 	}
 
 	
+	
+	public String getRealm() {
+		return tfrealm.getText();
+	}
+	
+	public String getUser() {
+		return tfuser.getText();
+	}
+	
+	public String getPasswd() {
+		return new String(pwfpass.getPassword());
+	}
+	
+	public String getHashPW() {
+		try {
+			DigestPWUtil pwutil = new DigestPWUtil();
+			String epass = pwutil.digestEncodeStoredPw(tfrealm.getText(), tfuser.getText(), 
+					new String(pwfpass.getPassword()));
+			return epass;
+		} catch (NoSuchAlgorithmException e1) {
+			log.error(e1);
+			return null;
+		}
+	}
+	
+	public void setRealm(String realm) {
+		tfrealm.setText(realm);
+	}
+	
+	public void setUser(String user) {
+		tfuser.setText(user);
+	}
+	
+	public void setPasswd(String passwd) {
+		pwfpass.setText(passwd);
+	}
+
 }

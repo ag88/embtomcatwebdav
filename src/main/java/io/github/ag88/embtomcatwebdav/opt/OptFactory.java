@@ -170,10 +170,11 @@ public class OptFactory {
 	 * Load config options from properties file.
 	 *
 	 * @param configfile this should be a properties text file in the appropriate format
-	 * e.g. generated using {@link #genconfigprop(String)}
+	 * e.g. generated using {@link #genconfigfile(String)}
 	 */
 	public void loadconfigprop(String configfile) {				
 		try {
+			log.info("loading configs from: ".concat(configfile));
 			Properties properties = new Properties();
 			BufferedReader reader = new BufferedReader(new FileReader(configfile));
 			properties.load(reader);
@@ -258,10 +259,67 @@ public class OptFactory {
 	 * Generate config options properties file template.
 	 * 
 	 * It would fill up some default values
-	 *
+	 * 
+	 */
+	public String genconfigprop() {
+		
+		StringBuilder sb = new StringBuilder(1024);
+		
+		//p.store(writer, "Embedded Tomcat Webdav server properties");
+		sb.append("# Embedded Tomcat Webdav server properties");
+		sb.append(System.lineSeparator());		
+		sb.append("# generated: ".concat(LocalDateTime.now().toString()));
+		sb.append(System.lineSeparator());
+		Iterator<Opt> iter = iterator();
+		while(iter.hasNext()) {
+			Opt o = iter.next();
+			if(o.getType() == Opt.PropType.Norm || o.getType() == Opt.PropType.Prop) {					
+				
+				if(o.getDescription().contains(System.lineSeparator())) {
+					String[] desc = o.getDescription().split(System.lineSeparator(), 0);
+					for(String l : desc) {
+						sb.append("# ");
+						sb.append(l);
+						sb.append(System.lineSeparator());
+					}
+				} else {
+					sb.append("# ");
+					sb.append(o.getDescription());
+					sb.append(System.lineSeparator());
+				}					
+				sb.append(o.getName());
+				sb.append("=");
+				
+				Object value = null;
+				String vtext = "";
+				value = o.getValue();
+				if (value == null) {
+					value = o.getDefaultval();
+					if (value == null)
+						vtext = "";
+					else
+						vtext = value.toString();
+				} else
+					vtext = value.toString();
+
+				// escape '\'
+				vtext = vtext.replace("\\", "\\\\");
+				
+				sb.append(vtext);
+				sb.append(System.lineSeparator());					
+			}				
+		}
+
+		return sb.toString();
+	}
+	
+	
+	/**
+	 * Generate config options properties file template and save it
+	 * 
 	 * @param configfile new properties config file name.
 	 */
-	public void genconfigprop(String configfile) {
+	public void genconfigfile(String configfile) {
 		if(Files.exists(Paths.get(configfile))) {
 			log.error("file exists, not overwriting, specify a new name");
 			System.exit(1);
@@ -272,60 +330,14 @@ public class OptFactory {
 
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(configfile));
-			//p.store(writer, "Embedded Tomcat Webdav server properties");
-			writer.write("# Embedded Tomcat Webdav server properties");
-			writer.write(System.lineSeparator());
-			writer.write("# generated: ".concat(LocalDateTime.now().toString()));
-			writer.write(System.lineSeparator());
-			Iterator<Opt> iter = iterator();
-			while(iter.hasNext()) {
-				Opt o = iter.next();
-				if(o.getType() == Opt.PropType.Norm || o.getType() == Opt.PropType.Prop) {					
-					
-					if(o.getDescription().contains(System.lineSeparator())) {
-						String[] desc = o.getDescription().split(System.lineSeparator(), 0);
-						for(String l : desc) {
-							writer.write("# ");
-							writer.write(l);
-							writer.write(System.lineSeparator());
-						}
-					} else {
-						writer.write("# ");
-						writer.write(o.getDescription());
-						writer.write(System.lineSeparator());
-					}					
-					writer.write(o.getName());
-					writer.write("=");
-					
-					Object value = null;
-					String vtext = "";
-					value = o.getValue();
-					if (value == null) {
-						value = o.getDefaultval();
-						if (value == null)
-							vtext = "";
-						else
-							vtext = value.toString();
-					} else
-						vtext = value.toString();
-
-					// escape '\'
-					vtext = vtext.replace("\\", "\\\\");
-					
-					writer.write(vtext);
-					writer.write(System.lineSeparator());					
-				}				
-			}
+			
+			String configs = genconfigprop();
+			writer.write(configs);
 			
 			writer.flush();
 			writer.close();
 			
-			log.info("config file saveed to ".concat(configfile));
-	        try {
-	            Class.forName("org.junit.jupiter.api.Test");
-	        } catch (ClassNotFoundException e) {
-	        	System.exit(0);
-	        }
+			log.info("config file saved to ".concat(configfile));
 		} catch (IOException e) {
 			log.error(String.format("unable to write config file %s",configfile), e);
 			System.exit(1);

@@ -18,8 +18,8 @@ package io.github.ag88.embtomcatwebdav.opt;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 
-import io.github.ag88.embtomcatwebdav.DigestPWGenDlg;
 import io.github.ag88.embtomcatwebdav.WebDavServer;
+import io.github.ag88.embtomcatwebdav.gui.DigestPWGenDlg;
 
 /**
  * Conf for Gennpasswd option.
@@ -48,10 +48,10 @@ public class OptGenpasswd extends Opt {
 	public void process(CommandLine cmd, Object... objects ) {
 		WebDavServer wdav = OptFactory.getInstance().getWebDAVserv();
 		
-		DigestPWGenDlg dlg = new DigestPWGenDlg(wdav);
+		DigestPWGenDlg dlg = new DigestPWGenDlg();
+		dlg.setRealm((String)OptFactory.getInstance().getOpt("realm").getValue());
 		dlg.pack();
-		dlg.setLocationRelativeTo(null);
-		dlg.setVisible(true);
+		dlg.doModal();
 		System.exit(0);
 	}
 
