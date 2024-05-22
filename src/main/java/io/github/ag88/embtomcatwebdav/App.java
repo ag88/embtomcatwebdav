@@ -32,6 +32,7 @@ import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.prefs.Preferences;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -380,6 +381,10 @@ public class App {
 			gui.requestFocus();
 		}
 
+	}
+	
+	public Preferences getPreferences() {
+		return Preferences.userNodeForPackage(App.class);
 	}
 	
 	/**
