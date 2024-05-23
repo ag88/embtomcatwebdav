@@ -319,8 +319,8 @@ public class OptFactory {
 	 * 
 	 * @param configfile new properties config file name.
 	 */
-	public void genconfigfile(String configfile) {
-		if(Files.exists(Paths.get(configfile))) {
+	public void genconfigfile(String configfile, boolean overwrite) {
+		if(!overwrite && Files.exists(Paths.get(configfile))) {
 			log.error("file exists, not overwriting, specify a new name");
 			System.exit(1);
 		}

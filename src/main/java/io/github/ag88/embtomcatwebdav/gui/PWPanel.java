@@ -100,7 +100,10 @@ public class PWPanel extends JPanel implements ActionListener {
 		addleft(pwfpass);
 		addleft(new JLabel("note that username and password has nothing to do with OS (e.g. Windows/Linux/OS X etc) user and password"));
 		addleft(new JLabel("the username and password is only used for connecting to this web/webdav server"));
-		JLabel l1 = new JLabel("note: in DIGEST mode, changing username or realm or switching to plain resets/clears the password, and you need to set password again");
+		JLabel l1 = new JLabel("note: in DIGEST mode, changing username or realm or switching to plain");
+		l1.setForeground(Color.MAGENTA);
+		addleft(l1);
+		l1 = new JLabel("resets/clears the password, and you need to set password again");
 		l1.setForeground(Color.MAGENTA);
 		addleft(l1);
 		ButtonGroup bg = new ButtonGroup();

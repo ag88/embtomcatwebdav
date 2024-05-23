@@ -45,7 +45,7 @@ public class OptGenconf extends Opt {
 	@Override
 	public void process(CommandLine cmd, Object... objects) {
 		String configfile = cmd.getOptionValue("genconf");
-		OptFactory.getInstance().genconfigfile(configfile);
+		OptFactory.getInstance().genconfigfile(configfile, false);
         try {
             Class.forName("org.junit.jupiter.api.Test");
         } catch (ClassNotFoundException e) {

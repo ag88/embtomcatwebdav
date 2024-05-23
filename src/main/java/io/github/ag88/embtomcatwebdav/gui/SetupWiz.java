@@ -195,7 +195,7 @@ public class SetupWiz {
 		wd.setbtnNextLabel("Save and launch");
 		WizDlg.Ret ret = wd.doModal();
 		if( ret == WizDlg.Ret.NEXT) {
-			OptFactory.getInstance().genconfigfile(App.getInstance().getconfigfile());
+			OptFactory.getInstance().genconfigfile(App.getInstance().getconfigfile(), true);
 		}
 		return ret;
 	}

@@ -17,12 +17,17 @@ import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.NumberFormat;
+import java.util.Calendar;
 import java.util.prefs.Preferences;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -83,9 +88,16 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 		mFile.add(Util.addmenuitem("Close", "CLOSE", KeyEvent.VK_C, this));
 		mFile.add(Util.addmenuitem("Exit", "EXIT", KeyEvent.VK_E, this));
 		mbar.add(mFile);
-		JMenu mView = new JMenu("View");
-		mView.setMnemonic(KeyEvent.VK_V);
-		mView.add(Util.addmenuitem("Home", "HOME", KeyEvent.VK_H, this));
+		JMenu mView = new JMenu("Setup");
+		mView.setMnemonic(KeyEvent.VK_S);
+		mView.add(Util.addmenuitem("View Config", "VIEWC", KeyEvent.VK_V, this));
+		mView.addSeparator();
+		mView.add(Util.addmenuitem("Paths", "PATH", KeyEvent.VK_P, this));
+		mView.add(Util.addmenuitem("Authentication", "AUTH", KeyEvent.VK_A, this));
+		mView.add(Util.addmenuitem("Host", "HOST", KeyEvent.VK_H, this));
+		mView.add(Util.addmenuitem("Urlprefix, allowlinking", "URLPREFIX", KeyEvent.VK_U, this));
+		mView.add(Util.addmenuitem("Access log", "ACLOG", KeyEvent.VK_C, this));
+		mView.add(Util.addmenuitem("Other", "OTHER", KeyEvent.VK_R, this));
 		mbar.add(mView);
 		JMenu mAbout = new JMenu("About");
 		mView.setMnemonic(KeyEvent.VK_A);
@@ -122,7 +134,7 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 			// tfurl.setText(url.toString());
 			// l.add(tfurl);
 			if (url != null)
-				l.add(Util.URLJLabel(url, url));			
+				l.add(Util.URLJLabel(url, url));
 			p.add(l);
 			JButton btncopy = new JButton("copy URL to clipboard");
 			btncopy.setAlignmentX(LEFT_ALIGNMENT);
@@ -168,7 +180,7 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 			JPanel l = new JPanel(new FlowLayout(FlowLayout.LEADING));
 			l.add(new JLabel("url:"));
 			tfurl = new JTextField(40);
-			if( url != null)
+			if (url != null)
 				tfurl.setText(url);
 			l.add(tfurl);
 			// l.add(Util.URLJLabel(url.toString(), url.toString()));
@@ -235,12 +247,225 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 					} catch (InterruptedException e) {
 					}
 					jlmsg.setText("");
-				}				
+				}
 			});
 			t.start();
 		}
 	}
 
+	private void dooptselpath() {
+		String path = (String) OptFactory.getInstance().getOpt("path").getValue();
+		String basedir = (String) OptFactory.getInstance().getOpt("basedir").getValue();
+
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
+		FileSelPanel fspp = new FileSelPanel("Select directory/folder to serve:");
+		fspp.setChooser(path, JFileChooser.DIRECTORIES_ONLY);
+		Util.addleft(p, fspp);
+
+		Util.addleft(p, new JLabel(
+				"Tomcat requires a work folder while running." + "  It is recommended to leave it as the default"));
+		FileSelPanel fspb = new FileSelPanel("Select tomcat work directory:");
+		fspb.setChooser(basedir, JFileChooser.DIRECTORIES_ONLY);
+		Util.addleft(p, fspb);
+		Util.addleft(p, new JLabel("note requires restart of server"));
+
+		int ret = JOptionPane.showConfirmDialog(this, p, "Select folders", JOptionPane.OK_CANCEL_OPTION);
+		if (ret == JOptionPane.OK_OPTION) {
+			path = fspp.getSelFile();
+			OptFactory.getInstance().getOpt("path").setValue(path);
+			basedir = fspb.getSelFile();
+			OptFactory.getInstance().getOpt("basedir").setValue(basedir);
+			OptFactory.getInstance().genconfigfile(App.getInstance().getconfigfile(), true);
+			App.getInstance().restartserver(true);
+			dispose();
+		}
+
+	}
+
+	private void doopthost() {
+		String host = (String) OptFactory.getInstance().getOpt("host").getValue();
+		int port = (int) OptFactory.getInstance().getOpt("port").getValue();
+
+		HostPanel ph = new HostPanel(host, port);
+
+		Util.addleft(ph, new JLabel("note requires restart of server"));
+
+		int ret = JOptionPane.showConfirmDialog(this, ph, "set host and port", JOptionPane.OK_CANCEL_OPTION);
+		if (ret == JOptionPane.OK_OPTION) {
+
+			host = ph.getHost();
+			port = ph.getPort();
+			OptFactory.getInstance().getOpt("host").setValue(host);
+			OptFactory.getInstance().getOpt("port").setValue(new Integer(port));
+
+			OptFactory.getInstance().genconfigfile(App.getInstance().getconfigfile(), true);
+			App.getInstance().restartserver(true);
+			dispose();
+		}
+	}
+
+	private void dooptauth() {
+		String realm = ((String) OptFactory.getInstance().getOpt("realm").getValue());
+		String user = ((String) OptFactory.getInstance().getOpt("user").getValue());
+		String passwd = ((String) OptFactory.getInstance().getOpt("password").getValue());
+		boolean digest = ((Boolean) OptFactory.getInstance().getOpt("digest").getValue());
+
+		PWPanel pwp = new PWPanel();
+		pwp.setAuthMode(digest ? PWPanel.AuthMode.DIGEST : PWPanel.AuthMode.PLAIN);
+		pwp.setRealm(realm);
+		pwp.setUser(user);
+		pwp.setPasswd(passwd);
+		Util.addleft(pwp, new JLabel("note requires restart of server"));
+
+		int ret = JOptionPane.showConfirmDialog(this, pwp, "Setup user/realm/password", JOptionPane.OK_CANCEL_OPTION);
+		if (ret == JOptionPane.OK_OPTION) {
+			digest = pwp.getAuthmode() == PWPanel.AuthMode.DIGEST ? true : false;
+			realm = pwp.getRealm();
+			user = pwp.getUser();
+			passwd = pwp.getPasswd();
+			OptFactory.getInstance().getOpt("digest").setValue(new Boolean(digest));
+			OptFactory.getInstance().getOpt("realm").setValue(realm);
+			OptFactory.getInstance().getOpt("user").setValue(user);
+			OptFactory.getInstance().getOpt("password").setValue(passwd);
+
+			OptFactory.getInstance().genconfigfile(App.getInstance().getconfigfile(), true);
+			App.getInstance().restartserver(true);
+			dispose();
+		}
+
+	}
+
+	private void dourlprefix() {
+		String urlprefix = ((String) OptFactory.getInstance().getOpt("urlprefix").getValue());
+		boolean allowlink = ((Boolean) OptFactory.getInstance().getOpt("allowlinking").getValue());
+
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
+		p.add(new JLabel(OptFactory.getInstance().getOpt("urlprefix").getDescription()));
+		JPanel l1 = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		l1.add(new JLabel("urlprefix"));
+		JTextField tfurlprefix = new JTextField(20);
+		tfurlprefix.setText(urlprefix);
+		l1.add(tfurlprefix);
+		p.add(l1);
+		
+		p.add(new JLabel(OptFactory.getInstance().getOpt("allowlinking").getDescription()));
+		JCheckBox cballowlink = new JCheckBox("allowlinking");
+		cballowlink.setSelected(allowlink);
+		p.add(cballowlink);
+		Util.addleft(p, new JLabel("note requires restart of server"));
+
+		int ret = JOptionPane.showConfirmDialog(this, p, "Setup urlprefix, allowlinking", JOptionPane.OK_CANCEL_OPTION);
+		if (ret == JOptionPane.OK_OPTION) {
+			urlprefix = tfurlprefix.getText();
+			allowlink = cballowlink.isSelected();
+
+			OptFactory.getInstance().getOpt("urlprefix").setValue(urlprefix);
+			OptFactory.getInstance().getOpt("allowlinking").setValue(new Boolean(allowlink));
+			
+			OptFactory.getInstance().genconfigfile(App.getInstance().getconfigfile(), true);
+			App.getInstance().restartserver(true);
+			dispose();
+		}
+
+	}
+	
+	private void doaccesslog() {
+		boolean accesslog = ((Boolean) OptFactory.getInstance().getOpt("accesslog").getValue());
+		String logdir = ((String) OptFactory.getInstance().getOpt("accesslog.dir").getValue());
+		boolean logrot = ((Boolean) OptFactory.getInstance().getOpt("accesslog.rot").getValue());
+		int logdays = ((Integer) OptFactory.getInstance().getOpt("accesslog.days").getValue());
+		
+
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
+
+		p.add(new JLabel(OptFactory.getInstance().getOpt("accesslog").getDescription()));
+		JCheckBox cbaccesslog = new JCheckBox("accesslog");
+		cbaccesslog.setSelected(accesslog);
+		p.add(cbaccesslog);
+		
+		p.add(new JLabel(OptFactory.getInstance().getOpt("accesslog.dir").getDescription()));
+		FileSelPanel fspp = new FileSelPanel("Select directory/folder for accesslog:");
+		fspp.setChooser(logdir, JFileChooser.DIRECTORIES_ONLY);
+		Util.addleft(p, fspp);		
+		
+		p.add(new JLabel(OptFactory.getInstance().getOpt("accesslog.rot").getDescription()));
+		JCheckBox cblogrot = new JCheckBox("accesslog.rot");
+		cblogrot.setSelected(logrot);
+		p.add(cblogrot);
+		
+		p.add(new JLabel(OptFactory.getInstance().getOpt("accesslog.days").getDescription()));
+		JPanel l1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		l1.add(new JLabel("log rotate days"));
+		NumberFormat format = NumberFormat.getInstance();
+		format.setMaximumFractionDigits(0);
+		format.setGroupingUsed(false);
+		JFormattedTextField ftfdays = new JFormattedTextField(format);		
+		ftfdays.setValue(logdays);
+		ftfdays.setColumns(5);
+		l1.add(ftfdays);
+		p.add(l1);
+		
+		Util.addleft(p, new JLabel("note requires restart of server"));
+
+		int ret = JOptionPane.showConfirmDialog(this, p, "Setup urlprefix, allowlinking", JOptionPane.OK_CANCEL_OPTION);
+		if (ret == JOptionPane.OK_OPTION) {
+			accesslog = cbaccesslog.isSelected();
+			logdir = fspp.getSelFile();
+			logrot = cblogrot.isSelected();
+			logdays = ((Number)ftfdays.getValue()).intValue();
+
+			OptFactory.getInstance().getOpt("accesslog").setValue(Boolean.valueOf(accesslog));
+			OptFactory.getInstance().getOpt("accesslog.dir").setValue(logdir);
+			OptFactory.getInstance().getOpt("accesslog.rot").setValue(Boolean.valueOf(logrot));
+			OptFactory.getInstance().getOpt("accesslog.days").setValue(Integer.valueOf(logdays));
+
+			
+			OptFactory.getInstance().genconfigfile(App.getInstance().getconfigfile(), true);
+			App.getInstance().restartserver(true);
+			dispose();
+		}
+		
+	}
+
+	private void doother() {	
+		boolean quiet = ((Boolean) OptFactory.getInstance().getOpt("quiet").getValue());
+		boolean chkupdates = ((Boolean) OptFactory.getInstance().getOpt("checkupdates").getValue());
+
+		JPanel p = new JPanel();
+		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
+				
+		p.add(new JLabel(OptFactory.getInstance().getOpt("quiet").getDescription()));
+		JCheckBox cbquiet = new JCheckBox("quiet");
+		cbquiet.setSelected(quiet);
+		p.add(cbquiet);
+		
+		p.add(new JLabel(OptFactory.getInstance().getOpt("checkupdates").getDescription()));
+		JCheckBox cbchkupdates = new JCheckBox("checkupdates");
+		cbchkupdates.setSelected(chkupdates);
+		p.add(cbchkupdates);
+		
+		Util.addleft(p, new JLabel("note requires restart of server"));
+
+		int ret = JOptionPane.showConfirmDialog(this, p, "Setup urlprefix, allowlinking", JOptionPane.OK_CANCEL_OPTION);
+		if (ret == JOptionPane.OK_OPTION) {
+			quiet = cbquiet.isSelected();
+			chkupdates = cbchkupdates.isSelected();
+			
+			OptFactory.getInstance().getOpt("quiet").setValue(new Boolean(quiet));
+			OptFactory.getInstance().getOpt("checkupdates").setValue(new Boolean(chkupdates));
+			
+			OptFactory.getInstance().genconfigfile(App.getInstance().getconfigfile(), true);
+			App.getInstance().restartserver(true);
+			dispose();
+		}
+		
+	}
+	
+
+	
 	public void doshutdown() {
 		int ret = JOptionPane.showConfirmDialog(this, "Stop embtomcatwebdave server?", "stop server",
 				JOptionPane.OK_CANCEL_OPTION);
@@ -264,6 +489,21 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("HOME")) {
 
+		} else if (e.getActionCommand().equals("PATH")) {
+			dooptselpath();
+		} else if (e.getActionCommand().equals("AUTH")) {
+			dooptauth();
+		} else if (e.getActionCommand().equals("HOST")) {
+			doopthost();
+		} else if (e.getActionCommand().equals("URLPREFIX")) {
+			dourlprefix();
+		} else if (e.getActionCommand().equals("ACLOG")) {
+			doaccesslog();
+		} else if (e.getActionCommand().equals("OTHER")) {
+			doother();
+		} else if (e.getActionCommand().equals("VIEWC")) {
+			ListOptsPanel p = new ListOptsPanel();
+			JOptionPane.showMessageDialog(this,p,"current config",JOptionPane.INFORMATION_MESSAGE);
 		} else if (e.getActionCommand().equals("URLCLP")) {
 			dourlclip();
 		} else if (e.getActionCommand().equals("EXIT")) {
@@ -278,6 +518,8 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 		}
 	}
 
+
+
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		// int i = e.getFirstIndex();
@@ -286,29 +528,22 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 		int i = jlalias.getSelectionModel().getMinSelectionIndex();
 
 		String alias = (String) jlalias.getModel().getElementAt(i);
-		Tomcat tomcat = App.getInstance().getWdav().getTomcat();
-		int port = tomcat.getConnector().getPort();
-		String urlprefix = (String) OptFactory.getInstance().getOpt("urlprefix").getValue();
-		boolean secure = tomcat.getConnector().getSecure();
-		String hostname = tomcat.getHost().getName();
-		try {
-			URL url = new URL(secure ? "https" : "http", alias, port, urlprefix);
-			BufferedImage image = genQR(url.toString());
+		String url = geturl(alias);
+		if (url != null) {
+			BufferedImage image = genQR(url);
 			pi.setImage(image);
 			tfurl.setText(url.toString());
 			pi.invalidate();
 			pi.repaint();
-		} catch (MalformedURLException e1) {
-			log.error("invalid url: " + (secure ? "https://" : "http://") + hostname + ':' + port + '/' + urlprefix);
 		}
-
 	}
 
 	private void doabout() {
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
 		p.add(Box.createVerticalStrut(100));
-		p.add(new JLabel("Copyright (C) Andrew Goh 2023"));
+		Calendar.getInstance();
+		p.add(new JLabel("Copyright (C) Andrew Goh ".concat(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)))));
 		// p.add(new JLabel("MIT Licensed"));
 		String url = "https://github.com/ag88/embtomcatwebdav";
 		p.add(Util.URLJLabel(url, url));

@@ -15,8 +15,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
@@ -105,6 +107,11 @@ public class Util implements ActionListener {
             return (new ImageIcon(imageURL, description)).getImage();
         }
     }
+    
+	public static void addleft(JComponent p, JComponent o) {
+		o.setAlignmentX(Box.LEFT_ALIGNMENT);
+		p.add(o);
+	}
 
 	public void makesystray() {
 		//Check the SystemTray is supported
@@ -153,7 +160,8 @@ public class Util implements ActionListener {
         	log.error("TrayIcon could not be added.");
         }
 	}
-
+	
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 

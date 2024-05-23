@@ -26,7 +26,7 @@ public class OptCheckUpdates extends Opt {
 		this.type = PropType.Prop;
 		
 		this.name = "checkupdates";
-		this.description = "check for updates";
+		this.description = "check for updates from github repository";
 		this.defaultval = Boolean.TRUE;
 		this.value = Boolean.TRUE;
 		this.opt = null;

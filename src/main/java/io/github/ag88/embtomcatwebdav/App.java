@@ -37,6 +37,7 @@ import java.util.prefs.Preferences;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import org.apache.catalina.LifecycleException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -365,7 +366,7 @@ public class App {
 
 		if (gui == null || !gui.isDisplayable()) {
 			this.gui = new Gui();
-			;
+			
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					gui = new Gui();
@@ -383,9 +384,47 @@ public class App {
 
 	}
 	
-	public Preferences getPreferences() {
-		return Preferences.userNodeForPackage(App.class);
+	public void restartserver(boolean newgui) {
+		try {
+			wdav.getTomcat().stop();
+			wdav.getTomcat().destroy();
+			try {
+				serverthread.join();
+			} catch (InterruptedException e) {
+			}
+			wdav = new WebDavServer();
+			OptFactory.getInstance().setWebDAVserv(wdav);
+			wdav.loadparams(OptFactory.getInstance().getOpts());
+			//wdav.runserver();
+			serverthread = new WebDAVServerThread("embtomcatwebdav", wdav);
+			serverthread.start();
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e1) {
+			}
+			while(!wdav.isRunning()) {
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+				}
+			}
+			
+			if(newgui) {
+				gui = null;
+				createGui();
+			}
+			
+		} catch (LifecycleException e1) {
+			log.error(e1);
+			System.exit(1);
+		} catch (Exception e) {
+			log.error(e);
+			System.exit(1);			
+		}
+
+		
 	}
+		
 	
 	/**
 	 * Read manifest.
@@ -422,6 +461,11 @@ public class App {
 			log.error(e);
 			return null;
 		}
+	}
+
+	
+	public Preferences getPreferences() {
+		return Preferences.userNodeForPackage(App.class);
 	}
 
 	/**
