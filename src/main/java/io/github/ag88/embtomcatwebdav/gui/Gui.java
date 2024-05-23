@@ -86,7 +86,7 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 		JMenu mFile = new JMenu("File");
 		mFile.setMnemonic(KeyEvent.VK_F);
 		mFile.add(Util.addmenuitem("Close", "CLOSE", KeyEvent.VK_C, this));
-		mFile.add(Util.addmenuitem("Exit", "EXIT", KeyEvent.VK_E, this));
+		mFile.add(Util.addmenuitem("Stop server and exit", "EXIT", KeyEvent.VK_S, this));
 		mbar.add(mFile);
 		JMenu mView = new JMenu("Setup");
 		mView.setMnemonic(KeyEvent.VK_S);
@@ -109,7 +109,7 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 		getContentPane().setLayout(new BorderLayout());
 
 		JToolBar mToolbar = new JToolBar();
-		mToolbar.add(Util.makeNavigationButton("Home24.gif", "HOME", "Open", "Open", this));
+		mToolbar.add(Util.makeNavigationButton("stopsign.png", "EXIT", "Stop server and exit", "Stop server and exit", this));
 		getContentPane().add(mToolbar, BorderLayout.NORTH);
 
 		Tomcat tomcat = App.getInstance().getWdav().getTomcat();
@@ -487,9 +487,7 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("HOME")) {
-
-		} else if (e.getActionCommand().equals("PATH")) {
+		if (e.getActionCommand().equals("PATH")) {
 			dooptselpath();
 		} else if (e.getActionCommand().equals("AUTH")) {
 			dooptauth();
