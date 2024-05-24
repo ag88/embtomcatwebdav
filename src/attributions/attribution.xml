@@ -18,6 +18,23 @@
          </downloadUrls>
       </dependency>
       <dependency>
+         <name>Apache Commons IO</name>
+         <groupId>commons-io</groupId>
+         <artifactId>commons-io</artifactId>
+         <version>2.11.0</version>
+         <projectUrl>https://commons.apache.org/proper/commons-io/</projectUrl>
+         <type>jar</type>
+         <licenses>
+            <license>
+               <name>Apache License, Version 2.0</name>
+               <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            </license>
+         </licenses>
+         <downloadUrls>
+            <string>https://repo.maven.apache.org/maven2/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar</string>
+         </downloadUrls>
+      </dependency>
+      <dependency>
          <name>Apache Commons Lang</name>
          <groupId>org.apache.commons</groupId>
          <artifactId>commons-lang3</artifactId>
@@ -108,6 +125,23 @@
          </licenses>
          <downloadUrls>
             <string>https://repo.maven.apache.org/maven2/net/java/dev/jna/jna-platform/5.13.0/jna-platform-5.13.0.jar</string>
+         </downloadUrls>
+      </dependency>
+      <dependency>
+         <name>Open stuff like URLs, files, executables. Cross-platform</name>
+         <groupId>com.vaadin</groupId>
+         <artifactId>open</artifactId>
+         <version>8.5.0</version>
+         <projectUrl>http://vaadin.com/open</projectUrl>
+         <type>jar</type>
+         <licenses>
+            <license>
+               <name>Apache License Version 2.0</name>
+               <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            </license>
+         </licenses>
+         <downloadUrls>
+            <string>https://repo.maven.apache.org/maven2/com/vaadin/open/8.5.0/open-8.5.0.jar</string>
          </downloadUrls>
       </dependency>
       <dependency>

@@ -89,6 +89,11 @@
     		<version>1.2.2</version>
 		</dependency>
 		<dependency>
+    		<groupId>com.vaadin</groupId>
+    		<artifactId>open</artifactId>
+    		<version>8.5.0</version>
+		</dependency>
+		<dependency>
 			<groupId>com.github.lookfirst</groupId>
 			<artifactId>sardine</artifactId>
 			<version>5.10</version>

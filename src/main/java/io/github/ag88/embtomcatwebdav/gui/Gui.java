@@ -558,12 +558,49 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 	private void doabout() {
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
-		p.add(Box.createVerticalStrut(100));
+		p.add(Box.createVerticalGlue());
 		Calendar.getInstance();
 		p.add(new JLabel("Copyright (C) Andrew Goh ".concat(Integer.toString(Calendar.getInstance().get(Calendar.YEAR)))));
 		// p.add(new JLabel("MIT Licensed"));
 		String url = "https://github.com/ag88/embtomcatwebdav";
 		p.add(Util.URLJLabel(url, url));
+		p.add(Box.createVerticalGlue());
+
+		Tomcat tomcat = App.getInstance().getWdav().getTomcat();
+		int port = tomcat.getConnector().getPort();
+
+		String urlprefix = (String) OptFactory.getInstance().getOpt("urlprefix").getValue();
+		boolean secure = tomcat.getConnector().getSecure();
+
+		String hostname = tomcat.getHost().getName();		
+		if (!hostname.equals("0.0.0.0")) {
+			try {
+				p.add(new JLabel("The embtomcat webdav/web service is accessible at:"));
+				String davurl = new URL(secure ? "https" : "http", hostname, port, urlprefix).toString();
+				p.add(Util.URLJLabel(davurl, davurl));
+				p.add(Box.createVerticalGlue());
+				url = new URL(secure ? "https" : "http", hostname, port, "/res/attrib/attribution.html").toString();
+				p.add(Util.URLJLabel(url, "Attributions"));				
+			} catch (MalformedURLException e) {
+			}					
+		} else {			
+			if (jlalias != null) {
+				int i = jlalias.getSelectionModel().getMinSelectionIndex();
+				hostname = (String) jlalias.getModel().getElementAt(i);
+				try {
+					p.add(new JLabel("The embtomcat webdav/web service is accessible at:"));
+					String davurl = new URL(secure ? "https" : "http", hostname, port, urlprefix).toString();
+					p.add(Util.URLJLabel(davurl, davurl));
+					p.add(Box.createVerticalGlue());
+					url = new URL(secure ? "https" : "http", hostname, port, "/res/attrib/attribution.html").toString();
+					p.add(Util.URLJLabel(url, "Attributions"));				
+				} catch (MalformedURLException e) {
+				}
+			}			
+		}
+		
+		p.add(Box.createVerticalGlue());
+		p.setPreferredSize(new Dimension(400,150));
 		JOptionPane.showMessageDialog(this, p);
 	}
 

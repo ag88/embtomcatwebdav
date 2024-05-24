@@ -26,6 +26,8 @@ import javax.swing.SwingUtilities;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+import com.vaadin.open.Open;
+
 import io.github.ag88.embtomcatwebdav.App;
 
 public class Util implements ActionListener {
@@ -82,12 +84,15 @@ public class Util implements ActionListener {
 		jl.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				Open.open(url);
+				/*
 				try {
 					Desktop.getDesktop().browse(new URI(url));
 				} catch (URISyntaxException | IOException ex) {
 					log.debug("invalid url " + url);
 					log.debug(e);
 				}
+				*/
 			}
 		});
 		return jl;
