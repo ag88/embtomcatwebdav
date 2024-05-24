@@ -68,6 +68,8 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 		setTitle("embtomcatwebdav");
 
 		systraysup = SystemTray.isSupported();
+		if(!(Boolean)OptFactory.getInstance().getOpt("systray").getValue())
+			systraysup = false;
 
 		if (systraysup)
 			setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -433,7 +435,9 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 	private void doother() {	
 		boolean quiet = ((Boolean) OptFactory.getInstance().getOpt("quiet").getValue());
 		boolean chkupdates = ((Boolean) OptFactory.getInstance().getOpt("checkupdates").getValue());
-
+		boolean bgui = ((Boolean) OptFactory.getInstance().getOpt("gui").getValue());
+		boolean bsystray = ((Boolean) OptFactory.getInstance().getOpt("systray").getValue());
+		
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
 				
@@ -446,6 +450,17 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 		JCheckBox cbchkupdates = new JCheckBox("checkupdates");
 		cbchkupdates.setSelected(chkupdates);
 		p.add(cbchkupdates);
+
+		p.add(new JLabel(OptFactory.getInstance().getOpt("gui").getDescription()));
+		JCheckBox cbgui = new JCheckBox("gui");
+		cbgui.setSelected(bgui);
+		p.add(cbgui);
+		
+		p.add(new JLabel(OptFactory.getInstance().getOpt("systray").getDescription()));
+		JCheckBox cbsystray = new JCheckBox("systray");
+		cbsystray.setSelected(bsystray);
+		p.add(cbsystray);
+
 		
 		Util.addleft(p, new JLabel("note requires restart of server"));
 
@@ -453,9 +468,13 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 		if (ret == JOptionPane.OK_OPTION) {
 			quiet = cbquiet.isSelected();
 			chkupdates = cbchkupdates.isSelected();
+			bgui = cbgui.isSelected();
+			bsystray = cbsystray.isSelected();
 			
 			OptFactory.getInstance().getOpt("quiet").setValue(new Boolean(quiet));
 			OptFactory.getInstance().getOpt("checkupdates").setValue(new Boolean(chkupdates));
+			OptFactory.getInstance().getOpt("gui").setValue(new Boolean(bgui));
+			OptFactory.getInstance().getOpt("systray").setValue(new Boolean(bsystray));
 			
 			OptFactory.getInstance().genconfigfile(App.getInstance().getconfigfile(), true);
 			App.getInstance().restartserver(true);

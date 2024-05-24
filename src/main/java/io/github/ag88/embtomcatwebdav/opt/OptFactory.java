@@ -130,6 +130,8 @@ public class OptFactory {
 		addOpt(new OptAccesslogDays());
 		addOpt(new OptCheckUpdates());
 		addOpt(new OptAllowLinking());
+		addOpt(new OptGui());
+		addOpt(new OptSysTray());
 	}
 
 	/**

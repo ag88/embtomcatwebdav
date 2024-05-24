@@ -153,10 +153,14 @@ public class App {
 			}
 		}
 		
-		createGui();
+		if((Boolean)OptFactory.getInstance().getOpt("gui").getValue()) {
+			createGui();			
+		}
 		
-		Util u = new Util();
-		u.makesystray();
+		if((Boolean)OptFactory.getInstance().getOpt("systray").getValue()) {
+			Util u = new Util();
+			u.makesystray();
+		}
 
 		try {
 			serverthread.join();
@@ -409,7 +413,7 @@ public class App {
 				}
 			}
 			
-			if(newgui) {
+			if(newgui && (Boolean)OptFactory.getInstance().getOpt("gui").getValue()) {
 				gui = null;
 				createGui();
 			}

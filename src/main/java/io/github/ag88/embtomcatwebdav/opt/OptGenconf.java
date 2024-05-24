@@ -33,7 +33,7 @@ public class OptGenconf extends Opt {
 		this.cmdproc = true; //process command
 		this.type = PropType.CLI;
 		this.valclazz = String.class;
-		this.priority = 50;
+		this.priority = 60;
 	}
 	
 	@Override
