@@ -50,13 +50,6 @@ public class DigestPWGenDlg extends JDialog implements ActionListener {
 	
 	/** The log. */
 	Log log = LogFactory.getLog(DigestPWGenDlg.class);
-
-	public static enum Ret {
-		LEFT,
-		RIGHT
-	};
-	
-	Ret ret;
 	
 	/** The tfrealm. */
 	JTextField tfrealm;
@@ -152,27 +145,14 @@ public class DigestPWGenDlg extends JDialog implements ActionListener {
 		p.add(o);
 	}
 	
-	public void addButtons(String left, String right) {
-		JPanel p = new JPanel();
-		JButton bl = new JButton(left);
-		bl.setActionCommand("BLEFT");
-		bl.addActionListener(this);
-		p.add(bl);
-		JButton br = new JButton(right);
-		br.setActionCommand("BRIGHT");
-		br.addActionListener(this);
-		p.add(br);
-		getContentPane().add(p, BorderLayout.SOUTH);
-	}
 
-	public Ret doModal() {
+	public void doModal() {
 		
 		pack();
 		setLocationRelativeTo(getParent());
 		setModal(true);
 		setVisible(true);
-		
-		return ret;
+
 	}
 
 	
@@ -192,15 +172,7 @@ public class DigestPWGenDlg extends JDialog implements ActionListener {
 			} catch (NoSuchAlgorithmException e1) {
 				log.error(e1);
 			}
-		} else if (e.getActionCommand().equals("BLEFT")) {
-			ret = Ret.LEFT;
-			setVisible(false);
-			dispose();
-		} else if (e.getActionCommand().equals("BRIGHT")) {
-			ret = Ret.RIGHT;
-			setVisible(false);
-			dispose();
-		}	
+		}
 	}
 
 	
