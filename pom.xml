@@ -5,7 +5,7 @@
 
 	<groupId>io.github.ag88</groupId>
 	<artifactId>embtomcatwebdav</artifactId>
-	<version>0.9.2</version>
+	<version>1.0.0pre1</version>
 	<packaging>jar</packaging>
 
 	<name>embtomcatwebdav</name>
