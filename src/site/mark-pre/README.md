@@ -84,13 +84,23 @@ it is created.
     searching for files/patterns. This minor update makes it case insensitive, word
     searches matches regardless of case
 
+- ****new** v1.0.0 major feature release new QR Code Gui, scan QR code and connect !
+  - scan the QR Code with your mobile phone and connect to upload servlet !
+  - Added a 'setup wizard' that helps to configure embtomcatwebdav and get it up and running easily
+  - Gui configuration panels for the various server configuration
+  - it now uses a standard configuration file so that you can simply launch it and start uploading / downloading
+  
+
 Note that the above are cumulative updates, the latest version e.g. v${project.version} contains all
 the updates/features in the lower/prior versions.
 
 status: beta
 
-![screenshot in a browser showing the upload servlet](web/screenshot.png "Screen shot showing the upload servlet")
+![screenshot in a browser showing the upload servlet](web/screenshot.png "Screen shot showing the upload servlet")  
 Upload servlet on a desktop web browser showing the new upload servlet
+
+![Scan QR code using your phone and connect to upload servlet](web/example.mp4 "Scan QR code using your phone and connect to upload servlet")  
+***new in v1.0.0 Scan QR code with your mobile phone and connect to upload servlet**
 
 ## Download
 
