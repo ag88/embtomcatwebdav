@@ -48,11 +48,14 @@ import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
 import io.github.ag88.embtomcatwebdav.App;
-import io.github.ag88.embtomcatwebdav.ImagePanel;
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 import io.github.ag88.embtomcatwebdav.util.QRUtil;
 import io.nayuki.qrcodegen.QrCode;
 
+/**
+ * Class Gui - the QR Code Gui
+ * 
+ */
 public class Gui extends JFrame implements ActionListener, WindowListener, ListSelectionListener {
 
 	Log log = LogFactory.getLog(Gui.class);
@@ -216,6 +219,12 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 		}
 	}
 
+	/**
+	 * Gen QR
+	 *
+	 * @param text the text
+	 * @return the buffered image
+	 */
 	public BufferedImage genQR(String text) {
 		// Simple operation
 		QrCode qr = QrCode.encodeText(text, QrCode.Ecc.LOW);

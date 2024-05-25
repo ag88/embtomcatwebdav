@@ -108,6 +108,11 @@ public class App {
 		OptFactory.getInstance().setApp(this);
 	}
 
+	/**
+	 * Gets the single instance of App.
+	 *
+	 * @return single instance of App
+	 */
 	public static App getInstance() {
 		return m_instance;
 	}
@@ -168,40 +173,22 @@ public class App {
 		}
 	}
 
-	public void initdirs() {
-		String appName;
-		String appVersion;
-		String appAuthor;
-		
-		Map<String, String> mdict = App.getInstance().readManifest();
-		if (mdict == null || mdict.size() == 0) {
-			appName = "embtomcatwebdav";
-			appVersion = "0.9.2";
-			appAuthor = "io.github.ag88";
-		} else {
-			appName = mdict.get("artifactId");
-			if (appName == null)
-				appName = "embtomcatwebdav";
-			appVersion = mdict.get("version");
-			if (appVersion == null)
-				appVersion = "0.9.2";
-			appAuthor = mdict.get("groupId");
-			if (appAuthor == null)
-				appAuthor = "io.github.ag88";	
-		}
-		
-		AppDirs appdirs = AppDirsFactory.getInstance();
-
-		m_datadir = appdirs.getUserDataDir(appName, "", appAuthor);
-		m_configdir = appdirs.getUserConfigDir(appName, "", appAuthor);		
-	}
-
+	/**
+	 * Gets the configfile.
+	 *
+	 * @return the configfile
+	 */
 	public String getconfigfile() {
 		Path pconfig = Paths.get(getConfigdir(), "config.ini");
 		return pconfig.toString();
 	}
 
 	
+	/**
+	 * Load configs from config file
+	 *
+	 * @param args the args
+	 */
 	public void loadconfigs(String[] args) {
 		Options options = new Options();
 		options.addOption(new Option("c", "conf", true, "config file"));
@@ -366,6 +353,9 @@ public class App {
 
 	}
 
+	/**
+	 * Creates the gui.
+	 */
 	public void createGui() {
 
 		if (gui == null || !gui.isDisplayable()) {
@@ -388,6 +378,11 @@ public class App {
 
 	}
 	
+	/**
+	 * Restart the embtomcatwebdav server.
+	 *
+	 * @param newgui re-create the gui
+	 */
 	public void restartserver(boolean newgui) {
 		try {
 			wdav.getTomcat().stop();
@@ -428,7 +423,35 @@ public class App {
 
 		
 	}
+
+	private void initdirs() {
+		String appName;
+		String appVersion;
+		String appAuthor;
 		
+		Map<String, String> mdict = App.getInstance().readManifest();
+		if (mdict == null || mdict.size() == 0) {
+			appName = "embtomcatwebdav";
+			appVersion = "1.0.0";
+			appAuthor = "io.github.ag88";
+		} else {
+			appName = mdict.get("artifactId");
+			if (appName == null)
+				appName = "embtomcatwebdav";
+			appVersion = mdict.get("version");
+			if (appVersion == null)
+				appVersion = "1.0.0";
+			appAuthor = mdict.get("groupId");
+			if (appAuthor == null)
+				appAuthor = "io.github.ag88";	
+		}
+		
+		AppDirs appdirs = AppDirsFactory.getInstance();
+
+		m_datadir = appdirs.getUserDataDir(appName, "", appAuthor);
+		m_configdir = appdirs.getUserConfigDir(appName, "", appAuthor);		
+	}
+
 	
 	/**
 	 * Read manifest.
@@ -458,6 +481,11 @@ public class App {
 		return null;
 	}
 
+	/**
+	 * Ownjarfile.
+	 *
+	 * @return the jarfile
+	 */
 	public String ownjarfile() {
 		try {
 			return new File(App.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
@@ -468,6 +496,11 @@ public class App {
 	}
 
 	
+	/**
+	 * Gets the user preferences associated with this app
+	 *
+	 * @return the preferences
+	 */
 	public Preferences getPreferences() {
 		return Preferences.userNodeForPackage(App.class);
 	}
@@ -481,26 +514,56 @@ public class App {
 		return log;
 	}
 
+	/**
+	 * Gets the datadir.
+	 *
+	 * @return the datadir
+	 */
 	public String getDatadir() {
 		return m_datadir;
 	}
 
+	/**
+	 * Sets the datadir.
+	 *
+	 * @param m_datadir the new datadir
+	 */
 	public void setDatadir(String m_datadir) {
 		this.m_datadir = m_datadir;
 	}
 
+	/**
+	 * Gets the configdir.
+	 *
+	 * @return the configdir
+	 */
 	public String getConfigdir() {
 		return m_configdir;
 	}
 
+	/**
+	 * Sets the configdir.
+	 *
+	 * @param m_configdir the new configdir
+	 */
 	public void setConfigdir(String m_configdir) {
 		this.m_configdir = m_configdir;
 	}
 
+	/**
+	 * Gets the wdav server object
+	 *
+	 * @return the wdav
+	 */
 	public WebDavServer getWdav() {
 		return wdav;
 	}
 
+	/**
+	 * Sets the wdav server object
+	 *
+	 * @param wdav the new wdav
+	 */
 	public void setWdav(WebDavServer wdav) {
 		this.wdav = wdav;
 	}

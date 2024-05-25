@@ -30,6 +30,12 @@ import com.vaadin.open.Open;
 
 import io.github.ag88.embtomcatwebdav.App;
 
+/**
+ * Class Util. Various swing Gui utils
+ * 
+ * Various swing Gui utils
+ * 
+ */
 public class Util implements ActionListener {
 
 	Log log = LogFactory.getLog(Util.class);
@@ -38,6 +44,16 @@ public class Util implements ActionListener {
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Make navigation button.
+	 *
+	 * @param imageName the image name
+	 * @param actionCommand the action command
+	 * @param toolTipText the tool tip text
+	 * @param altText the alt text
+	 * @param listener the listener
+	 * @return the j button
+	 */
 	public static JButton makeNavigationButton(String imageName, String actionCommand,
 			String toolTipText, String altText, ActionListener listener) {
 
@@ -52,6 +68,13 @@ public class Util implements ActionListener {
 		return button;
 	}
 	
+	/**
+	 * Sets the icon.
+	 *
+	 * @param button the button
+	 * @param imageName the image name
+	 * @param altText the alt text
+	 */
 	public static void setIcon(JButton button, String imageName, String altText) {
 		Log log = LogFactory.getLog(Util.class);
 		//Look for the image.
@@ -67,6 +90,15 @@ public class Util implements ActionListener {
 	}
 
 	
+	/**
+	 * Addmenuitem.
+	 *
+	 * @param label the label
+	 * @param cmd the cmd
+	 * @param keyevent the keyevent
+	 * @param listener the listener
+	 * @return the j menu item
+	 */
 	public static JMenuItem addmenuitem(String label, String cmd, int keyevent, ActionListener listener) {
 		JMenuItem item = new JMenuItem(label);
 		item.setMnemonic(keyevent);
@@ -75,6 +107,13 @@ public class Util implements ActionListener {
 		return item;		
 	}
 
+	/**
+	 * URLJ label.
+	 *
+	 * @param url the url
+	 * @param text the text
+	 * @return the j label
+	 */
 	public static JLabel URLJLabel(final String url, String text) {
 		Log log = LogFactory.getLog(Util.class);
 		JLabel jl = new JLabel();
@@ -98,7 +137,13 @@ public class Util implements ActionListener {
 		return jl;
 	}
 
-    //Obtain the image URL
+    /**
+     * Creates the image given icon name
+     *
+     * @param imageName the image name
+     * @param description the description
+     * @return the image
+     */
     public Image createImage(String imageName, String description) {
     	
 		//Look for the image.
@@ -113,11 +158,20 @@ public class Util implements ActionListener {
         }
     }
     
+	/**
+	 * Add JComponent left aligned
+	 *
+	 * @param p the base component (e.g. JPanel)
+	 * @param o the component to add and align
+	 */
 	public static void addleft(JComponent p, JComponent o) {
 		o.setAlignmentX(Box.LEFT_ALIGNMENT);
 		p.add(o);
 	}
 
+	/**
+	 * Make systray.
+	 */
 	public void makesystray() {
 		//Check the SystemTray is supported
         if (!SystemTray.isSupported()) {

@@ -18,6 +18,11 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+/**
+ * The Class HostPanel, JPanel for host dialog
+ * 
+ * JPanel for host dialog
+ */
 public class HostPanel extends JPanel implements ActionListener {
 
 	JTextField tfhost;

@@ -7,6 +7,12 @@ import java.util.regex.Pattern;
 
 import org.apache.catalina.realm.MessageDigestCredentialHandler;
 
+/**
+ * The Class DigestPWUtil.
+ * 
+ * Utility class for digest auth passwords
+ * 
+ */
 public class DigestPWUtil {
 
 	public DigestPWUtil() {

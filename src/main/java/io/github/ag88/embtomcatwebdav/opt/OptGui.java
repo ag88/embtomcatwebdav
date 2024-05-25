@@ -18,7 +18,7 @@ package io.github.ag88.embtomcatwebdav.opt;
 import io.github.ag88.embtomcatwebdav.opt.Opt.PropType;
 
 /**
- * Conf for checkupdates option.
+ * Conf for gui option.
  */
 public class OptGui extends Opt {
 

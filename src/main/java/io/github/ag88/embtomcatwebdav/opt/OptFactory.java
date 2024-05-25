@@ -172,7 +172,7 @@ public class OptFactory {
 	 * Load config options from properties file.
 	 *
 	 * @param configfile this should be a properties text file in the appropriate format
-	 * e.g. generated using {@link #genconfigfile(String)}
+	 * e.g. generated using {@link #genconfigfile(String,boolean)}
 	 */
 	public void loadconfigprop(String configfile) {				
 		try {
@@ -262,6 +262,7 @@ public class OptFactory {
 	 * 
 	 * It would fill up some default values
 	 * 
+	 * @return text lines in config file as a string
 	 */
 	public String genconfigprop() {
 		
@@ -320,6 +321,7 @@ public class OptFactory {
 	 * Generate config options properties file template and save it
 	 * 
 	 * @param configfile new properties config file name.
+	 * @param overwrite true overwrites config file
 	 */
 	public void genconfigfile(String configfile, boolean overwrite) {
 		if(!overwrite && Files.exists(Paths.get(configfile))) {

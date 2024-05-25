@@ -70,7 +70,6 @@ public class DigestPWGenDlg extends JDialog implements ActionListener {
 	/**
 	 * Instantiates a new digest PW gen dlg.
 	 *
-	 * @param wdav the wdav
 	 */
 	public DigestPWGenDlg() {
 		super((JFrame) null, "Generate DIGEST password");

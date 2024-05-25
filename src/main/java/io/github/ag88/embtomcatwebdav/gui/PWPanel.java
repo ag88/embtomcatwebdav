@@ -30,6 +30,11 @@ import org.apache.juli.logging.LogFactory;
 
 import io.github.ag88.embtomcatwebdav.util.DigestPWUtil;
 
+/**
+ * The Class PWPanel. JPanel for auth dialog
+ * 
+ * JPanel for auth dialog
+ */
 public class PWPanel extends JPanel implements ActionListener {
 
 	/** The log. */

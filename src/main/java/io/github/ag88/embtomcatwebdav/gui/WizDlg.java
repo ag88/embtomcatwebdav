@@ -18,6 +18,11 @@ import javax.swing.JPanel;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
+/**
+ * Class WizDlg. Container for dialog panels
+ * 
+ * Container for dialog panels
+ */
 public class WizDlg extends JDialog implements ActionListener {
 	
 	Log log = LogFactory.getLog(WizDlg.class);
@@ -69,6 +74,13 @@ public class WizDlg extends JDialog implements ActionListener {
 		setPreferredSize(d1);
 	}
 	
+	/**
+	 * Do modal. Display dialog 
+	 * 
+	 * Display dialog. This methods blocks.
+	 *
+	 * @return the ret
+	 */
 	public Ret doModal() {
 		
 		pack();

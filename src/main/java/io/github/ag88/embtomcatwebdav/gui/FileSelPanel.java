@@ -16,6 +16,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/**
+ * Class FileSelPanel - File selection panel
+ * 
+ * File selection panel
+ */
 public class FileSelPanel extends JPanel implements ActionListener {
 
 	JTextField tfselfile;
@@ -45,6 +50,12 @@ public class FileSelPanel extends JPanel implements ActionListener {
 	}
 
 	
+	/**
+	 * Sets the chooser. directory and file selection mode
+	 *
+	 * @param directory the directory
+	 * @param mode the file selection mode
+	 */
 	public void setChooser(String directory, int mode) {
 		chooser = new JFileChooser(directory);
 		tfselfile.setText(directory);
@@ -76,6 +87,11 @@ public class FileSelPanel extends JPanel implements ActionListener {
 	}
 	
 	
+	/**
+	 * Gets the selected file.
+	 *
+	 * @return the selected file
+	 */
 	public String getSelFile() {
 		 return tfselfile.getText();
 	}

@@ -18,7 +18,7 @@ package io.github.ag88.embtomcatwebdav.opt;
 import io.github.ag88.embtomcatwebdav.opt.Opt.PropType;
 
 /**
- * Conf for checkupdates option.
+ * Conf for systray option.
  */
 public class OptSysTray extends Opt {
 

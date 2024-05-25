@@ -30,6 +30,12 @@ import java.util.Objects;
 
 import io.nayuki.qrcodegen.QrCode;
 
+/**
+ * The Class QRUtil
+ * 
+ * Utility class for QR code generation
+ * 
+ */
 public class QRUtil {
 
 	public QRUtil() {
@@ -39,9 +45,9 @@ public class QRUtil {
 	/**
 	 * QrCode To image.
 	 *
-	 * @param qr the qr
-	 * @param scale the scale
-	 * @param border the border
+	 * @param qr the qr code, needs to be obtained from {@link io.nayuki.qrcodegen.QrCode}
+	 * @param scale the scale (min 1)
+	 * @param border the border size in pixels
 	 * @return the buffered image
 	 */
 	public BufferedImage toImage(QrCode qr, int scale, int border) {

@@ -37,6 +37,11 @@ import org.apache.juli.logging.LogFactory;
 import io.github.ag88.embtomcatwebdav.App;
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 
+/**
+ * Class SetupWiz. Setup wiz
+ * 
+ * Setup wiz
+ */
 public class SetupWiz {
 	
 	Log log = LogFactory.getLog(SetupWiz.class);
@@ -58,6 +63,11 @@ public class SetupWiz {
 	public void init() {
 	}
 	
+	/**
+	 * Do setup.
+	 *
+	 * @param init initialize options
+	 */
 	public void dosetup(boolean init) {
 		if(!checkandcreatedir(init)) return;
 		dodlgs();

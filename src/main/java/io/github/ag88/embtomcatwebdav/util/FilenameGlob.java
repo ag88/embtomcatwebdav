@@ -28,6 +28,7 @@ public class FilenameGlob {
 	 * The glob pattern string and can have wildcards like '*'.
 	 *
 	 * @param glob the pattern string
+	 * @param casesens case sensitive
 	 */
 	public FilenameGlob(String glob, boolean casesens) {
 		this.casesensitive = casesens;

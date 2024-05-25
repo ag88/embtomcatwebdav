@@ -21,6 +21,11 @@ import io.github.ag88.embtomcatwebdav.App;
 import io.github.ag88.embtomcatwebdav.opt.Opt;
 import io.github.ag88.embtomcatwebdav.opt.OptFactory;
 
+/**
+ * The Class ListOptsPanel. Display config properties
+ * 
+ * Display config properties
+ */
 public class ListOptsPanel extends JPanel {
 
 	Log log = LogFactory.getLog(ListOptsPanel.class);
