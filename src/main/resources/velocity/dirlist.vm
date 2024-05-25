@@ -82,6 +82,7 @@ function onupload() {
   #end  
   <input type="submit" value="update">
 </form>
+</div>
 <p>
 #if( $logrecs )
 <div class="upload-msg">

@@ -599,6 +599,16 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 			}			
 		}
 		
+        URL spurl = App.class.getResource("/resources/sponsor.htm");
+		if (spurl != null) {
+			try {
+				url = new URL(secure ? "https" : "http", hostname, port, "/res/sponsor.htm").toString();
+				p.add(Box.createVerticalGlue());
+				p.add(Util.URLJLabel(url, "Sponsor this project"));
+			} catch (MalformedURLException e) {
+			}
+		}
+		
 		p.add(Box.createVerticalGlue());
 		p.setPreferredSize(new Dimension(400,150));
 		JOptionPane.showMessageDialog(this, p);

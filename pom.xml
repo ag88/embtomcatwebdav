@@ -358,6 +358,7 @@
 											<includes>
 												<include>footeru1.txt</include>
 												<include>newversion.txt</include>
+												<include>sponsor.htm</include>
 											</includes>
 											<excludes>
 												<exclude>distribution.xml</exclude>

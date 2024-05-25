@@ -115,3 +115,13 @@ a.ha-shade {
 	border-bottom: 1px solid black;	
 }
 
+a.imgbut {
+  background-color: blue;
+  color: white;
+  padding: 2px 2px 2px 2px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+

@@ -5,4 +5,5 @@ Developing this has taken quite some effort mainly in adding features,
 getting it to work and rather extensive tests.         
 If you use this app and found it useful, I'd really appreciate it if you could support 
 my efforts <a href="https://donorbox.org/embedded-tomcat-webdav-server">
-<img src="/res/donorbox.png" alt="sponsor this project"></a>
+<img src="/res/donorbox.png" alt="sponsor this project"></a><p>
+
