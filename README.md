@@ -99,7 +99,9 @@ status: beta
 ![screenshot in a browser showing the upload servlet](web/screenshot.png "Screen shot showing the upload servlet")  
 Upload servlet on a desktop web browser showing the new upload servlet
 
-![Scan QR code using your phone and connect to upload servlet](web/example.mp4 "Scan QR code using your phone and connect to upload servlet")  
+<video controls>
+  <source src="web/example.mp4" type="video/mp4">
+</video>
 ***new in v1.0.0 Scan QR code with your mobile phone and connect to upload servlet**
 
 ## Download
