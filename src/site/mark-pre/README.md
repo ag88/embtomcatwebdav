@@ -107,10 +107,48 @@ Upload servlet on a desktop web browser showing the new upload servlet
 It is recommended to use the recent/latest **[release jars](https://github.com/ag88/embtomcatwebdav/releases/latest)** .
 In the releases section of this repository.
 
-## <a id="run">Run</a>
+## Prerequisites
 
 Java / JDK >= 1.8 is required, 
-e.g. from https://adoptium.net , https://openjdk.org/, https://www.oracle.com/sg/java/technologies/downloads/
+e.g. from 
+- https://adoptium.net 
+- https://openjdk.org/
+- https://www.oracle.com/java/technologies/downloads/
+
+## <a id="run">Run</a>
+
+In some operating systems, it may be possible to run it by simply double clicking on the jar file after Java/JDK is installed.
+e.g. In Windows, you can normally run it by simply double clicking the jar file in windows explorer.
+
+### QR Code Gui (from v1.0.0)
+
+For embtomcatwebdav 1.0.0, after the first few initial setup dialogs, it would present a QR Code Gui.
+If you have selected DHCP (dynamic) ip address 0.0.0.0, you would see a Gui as follows:
+
+![QR Code Gui](web/gui.png "QR code Gui")
+
+- Select the IP address of the network facing network interface. Select its IPV4 address if there are other addresses available.  
+
+- Scan the QR Code using your mobile phone (e.g. some mobile phones has those features, or use an app as like 
+[QRDroid](https://play.google.com/store/apps/details?id=la.droid.qr) etc.)
+
+- You mobile phone should present a web browser with the scanned URL open. e.g.
+
+![screenshot in a browser](web/UploadServPhone.jpg "Upload on a phone")  
+Upload servlet on a phone web browser
+
+- If you close the QR Code Gui window, you could open that window again, by double clicking the icon from the systray
+
+- To stop/shutdown embtomcatwebdav, simply click the 'stop' icon on the toolbar, or select 'File > stop server and exit' from the menu.
+
+
+If you are running this in Windows, it is recommended to use version 1.0.0 and newer
+https://github.com/ag88/embtomcatwebdav/releases/latest  
+versions less than 1.0.0 do not have a Gui, in Windows to stop it after you simply 'double click' that, 
+launch the task manager, right click on the task bar to find it.
+In Task manager look for a process java binary or some such app matching it that is running and kill it.
+For more info take a look in the 
+[wiki: using embtomcatwebdav in MS Windows](https://github.com/ag88/embtomcatwebdav/wiki/2-Windows-%3A-using-embtomcatwebdav-in-MS-Windows).
 
 
 ### from commnd line CLI
@@ -118,14 +156,6 @@ e.g. from https://adoptium.net , https://openjdk.org/, https://www.oracle.com/sg
 ```
 java -jar ${project.artifactId}-${project.version}.jar
 ```
-In some operating systems, it may be possible to run it by simply double clicking on the jar file after Java/JDK is installed.
-e.g. In Windows, you can normally run it by simply double clicking the icon. The trouble is that it seemed there is 'nothing', 
-but that actually it is running. Point your web browser to http://localhost:8080/webdav, and you would see the upload servlet.
-
-To stop it after you simply 'double click' that, launch the task manager, right click on the task bar to find it.
-In Task manager look for a process java binary or some such app matching it that is running and kill it.
-For more info take a look in the 
-[wiki: using embtomcatwebdav in MS Windows](https://github.com/ag88/embtomcatwebdav/wiki/2-Windows-%3A-using-embtomcatwebdav-in-MS-Windows).
 
 To run with parameters e.g. changing the port to 8081
 ```
