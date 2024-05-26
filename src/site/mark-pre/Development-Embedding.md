@@ -61,6 +61,11 @@ https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/${project.v
   - in prior release the filter in upload servlet is case sensitive, this is troublesome
     searching for files/patterns. This minor update makes it case insensitive, word
     searches matches regardless of case
+- v1.0.0 major feature release new QR Code Gui, scan QR code and connect !
+  - scan the QR Code with a mobile phone and connect to upload servlet !
+  - Added a 'setup wizard' that helps to configure embtomcatwebdav and get it up and running easily
+  - Gui configuration panels for the various server configuration
+  - it now uses a standard configuration file so that you can simply launch it and start uploading / downloading
 
 ## Embedding
 

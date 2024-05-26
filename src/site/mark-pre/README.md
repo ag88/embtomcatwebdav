@@ -109,7 +109,11 @@ In the releases section of this repository.
 
 ## <a id="run">Run</a>
 
-Java / JDK >= 1.8 is required
+Java / JDK >= 1.8 is required, 
+e.g. from https://adoptium.net , https://openjdk.org/, https://www.oracle.com/sg/java/technologies/downloads/
+
+
+### from commnd line CLI
 
 ```
 java -jar ${project.artifactId}-${project.version}.jar
