@@ -178,10 +178,10 @@ It is recommended to leave the tomcat work directory as the default. Apache Tomc
 
 
 ![configs display](web/configs.png "configs display")  
-It displays the configs before saving and launch. For other configs and if any changes is needed, they can be updated from the QR Code Gui under the Setup menu.
+It displays the configs before saving and launch. For other configs and if any changes are needed, they can be updated from the QR Code Gui under the Setup menu.
 
 
-from v1.0.0, embtomcatwebdav uses a default config file which is displayed in the line below. The configs are stored in that config file.
+From v1.0.0, embtomcatwebdav uses a default config file which is displayed in the line below. The configs are stored in that config file.
 
 
 ## from commnd line CLI
