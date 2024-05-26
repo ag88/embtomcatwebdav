@@ -132,7 +132,9 @@ If you have selected DHCP (dynamic) ip address 0.0.0.0, you would see a Gui as f
 - Scan the QR Code using your mobile phone (e.g. some mobile phones has those features, or use an app as like 
 [QRDroid](https://play.google.com/store/apps/details?id=la.droid.qr) etc.)
 
-- You mobile phone should present a web browser with the scanned URL open. e.g.
+- You mobile phone should present a web browser with the scanned URL open.  
+  if it doesn't connect check that you mobile phone/device are on the same WiFi LAN network as your host(pc/notebook) running embtomcatwebdav
+  e.g.
 
 ![screenshot in a browser](web/UploadServPhone.jpg "Upload on a phone")  
 Upload servlet on a phone web browser
