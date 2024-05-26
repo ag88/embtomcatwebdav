@@ -88,7 +88,7 @@ it is created.
   - scan the QR Code with your mobile phone and connect to upload servlet !
   - Added a 'setup wizard' that helps to configure embtomcatwebdav and get it up and running easily
   - Gui configuration panels for the various server configuration
-  - it now uses a standard configuration file so that you can simply launch it and start uploading / downloading
+  - it now uses a default configuration file so that you can simply launch it and start uploading / downloading
   
 
 Note that the above are cumulative updates, the latest version e.g. v${project.version} contains all
@@ -120,7 +120,7 @@ e.g. from
 In some operating systems, it may be possible to run it by simply double clicking on the jar file after Java/JDK is installed.
 e.g. In Windows, you can normally run it by simply double clicking the jar file in windows explorer.
 
-### QR Code Gui (from v1.0.0)
+## QR Code Gui (from v1.0.0)
 
 For embtomcatwebdav 1.0.0, after the first few initial setup dialogs, it would present a QR Code Gui.
 If you have selected DHCP (dynamic) ip address 0.0.0.0, you would see a Gui as follows:
@@ -137,7 +137,7 @@ If you have selected DHCP (dynamic) ip address 0.0.0.0, you would see a Gui as f
 ![screenshot in a browser](web/UploadServPhone.jpg "Upload on a phone")  
 Upload servlet on a phone web browser
 
-- If you close the QR Code Gui window, you could open that window again, by double clicking the icon from the systray
+- If you close the QR Code Gui window, you could open that window again, by double clicking the icon from the system tray
 
 - To stop/shutdown embtomcatwebdav, simply click the 'stop' icon on the toolbar, or select 'File > stop server and exit' from the menu.
 
@@ -151,7 +151,40 @@ For more info take a look in the
 [wiki: using embtomcatwebdav in MS Windows](https://github.com/ag88/embtomcatwebdav/wiki/2-Windows-%3A-using-embtomcatwebdav-in-MS-Windows).
 
 
-### from commnd line CLI
+## Setup wizard v1.0.0
+
+Version 1.0.0 and newer presents a setup wizard the first time you run embtomcatwebdav. This helps you configure the web server and gets up 
+and running easily/quickly.
+
+![host and port setup](web/hostportdlg.png "host and port setup")  
+host and port setup
+
+![authentication setup](web/authdlg.png "authentication setup")  
+authentication setup.
+
+note that the user and password prompted is not your OS user and password, this user and password is only used to connect to embtomcatwebdav
+server, and it can be any user or password that you prefer.
+
+With DIGEST authentication, if you change the realm or user, it would clear the password as the hash will change.
+DIGEST authentication is secure as only a hash is stored and not plaintext passwords. But that the system do not know your password,
+hence, if you change the realm or user, you would need to set the password again as the hash is no longer valid.
+
+![setup paths](web/paths.png "setup paths")  
+setup paths.
+
+Select the path that you want to serve in embtomcatwebdav. This would be the root folder that is served.
+
+It is recommended to leave the tomcat work directory as the default. Apache Tomcat requires a work directory while it is running.
+
+
+![configs display](web/configs.png "configs display")  
+It displays the configs before saving and launch. For other configs and if any changes is needed, they can be updated from the QR Code Gui under the Setup menu.
+
+
+from v1.0.0, embtomcatwebdav uses a default config file which is displayed in the line below. The configs are stored in that config file.
+
+
+## from commnd line CLI
 
 ```
 java -jar ${project.artifactId}-${project.version}.jar
