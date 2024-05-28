@@ -255,7 +255,7 @@ Various others e.g.
 
 [AppDirs](https://github.com/harawata/appdirs)
 
-Full [Attributions](web/attrib/attribution.html)
+Full [Attributions](https://htmlpreview.github.io/?https://github.com/ag88/embtomcatwebdav/blob/main/web/attrib/attribution.html)
 
 ## No warranty
 
