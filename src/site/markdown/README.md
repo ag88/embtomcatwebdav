@@ -293,17 +293,23 @@ usage: embtomcatwebdav-1.0.0
                                  front.
  -x,--urlprefix <urlprefix>      set urlprefix, default /webdav
  ```
-
-note that the app can be run without specifying arguments.
-
 requires JDK >= 1.8
 
-Note that on starting, it creates a folder "tomcat.port" in the current directory. This is needed for the embedded Tomcat instance to operate.
-And it serves the current directory on webdav at http://localhost:8080/webdav
+ 
+note that the app can be run without specifying arguments. From embtomcatwebdav v1.0.0 and newer, it would create and
+use a default config file and present a setup Wizard the first time you run it.
 
-On running, point the web browser to http://localhost:8080/webdav, you should see the directory listing of your current work directory. For more functionality, it requires a WebDAV client to interact with the WebDAV server
+For older releases than v1.0.0
 
-Since v0.3.2, you can maintain the options/settings in a text (config) file. To use a config file, first generate
+Note that on starting, it creates a folder "tomcat.port" in the current directory. This is needed for the embedded 
+Tomcat instance to operate. And it serves the current directory on webdav at http://localhost:8080/webdav. 
+In 1.0.0 and later, the path and work folder is configured in a setup wizard dialog.
+
+On running, point the web browser to http://localhost:8080/webdav, you should see the directory listing of your 
+current work directory. For more functionality, it requires a WebDAV client to interact with the WebDAV server
+
+In v1.0.0 and later this step is unnecessary, it uses a default config file.
+Prior v1.0.0, you can maintain the options/settings in a text (config) file. To use a config file, first generate
 a template/config file using the ``--genconf configfile`` option, e.g.:
 
 ```
@@ -393,7 +399,14 @@ Upload servlet on a phone web browser
 
 ## Running embtomcatwebdav on an actual network interface
 
-By default, embtomcatwebdav runs on ``http://localhost:8080/webdav``, this is normally only accessible on the local computer.
+In v1.0.0, embtomcatwebdav presents a setup wizard, this is configured in the host/port dialog.
+
+![host and port setup](web/hostportdlg.png "host and port setup")  
+host and port setup.
+
+You can simply select 'dynamic' DHCP (IP address 0.0.0.0) or select 'fixed' and provide an IP address and port.
+Prior to v1.0.0, embtomcatwebdav runs on ``http://localhost:8080/webdav`` by default, 
+this is normally only accessible on the local computer.
 
 v0.8.1 added a rather important feature. (only v0.8.1 and above)
 To access the servlet on your PC / desktop / laptop etc on an actual network interface, use the -H or --host
