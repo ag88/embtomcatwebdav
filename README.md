@@ -148,9 +148,6 @@ https://github.com/ag88/embtomcatwebdav/releases/latest
 versions less than 1.0.0 do not have a Gui, in Windows to stop it after you simply 'double click' that, 
 launch the task manager, right click on the task bar to find it.
 In Task manager look for a process java binary or some such app matching it that is running and kill it.
-For more info take a look in the 
-[wiki: using embtomcatwebdav in MS Windows](https://github.com/ag88/embtomcatwebdav/wiki/2-Windows-%3A-using-embtomcatwebdav-in-MS-Windows).
-
 
 ## Setup wizard v1.0.0
 
