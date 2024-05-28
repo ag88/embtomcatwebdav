@@ -182,7 +182,7 @@ It displays the configs before saving and launch. For other configs and if any c
 From v1.0.0, embtomcatwebdav uses a default config file which is displayed in the line below. The configs are stored in that config file.
 
 
-## Commnd line CLI 
+## Command line CLI 
 
 ```
 java -jar ${project.artifactId}-${project.version}.jar
