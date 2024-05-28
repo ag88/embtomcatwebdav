@@ -1,5 +1,88 @@
 # Extended README
 
+## Feature list / change log
+- It runs on http://localhost:8080/webdav
+- It serves the current working directory in which the app is started
+- Added (BASIC) authentication
+- Added (DIGEST) authentication - v0.3.0, v0.2.1
+- Added command line aguments so that various parameters can be changed:
+- Added SSL (i.e. https://) - v0.2.0
+- Added option to change urlprefix '/webdav' - v0.3.1
+- Added loading of options from properties file, and option to generate a default config file - v0.3.2
+- Added a dialog to generate DIGEST passwords that can be used in the config file. - v0.3.2
+- v0.3.3 is a rather major bugfix release, this release is released to maven central
+- v0.3.3 this app can be embedded, see the junit test cases to see how that is done
+- v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a separate thread.
+- v0.3.4 fixed a bug related to race conditions in isRunning() method and runserverfork()
+- v0.4.1 is a a rather major refactored release, this release is released to maven central
+- v0.4.1 added a refactored command line options and config properties processing engine, this makes it feasible 
+  for apps linking the library to add command line options and config properties in the same app.
+- v0.4.1 use console.readPassword() to avoid displaying the password in the console during entry. 
+  This is more secure in case there is a crowd nearby ;)  
+  Note that System.console() isn't available in all situations, e.g. in various IDEs,
+  in that case it falls back to reading from System.in, in which case character echo can't be avoided.
+- v0.5.0 is a rather major feature release
+- v0.5.0 added an Upload servlet that includes a form based file upload in the directory list.
+  This makes it possible to upload files without a WebDAV client. In addition, it is styled with
+  responsive html and css so that it is more readable on small (mobile) devices.
+- It requires a folder 'tomcat.port' for the embedded Tomcat instance, if the folder isn't present,
+it is created.
+- v0.5.1 is a bugfix release for v0.5.0, Upload servlet, some refactoring: 
+  enabled alwaysUseSession for authentication, some mobile devices do not cache authentication and keeps prompting 
+  authentication every refresh and page. This is still as secure (managed by a session) and avoided the annoying 
+  auth prompts every screen. Login only at the start, and for cookie tests (needed for jesssion), only checks in 
+  doPost() where it is needed and only if it is a new (invalid) session.
+- v0.5.2 added(fixed) sorting in Upload servlet
+- v0.6.0 added access log
+- v0.6.1 usability updates for upload servlet:
+  - limit authentication access to configured url prefix instead of /*,
+    this helps to reduce authentication challenges for resources icons,
+     e.g. favicon.ico etc for some browsers.
+  - added upload feedback on the page for large/long uploads,
+    add upload feedback for the upload servlet, so that
+    it shows 'uploading...' once upload is clicked.  
+- v0.6.2 usability updates for upload servlet:
+  - added a link to upload section at the top, this help with long directory lists
+    relieves from long scrolls to the bottom just for uploads
+- ***new** v0.8.0 major feature release: 
+  - new upload servlet:
+  - migrated to Apache Velocity templates.
+  - added download of multiple files as zip ***new**
+  - added filename filters ***new**
+  
+  Download multiple files as zip and filename filters significantly improves usability of the upload servlet
+  
+- ***new** v0.8.1  add support for ip 0.0.0.0 listen on all interfaces 
+  - host aliases will be added for all interfaces if 0.0.0.0 is specified as the host name
+  
+  This solves problems related to dynamic IP addresses
+  
+- ***new** v0.8.2 improvements, fixes for config file generation. 
+  - improvements, fixes for config file generation
+    config file generation now adds description entries and is sorted
+  - improved help documentation / description
+  - upload servlet is now default from this release
+  
+- ***new** v0.9.0 checks for updates from this repository
+  - checks for updates from this repository
+  - added option to enable/disable check for updates
+  - display server info: Embtomcatwebdav and version in page for upload servlet
+
+- ***new** v0.9.1 adds allowlinking option
+  - allow linking (e.g. follow symbolic links, warn: links can go outside working
+    dir/path, only works in upload servlet)
+
+- ***new** v0.9.2 make filter case insensitive
+  - in prior release the filter in upload servlet is case sensitive, this is troublesome
+    searching for files/patterns. This minor update makes it case insensitive, word
+    searches matches regardless of case
+
+- ****new** v1.0.0 major feature release new QR Code Gui, scan QR code and connect !
+  - scan the QR Code with your mobile phone and connect to upload servlet !
+  - Added a 'setup wizard' that helps to configure embtomcatwebdav and get it up and running easily
+  - Gui configuration panels for the various server configuration
+  - it now uses a default configuration file so that you can simply launch it and start uploading / downloading
+
 ## Command line CLI details, usage notes
 
 Embtomcatwebdav v1.0.0 and newer provides a QR Code Gui. The command like CLI is still available,
