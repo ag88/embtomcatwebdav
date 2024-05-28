@@ -89,7 +89,6 @@ it is created.
   - Added a 'setup wizard' that helps to configure embtomcatwebdav and get it up and running easily
   - Gui configuration panels for the various server configuration
   - it now uses a default configuration file so that you can simply launch it and start uploading / downloading
-  
 
 Note that the above are cumulative updates, the latest version e.g. v1.0.0 contains all
 the updates/features in the lower/prior versions.
@@ -186,7 +185,7 @@ It displays the configs before saving and launch. For other configs and if any c
 From v1.0.0, embtomcatwebdav uses a default config file which is displayed in the line below. The configs are stored in that config file.
 
 
-## from commnd line CLI
+## Commnd line CLI 
 
 ```
 java -jar embtomcatwebdav-1.0.0.jar
@@ -198,6 +197,9 @@ java -jar embtomcatwebdav-1.0.0.jar -p 8081
 ```
 
 If you have various configuration parameters, it is recommended to use a config file.
+From v1.0.0, embtomcatwebdav uses a default config file. Hence, this step is unnecessary,
+but that the option is still available.
+
 A template can be generated as such
 ```
 java -jar embtomcatwebdav-1.0.0.jar --genconf wdav.ini
@@ -238,7 +240,10 @@ java -jar embtomcatwebdav-1.0.0.jar -c wdav.ini
 You may like to adapt the batch files e.g. run.bat, run.sh as examples to run it as such.
 In that way it is also possible to set up auto start by simply running the batch file.
 
-## usage
+### CLI details, usage notes
+
+Embtomcatwebdav v1.0.0 and newer provides a QR Code Gui. The command like CLI is still available,
+details as follows:
 
 ```
 java -jar embtomcatwebdav-1.0.0.jar -h
