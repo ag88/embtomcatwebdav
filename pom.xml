@@ -340,6 +340,7 @@
 											<directory>${basedir}/src/site/mark-pre</directory>
 											<includes>
 												<include>README.md</include>
+												<include>README-ext.md</include>
 											</includes>
 											<filtering>true</filtering>
 										</resource>
