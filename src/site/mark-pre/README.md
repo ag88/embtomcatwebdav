@@ -79,6 +79,7 @@ e.g. from
 - https://adoptium.net 
 - https://openjdk.org/
 - https://www.oracle.com/java/technologies/downloads/
+- https://www.microsoft.com/openjdk
 
 ## <a id="run">Run</a>
 
