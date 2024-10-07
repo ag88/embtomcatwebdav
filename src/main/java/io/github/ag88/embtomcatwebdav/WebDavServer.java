@@ -101,6 +101,7 @@ import io.github.ag88.embtomcatwebdav.opt.OptUrlPrefix;
 import io.github.ag88.embtomcatwebdav.opt.OptUser;
 import io.github.ag88.embtomcatwebdav.servlet.CLResourceServlet;
 import io.github.ag88.embtomcatwebdav.servlet.DLZipServlet;
+import io.github.ag88.embtomcatwebdav.servlet.MkDirServlet;
 import io.github.ag88.embtomcatwebdav.servlet.RedirServlet;
 import io.github.ag88.embtomcatwebdav.servlet.WDavUploadServlet2;
 import io.github.ag88.embtomcatwebdav.util.DigestPWUtil;
@@ -200,7 +201,11 @@ public class WebDavServer
 	 */
 	String dlzip_path = "/dlzip";
 
-	
+	/**
+	 * create directory path
+	 */
+	String createdir_path = "/createdir";
+
 	/*
 	 * enable access log 
 	 */
@@ -401,7 +406,9 @@ public class WebDavServer
 				pat = pat.concat("*");
 				sc.addPattern(pat);
 				if(!(null == dlzip_path || dlzip_path.equals("")))
-					sc.addPattern(dlzip_path);				
+					sc.addPattern(dlzip_path);
+				if(!(null == createdir_path || createdir_path.equals("")))
+					sc.addPattern(createdir_path);
 				secconstr.addCollection(sc);
 				context.addConstraint(secconstr);				
 			}			
@@ -443,6 +450,8 @@ public class WebDavServer
 		    ws.addInitParameter("readonly", "false");
 			ws.addInitParameter("allowSpecialPaths", "true");
 			
+			ws.addInitParameter("x-upld-createdir_path", createdir_path);			
+			
 			String urlprefix1;
 			if (! urlprefix.endsWith("/"))
 				urlprefix1 = urlprefix.concat("/*");
@@ -472,6 +481,13 @@ public class WebDavServer
 					log.info("dlzip_path:".concat(dlzip_path));
 				Tomcat.addServlet(context, "dlzip", servlet);
 				context.addServletMappingDecoded(dlzip_path, "dlzip");
+				
+				
+				servlet = new MkDirServlet();
+				if(!quiet)
+					log.info("createdir_path:".concat(createdir_path));
+				Tomcat.addServlet(context, "createdir", servlet);
+				context.addServletMappingDecoded(createdir_path, "createdir");
 				
 			}
 						

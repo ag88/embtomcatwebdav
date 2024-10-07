@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<title>Create Directory/Folder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/res/style.css">
+<script type="text/javascript">
+function onupload() {
+	document.getElementById("upmsg").style = "visibility: visible; color: orange;";
+	document.getElementById("upmsg").innerHTML = "uploading...";
+	return true;
+}
+</script>
+</head>
+<body>
+<h1>Create directory/folder</h1>
+<p>
+<form class="dirsel" action="${mkdirpath}" method="post">
+  <br>
+  <div>
+    <label for="parentdir">Parent dir/folder:</label>
+    <input type="text" id="parentdir" name="parentdir" value="${parentdir}">
+  </div>
+  <br>
+  <div>
+    <label for="newfoldername">New directory folder to create:</label>
+    <input type="text" id="newfoldername" name="newfoldername">
+  </div>
+  <br>  
+  <button type="submit" name="submit" value="submit">Submit</button>
+</form>
+<p>
+#if( $msg )
+<hr class="line"> 
+<div class="upload-msg">
+	${msg}
+</div><p>
+#end
+<a href="${back}">Back</a>
+</body>
+</html>

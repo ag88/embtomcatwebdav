@@ -20,6 +20,7 @@ function onupload() {
  &nbsp; &nbsp; <a class="ha-shade" href="${qsnomulti}">Back to normal mode</a><br><br>
  #end
  &nbsp; &nbsp; <a class="ha-shade" href="#uploadfile">Upload file</a><br><br>
+ &nbsp; &nbsp; <a class="ha-shade" href="${createdir}">Create directory/folder</a><br><br>
 </nav>
 <hr class="line">
 <p>

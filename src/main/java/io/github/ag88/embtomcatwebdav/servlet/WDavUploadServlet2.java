@@ -112,6 +112,9 @@ public class WDavUploadServlet2 extends WebdavServlet {
 	/** DL Zip path */
 	String dlzip_path;
 	
+	/** create dir/folder path */
+	String createdir_path;
+	
 	/**
 	 * Instantiates a new w dav upload servlet.
 	 */
@@ -146,6 +149,8 @@ public class WDavUploadServlet2 extends WebdavServlet {
 		else
 			this.dlzip_path = dlzippath;
 		
+		createdir_path = config.getInitParameter("x-upld-createdir_path");
+		
 		if (((Boolean) OptFactory.getInstance().getOpt("allowlinking").getValue()).booleanValue())
 			resources.setAllowLinking(true);
 	}
@@ -174,6 +179,27 @@ public class WDavUploadServlet2 extends WebdavServlet {
 
         return result.toString();
     }
+
+    
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
+		// TODO Auto-generated method stub
+		super.doGet(request, response);
+		
+		// Identify the requested resource path
+		String path = getRelativePath(request, true);
+		if (path.length() == 0) {
+			// Context root redirect
+			//doDirectoryRedirect(request, response);
+			return;
+		}
+		
+		Cookie cookie = new Cookie("x-wdav-path", path);
+		cookie.setPath("/");
+		response.addCookie(cookie);
+		
+	}
 
 	
 	/**
@@ -733,6 +759,7 @@ public class WDavUploadServlet2 extends WebdavServlet {
 			context.put("footer", sb.toString());
 		}		
 		
+		context.put("createdir", createdir_path);
 		
    		template.merge( context, writer );
 

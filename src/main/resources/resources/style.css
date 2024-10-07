@@ -101,6 +101,10 @@ h1, h2, h3, b, nav {
 	background-color:#c0c0c0;
 }
 
+body {
+  	background-color: #fafafa;
+}  	
+
 a {
 	color:dark-blue;
 }

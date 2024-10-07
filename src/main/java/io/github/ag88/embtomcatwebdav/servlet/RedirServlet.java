@@ -7,12 +7,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
+
+import io.github.ag88.embtomcatwebdav.opt.OptFactory;
+
 /**
  * Class RedirServlet.
  * <p>
  * This servlet simply redirects to the path given when creating the object.
  */
 public class RedirServlet extends HttpServlet {
+	
+	Log log = LogFactory.getLog(RedirServlet.class);
 	
 	String redirpath;
 
@@ -27,6 +34,9 @@ public class RedirServlet extends HttpServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		
+		if (!(Boolean) OptFactory.getInstance().getOpts().get("quiet").getValue())
+			log.info("Redirect from: ".concat(req.getRequestURI()));
 		
 		StringBuilder sb = new StringBuilder(100);
 		sb.append(req.getScheme());
