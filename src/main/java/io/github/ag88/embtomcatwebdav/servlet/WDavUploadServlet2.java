@@ -142,14 +142,9 @@ public class WDavUploadServlet2 extends WebdavServlet {
 			quiet = ((Boolean) opt.getValue()).booleanValue();
 		else
 			quiet = false;
-		
-		String dlzippath = (String) OptFactory.getInstance().getOpt("dlzip_path").getValue();
-		if(null == dlzippath || dlzippath.equals(""))
-			this.dlzip_path = (String) OptFactory.getInstance().getOpt("dlzip_path").getDefaultval();
-		else
-			this.dlzip_path = dlzippath;
-		
-		createdir_path = config.getInitParameter("x-upld-createdir_path");
+				
+		this.dlzip_path = config.getInitParameter("x-upld-dlzip_path");
+		this.createdir_path = config.getInitParameter("x-upld-createdir_path");
 		
 		if (((Boolean) OptFactory.getInstance().getOpt("allowlinking").getValue()).booleanValue())
 			resources.setAllowLinking(true);
@@ -195,10 +190,9 @@ public class WDavUploadServlet2 extends WebdavServlet {
 			return;
 		}
 		
-		Cookie cookie = new Cookie("x-wdav-path", path);
-		cookie.setPath("/");
-		response.addCookie(cookie);
-		
+		HttpSession session = request.getSession();
+		session.setAttribute("x-wdav-path", path);
+				
 	}
 
 	

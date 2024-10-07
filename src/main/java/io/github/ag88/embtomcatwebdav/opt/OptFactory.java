@@ -123,6 +123,7 @@ public class OptFactory {
 		addOpt(new OptQuiet());
 		addOpt(new OptUploadServ());
 		addOpt(new OptDLZipPath());
+		addOpt(new OptCreatedirPath());
 		addOpt(new OptGenpasswd());
 		addOpt(new OptAccessLog());
 		addOpt(new OptAccesslogDir());

@@ -92,6 +92,21 @@
 	width: auto;
 }
 
+.msg-info {
+	width: auto;
+	color: black;
+}
+
+.msg-warn {
+	width: auto;
+	color: orange;
+}
+
+.msg-error {
+	width: auto;
+	color: red;
+}
+
 .footer {
 	width: auto;
 }

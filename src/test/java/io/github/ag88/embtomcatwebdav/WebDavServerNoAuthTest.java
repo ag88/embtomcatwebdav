@@ -52,7 +52,7 @@ public class WebDavServerNoAuthTest {
 	
 	private String basedir;
 	
-	private String urlprefix = "/webdav";
+	private String urlprefix = "/files";
 	
 	private boolean quiet = false;
 		

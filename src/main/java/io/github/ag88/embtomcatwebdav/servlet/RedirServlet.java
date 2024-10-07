@@ -2,6 +2,7 @@ package io.github.ag88.embtomcatwebdav.servlet;
 
 import java.io.IOException;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ public class RedirServlet extends HttpServlet {
 	Log log = LogFactory.getLog(RedirServlet.class);
 	
 	String redirpath;
+	boolean quiet;
 
 	/**
 	 * Instantiates a new redir servlet. 
@@ -33,10 +35,23 @@ public class RedirServlet extends HttpServlet {
 	}
 	
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
 		
-		if (!(Boolean) OptFactory.getInstance().getOpts().get("quiet").getValue())
-			log.info("Redirect from: ".concat(req.getRequestURI()));
+		quiet = (Boolean) OptFactory.getInstance().getOpts().get("quiet").getValue();
+	}
+	
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+		/* do not redirect favicon requests */
+		if (req.getRequestURI().equals("/favicon.ico")) {
+			resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+
+		if (!quiet)
+			log.info("Redirect from: ".concat(req.getRequestURI()));					
 		
 		StringBuilder sb = new StringBuilder(100);
 		sb.append(req.getScheme());

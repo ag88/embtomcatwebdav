@@ -76,7 +76,7 @@ public class WebDavServerTest {
 
 	private String password = "password";
 	
-	private String urlprefix = "/webdav";
+	private String urlprefix = "/files";
 	
 	private boolean quiet = false;
 		

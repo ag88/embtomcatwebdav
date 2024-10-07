@@ -13,24 +13,35 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
+
 package io.github.ag88.embtomcatwebdav.opt;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
- * Conf for UrlPrefix option.
+ * Conf for Createdirpath option.
  */
-public class OptUrlPrefix extends Opt {
+public class OptCreatedirPath extends Opt {
 
-	public OptUrlPrefix() {
-		this.name = "urlprefix";
-		this.description = "set urlprefix, default /files";
-		this.defaultval = "/files";
-		this.value = defaultval;
-		this.opt = "x";
-		this.longopt = "urlprefix";
-		this.argname = "urlprefix";
+	public OptCreatedirPath() {
+
+		/* defaulting base dir done in code */
+		this.type = PropType.Prop;
+		
+		this.name = "createdir_path";
+		this.description = "set the url path for createdir servlet";
+		this.defaultval = "/createdir";
+		this.value = null;
+		this.opt = null;
+		this.hasarg = true;
+		this.longopt = null;
+		this.argname = null;
 		this.valclazz = String.class;
-		this.priority = 14;
+		this.priority = 32;
+		this.validate = false;
+		this.replace = false;
 	}
-
-
+	
 }

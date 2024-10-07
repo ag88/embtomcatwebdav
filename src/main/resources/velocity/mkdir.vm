@@ -32,7 +32,7 @@ function onupload() {
 <p>
 #if( $msg )
 <hr class="line"> 
-<div class="upload-msg">
+<div class="${msgclass}">
 	${msg}
 </div><p>
 #end

@@ -450,6 +450,7 @@ public class WebDavServer
 		    ws.addInitParameter("readonly", "false");
 			ws.addInitParameter("allowSpecialPaths", "true");
 			
+			ws.addInitParameter("x-upld-dlzip_path", dlzip_path);
 			ws.addInitParameter("x-upld-createdir_path", createdir_path);			
 			
 			String urlprefix1;
@@ -613,6 +614,12 @@ public class WebDavServer
 			this.dlzip_path = (String) opts.get("dlzip_path").getDefaultval();
 		else
 			this.dlzip_path = dlzippath;
+		String createdirpath = (String) OptFactory.getInstance().getOpt("createdir_path").getValue();
+		if(null == createdirpath || createdirpath.equals(""))
+			this.createdir_path = (String) OptFactory.getInstance().getOpt("createdir_path").getDefaultval();
+		else
+			this.createdir_path = createdirpath;
+		
 		this.accesslog = ((Boolean) opts.get("accesslog").getValue()).booleanValue();
 		
 		m_opts = opts;

@@ -15,10 +15,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.NumberFormat;
 import java.util.Calendar;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.swing.Box;
@@ -156,14 +160,28 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 			int isel = 0;
 			Preferences pref = App.getInstance().getPreferences();
 			isel = pref.getInt("gui.aliaslist.sel", -1);
+			/* initial run */
 			if (isel < 0) {
 				for (int i = 0; i < aliases.length; i++) {
 					if (aliases[i].equals("localhost") || aliases[i].equals("127.0.0.1"))
+						continue;					
+					try {
+						InetAddress inetAddress = InetAddress.getByName(aliases[i]);
+						if (inetAddress instanceof Inet4Address && inetAddress.isSiteLocalAddress()) {
+							isel = i;
+							break;
+						}
+					} catch (UnknownHostException e) {
 						continue;
-					else {
-						isel = i;
-						break;
 					}
+				}
+				// not found
+				if (isel < 0)
+					isel = 0;
+				pref.putInt("gui.aliaslist.sel", isel);
+				try {
+					pref.flush();
+				} catch (BackingStoreException e) {
 				}
 			}
 			String alias = aliases[isel];
@@ -189,6 +207,13 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 				tfurl.setText(url);
 			l.add(tfurl);
 			// l.add(Util.URLJLabel(url.toString(), url.toString()));
+
+			JButton btncopy = new JButton("copy URL to clipboard");
+			btncopy.setAlignmentX(LEFT_ALIGNMENT);
+			btncopy.setActionCommand("URLCLP1");
+			btncopy.addActionListener(this);
+			l.add(btncopy);
+
 			p.add(l);
 			JScrollPane jsp = new JScrollPane(jlalias);
 			p.add(jsp);
@@ -246,6 +271,27 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 		String hostname = tomcat.getHost().getName();
 		String url = geturl(hostname);
 		if (url != null) {
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			StringSelection stringSelection = new StringSelection(url);
+			clipboard.setContents(stringSelection, null);
+			jlmsg.setText("url copied to clipboard");
+			Thread t = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+					}
+					jlmsg.setText("");
+				}
+			});
+			t.start();
+		}
+	}
+
+	private void dourlclip1() {
+		String url = tfurl.getText();		
+		if (url != null && url != "") {
 			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 			StringSelection stringSelection = new StringSelection(url);
 			clipboard.setContents(stringSelection, null);
@@ -532,6 +578,8 @@ public class Gui extends JFrame implements ActionListener, WindowListener, ListS
 			JOptionPane.showMessageDialog(this,p,"current config",JOptionPane.INFORMATION_MESSAGE);
 		} else if (e.getActionCommand().equals("URLCLP")) {
 			dourlclip();
+		} else if (e.getActionCommand().equals("URLCLP1")) {
+			dourlclip1();			
 		} else if (e.getActionCommand().equals("EXIT")) {
 			doshutdown();
 		} else if (e.getActionCommand().equals("CLOSE")) {

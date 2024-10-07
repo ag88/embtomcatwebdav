@@ -96,19 +96,20 @@ public class MkDirServlet extends HttpServlet {
 			throws ServletException, IOException {
 		Template template = VelUtil.getInstance().loadvmtemplate("velocity/mkdir.vm");
 		context.put("mkdirpath", req.getServletPath());		
-		for(Cookie c: req.getCookies()) {
-			if (c.getName().equals("x-wdav-path")) {
-				String path = c.getValue();
-				context.put("parentdir", path);
-				break;
-			}				
-		}
+		
+		
+		HttpSession session = req.getSession();
+		String parentdir = (String) session.getAttribute("x-wdav-path");
+		context.put("parentdir", parentdir);
 		
 		String backurl = urlprefix;
 		if (! backurl.endsWith("/"))
 			backurl = backurl.concat("/");
-		if (context.get("parentdir") != null)
-			backurl = backurl.concat((String) context.get("parentdir"));
+		if (parentdir != null) { 
+			if (parentdir.startsWith("/"))
+				parentdir = parentdir.substring(1);
+			backurl = backurl.concat(parentdir);
+		}
 		context.put("back", backurl);
 				
 		PrintWriter writer = resp.getWriter(); 
@@ -158,6 +159,7 @@ public class MkDirServlet extends HttpServlet {
 			if(!quiet) log.warn(msg);
 			VelocityContext context = new VelocityContext();
 			context.put("msg", msg);
+			context.put("msgclass", "msg-error");
 			doGetTemplate(req, resp, context);
 			return;
 		}
@@ -169,6 +171,7 @@ public class MkDirServlet extends HttpServlet {
 				log.warn(msg + ": ".concat(parentdir));
 			VelocityContext context = new VelocityContext();
 			context.put("msg", msg);
+			context.put("msgclass", "msg-error");
 			doGetTemplate(req, resp, context);
 			return;
 		}
@@ -179,18 +182,20 @@ public class MkDirServlet extends HttpServlet {
 				log.warn(msg + ": ".concat(parentdir));
 			VelocityContext context = new VelocityContext();
 			context.put("msg", msg);
+			context.put("msgclass", "msg-error");
 			doGetTemplate(req, resp, context);
 			return;
 		}
 
 		String newfoldername = req.getParameter("newfoldername");
-
+		
 		if (newfoldername == null || newfoldername == "") {
 			String msg = "new folder name cannot be null or empty";
 			if(!quiet)
 				log.warn(msg);
 			VelocityContext context = new VelocityContext();
 			context.put("msg", msg);
+			context.put("msgclass", "msg-error");
 			doGetTemplate(req, resp, context);
 			return;
 		}
@@ -198,11 +203,25 @@ public class MkDirServlet extends HttpServlet {
 		if (!parentdir.endsWith("/"))
 			parentdir = parentdir.concat("/");		
 		
-		if (!resources.mkdir(parentdir.concat(newfoldername))) {
+		String newfolderpath = parentdir.concat(newfoldername);
+		resource = resources.getResource(newfolderpath);
+		if (resource.exists()) {
+			String msg = newfoldername + " directory exists not creating";
+			if(!quiet)
+				log.warn(msg + ": ".concat(parentdir));
+			VelocityContext context = new VelocityContext();
+			context.put("msg", msg);
+			context.put("msgclass", "msg-error");
+			doGetTemplate(req, resp, context);
+			return;
+		}		
+		
+		if (!resources.mkdir(newfolderpath)) {
 			String msg = "IO error creating directory: ".concat(newfoldername);
 			log.warn(msg);
 			VelocityContext context = new VelocityContext();
 			context.put("msg", msg);
+			context.put("msgclass", "msg-error");
 			doGetTemplate(req, resp, context);
 			return;
 		} else {
@@ -211,6 +230,7 @@ public class MkDirServlet extends HttpServlet {
 				log.info("Directory created: " + parentdir.concat(newfoldername));
 			VelocityContext context = new VelocityContext();
 			context.put("msg", msg);
+			context.put("msgclass", "msg-info");
 			doGetTemplate(req, resp, context);
 			return;
 		}
