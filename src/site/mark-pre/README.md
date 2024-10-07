@@ -8,13 +8,13 @@ remote device say a mobile phone (Android, iPhone etc) simply using the web brow
 Running it with the upload servlet makes it possible to upload files without a WebDAV client.
 
 ## Feature list
-- It runs on http://localhost:8080/webdav
+- It runs at http://localhost:8080/files (v1.1) (earlier version incl 1.0 is http://localhost:8080/webdav)
 - It serves the current working directory in which the app is started
 - Added (BASIC) authentication
 - Added (DIGEST) authentication - v0.3.0, v0.2.1
 - Added command line aguments so that various parameters can be changed:
 - Added SSL (i.e. https://) - v0.2.0
-- Added option to change urlprefix '/webdav' - v0.3.1
+- Added option to change urlprefix '/files' - v0.3.1
 - Added loading of options from properties file, and option to generate a default config file - v0.3.2
 - Added a dialog to generate DIGEST passwords that can be used in the config file. - v0.3.2
 - ***new** v0.8.0 major feature release: 
@@ -55,6 +55,16 @@ Running it with the upload servlet makes it possible to upload files without a W
   - Added a 'setup wizard' that helps to configure embtomcatwebdav and get it up and running easily
   - Gui configuration panels for the various server configuration
   - it now uses a default configuration file so that you can simply launch it and start uploading / downloading
+
+- ****new** v1.1.0 major feature release create dir/folder from web interface, urlprefix changed to /files instead of /webdav
+
+  - added createdir servlet, it is now possible to create a dir/folder from the web interface
+
+  - the default urlprefix is now http://<host/ipaddr>:8080/files instead of /webdav.
+    This makes it easier to remember the url
+
+  - improvements in the gui, initial run now makes a better selection of the host address,
+    added a copy url to clipboard button
 
 Note that the above are cumulative updates, the latest version e.g. v${project.version} contains all
 the updates/features in the lower/prior versions.
@@ -184,8 +194,8 @@ port=8080
 path=/home/user
 # set basedir, a work folder for tomcat, default [current working dir]/tomcat.port
 basedir=/home/user/tomcat.8080
-# set urlprefix, default /webdav
-urlprefix=/webdav
+# set urlprefix, default /files
+urlprefix=/files
 # set realm name, default 'Simple'
 realm=Simple
 # set user. If the user is specified, the app will prompt for authentication

@@ -89,9 +89,9 @@ Embtomcatwebdav v1.0.0 and newer provides a QR Code Gui. The command like CLI is
 details as follows:
 
 ```
-java -jar embtomcatwebdav-1.0.0.jar -h
+java -jar embtomcatwebdav-1.1.0.jar -h
 
-usage: embtomcatwebdav-1.0.0
+usage: embtomcatwebdav-1.1.0
     --accesslog                  enable access log
     --allowlinking               allow linking (e.g. follow symbolic
                                  links, warn: links can go outside working
@@ -159,14 +159,14 @@ Prior v1.0.0, you can maintain the options/settings in a text (config) file. To 
 a template/config file using the ``--genconf configfile`` option, e.g.:
 
 ```
-java -jar embtomcatwebdav-1.0.0.jar --genconf wdav.ini
+java -jar embtomcatwebdav-1.1.0.jar --genconf wdav.ini
 ```
 
 You would get a config file as like that in the [run section](#run) above.
 
 Thereafter, running the app with the config file e.g. wdav.ini is
 ```
-java -jar embtomcatwebdav-1.0.0.jar -c wdav.ini
+java -jar embtomcatwebdav-1.1.0.jar -c wdav.ini
 ```
 
 To enable authentication, specify a userid using -u option and password would be prompted if the -w option is not specified.
@@ -191,7 +191,7 @@ in the config file if you use DIGEST authentication. This is more secure than st
 config files and that passwords are not transmitted as plaintext across the network.
 
 If you are bothered with illegal reflective access operation warnings, you can use the batch file run.bat or run.sh
-replace the "target/embtomcatwebdav-1.0.0.jar" with the appropriate release jar path, that should mute most of those illegal reflective access warnings. Tomcat needs those reflective access which accounts for its versetile flexibility features. 
+replace the "target/embtomcatwebdav-1.1.0.jar" with the appropriate release jar path, that should mute most of those illegal reflective access warnings. Tomcat needs those reflective access which accounts for its versetile flexibility features. 
 
 ## Upload servlet
 
@@ -221,7 +221,7 @@ doPost() whre it is needed and only if it is a new (invalid) session.
 
 v0.5.2 added(fixed) sorting in Upload servlet
 
-The older release features are all there in the latest release (e.g. v.1.0.0)
+The older release features are all there in the latest release (e.g. v.1.1.0)
 
 In the config (properties text) file, the option ``uploadservlet=true`` parameter should be set to ``true``.
 
@@ -283,7 +283,7 @@ Unix like OS) `ip -4 add`.
 
 For example, if you start *embtomcatwebdav* with  
 
-```java -jar embtomcatwebdav-1.0.0.jar -H 0.0.0.0```
+```java -jar embtomcatwebdav-1.1.0.jar -H 0.0.0.0```
 
 and if 192.168.1.171 is your PC's IP address, you can then point your web browser on your remote device (e.g. phone, e.g. Android, iPhone, etc) to http://ip_address:8080/webdav (e.g. http://192.168.1.171:8080/webdav in the example above), which should present a web page of the Upload servlet.
 
@@ -342,7 +342,7 @@ Note that keytool is normally bundled with JDK distributions, it is not part of 
 Next run the app with -S option and the keystore file. If the keystore password is not
 specified on the command line, it would prompt for it. e.g.
 ```
-java -jar embtomcatwebdav-1.0.0.jar -p 8443 -S keystorefile.jkf 
+java -jar embtomcatwebdav-1.1.0.jar -p 8443 -S keystorefile.jkf 
 ```
 Note that when you run the app with the -S keystorefile.jkf option, it copies the keystore file into the 'tomcat.port' work folder, this is needed for the app to access the keystore file.
 
@@ -362,17 +362,17 @@ There are rather tricky ways to be your own CA, make certs. But it may involve i
 mvn package
 ```
 
-Note that if you build from source the jar file is embtomcatwebdav-1.0.0-jar-with-dependencies.jar, in target/ folder.
+Note that if you build from source the jar file is embtomcatwebdav-1.1.0-jar-with-dependencies.jar, in target/ folder.
 
 ## Development/Embedding
 
 This release is released to maven central
-https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/1.0.0
+https://central.sonatype.com/artifact/io.github.ag88/embtomcatwebdav/1.1.0
 ```
 <dependency>
     <groupId>io.github.ag88</groupId>
     <artifactId>embtomcatwebdav</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 v0.3.3 added runserverfork() method which lets apps embedding this to run the server in a standalone thread.
