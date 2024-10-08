@@ -8,7 +8,8 @@ remote device say a mobile phone (Android, iPhone etc) simply using the web brow
 Running it with the upload servlet makes it possible to upload files without a WebDAV client.
 
 ## Feature list
-- It runs at http://localhost:8080/files (v1.1) (earlier version incl 1.0 is http://localhost:8080/webdav)
+- It runs at http://localhost:8080/files (v1.1) 
+  (earlier versions including 1.0 is http://localhost:8080/webdav)
 - It serves the current working directory in which the app is started
 - Added (BASIC) authentication
 - Added (DIGEST) authentication - v0.3.0, v0.2.1
@@ -58,7 +59,7 @@ Running it with the upload servlet makes it possible to upload files without a W
 
 - ****new** v1.1.0 major feature release create dir/folder from web interface, urlprefix changed to /files instead of /webdav
 
-  - added createdir servlet, it is now possible to create a dir/folder from the web interface
+  - added createdir servlet, it is now possible to create a new dir/folder from the web interface
 
   - the default urlprefix is now http://<host/ipaddr>:8080/files instead of /webdav.
     This makes it easier to remember the url
